@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import songModel from '../models/songs.model';
 import HttpException from '../utils/httpException.utils';
-import ISong from '../interfaces/song';
+import ISong from '../interfaces/song.interface';
 
 const getSongs = async (req: Request, res: Response): Promise<void> => {
     const songs = await songModel.read(req.query);

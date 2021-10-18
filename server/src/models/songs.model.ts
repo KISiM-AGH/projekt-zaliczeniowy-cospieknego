@@ -1,6 +1,6 @@
 import { multipleColumnSet } from '../utils/common.utils';
 import pool from '../db/db.config';
-import ISong from '../interfaces/song';
+import ISong from '../interfaces/song.interface';
 
 interface IReturnedRows {
     fieldCount?: number;
@@ -16,7 +16,7 @@ class songModel {
     _table = 'songs';
 
     read = async (params: object = {}) => {
-        let sql = `SELECT * FROM ${this._table}`;
+        let sql = `SELECT artist, title, album, albums.slug, duration, lyrics FROM ${this._table} INNER JOIN artists ON songs.artist_id = artists.id INNER JOIN albums ON songs.album_id = albums.id`;
 
         if (!Object.keys(params).length) {
             const [rows] = await pool.query<ISong[]>(sql, []);
