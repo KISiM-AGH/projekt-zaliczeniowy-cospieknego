@@ -19,6 +19,7 @@ export default function CollectionType(props: {}): ReactElement {
         setAnchorEl(null);
     };
 
+    // Na sztywno => do poprawy
     return (
         <Stack direction='row' spacing={2} sx={{ flexGrow: 24, color: '#fff' }}>
             {windowSize.x >= 1024 && (
@@ -53,8 +54,36 @@ export default function CollectionType(props: {}): ReactElement {
                     >
                         Playlisty
                     </Button>
-                    <Button color='secondary'>Podcasty</Button>
-                    <Button color='secondary'>Wykonawcy</Button>
+                    <Button
+                        color='secondary'
+                        component={forwardRef<
+                            HTMLAnchorElement,
+                            Partial<LinkProps>
+                        >((props, ref) => (
+                            <Link
+                                to='/collection/podcasts'
+                                ref={ref as any}
+                                {...props}
+                            />
+                        ))}
+                    >
+                        Podcasty
+                    </Button>
+                    <Button
+                        color='secondary'
+                        component={forwardRef<
+                            HTMLAnchorElement,
+                            Partial<LinkProps>
+                        >((props, ref) => (
+                            <Link
+                                to='/collection/artists'
+                                ref={ref as any}
+                                {...props}
+                            />
+                        ))}
+                    >
+                        Wykonawcy
+                    </Button>
                 </>
             )}
             {windowSize.x < 1024 && windowSize.x >= 900 && (

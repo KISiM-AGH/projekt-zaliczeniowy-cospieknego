@@ -59,10 +59,7 @@ interface IProps {
     children: ReactNode;
 }
 
-export default function Container({
-    children,
-    ...props
-}: IProps): ReactElement {
+export default function Main({ children, ...props }: IProps): ReactElement {
     return (
         <>
             <Box sx={styles.root} position='relative'>

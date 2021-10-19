@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { CssBaseline, createTheme, ThemeProvider } from '@mui/material';
-import { Container, NavBar, TopBar, MediaPlayer } from './components';
-import { Home, Search, Library } from './pages';
+import { Main, NavBar, TopBar, MediaPlayer } from './components';
+import { Home, Search, Collection } from './pages';
 
 const theme = createTheme({
     palette: {
@@ -27,35 +27,13 @@ function App() {
             <Router>
                 <NavBar />
                 <TopBar />
-                <Container>
+                <Main>
                     <Switch>
                         <Route exact path='/' component={Home} />
                         <Route path='/search' component={Search} />
-                        <Route
-                            path='/collection'
-                            render={({ match: { url } }) => (
-                                <>
-                                    <Route
-                                        path={`${url}/albums`}
-                                        component={Library}
-                                    />
-                                    <Route
-                                        path={`${url}/playlists`}
-                                        component={Library}
-                                    />
-                                    <Route
-                                        path={`${url}/podcasts`}
-                                        component={Library}
-                                    />
-                                    <Route
-                                        path={`${url}/artistsT`}
-                                        component={Library}
-                                    />
-                                </>
-                            )}
-                        />
+                        <Route path='/collection/:id' component={Collection} />
                     </Switch>
-                </Container>
+                </Main>
                 <MediaPlayer />
             </Router>
         </ThemeProvider>
