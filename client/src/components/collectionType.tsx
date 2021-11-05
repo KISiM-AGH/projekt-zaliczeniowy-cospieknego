@@ -5,7 +5,11 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useTheme } from '@mui/material/styles';
 import useWindowSize from '../hooks/useWindowSize';
 
-export default function CollectionType(props: {}): ReactElement {
+interface IProps {
+    activeType: string;
+}
+
+export default function CollectionType({ activeType }: IProps): ReactElement {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const windowSize = useWindowSize();
     const history = useHistory();
@@ -25,7 +29,11 @@ export default function CollectionType(props: {}): ReactElement {
             {windowSize.x >= 1024 && (
                 <>
                     <Button
-                        variant='contained'
+                        variant={activeType === 'albums' ? 'contained' : 'text'}
+                        color={
+                            activeType === 'albums' ? 'primary' : 'secondary'
+                        }
+                        sx={{ padding: '6px 16px' }}
                         component={forwardRef<
                             HTMLAnchorElement,
                             Partial<LinkProps>
@@ -40,7 +48,13 @@ export default function CollectionType(props: {}): ReactElement {
                         Albumy
                     </Button>
                     <Button
-                        color='secondary'
+                        variant={
+                            activeType === 'playlists' ? 'contained' : 'text'
+                        }
+                        color={
+                            activeType === 'playlists' ? 'primary' : 'secondary'
+                        }
+                        sx={{ padding: '6px 16px' }}
                         component={forwardRef<
                             HTMLAnchorElement,
                             Partial<LinkProps>
@@ -55,7 +69,13 @@ export default function CollectionType(props: {}): ReactElement {
                         Playlisty
                     </Button>
                     <Button
-                        color='secondary'
+                        variant={
+                            activeType === 'podcasts' ? 'contained' : 'text'
+                        }
+                        color={
+                            activeType === 'podcasts' ? 'primary' : 'secondary'
+                        }
+                        sx={{ padding: '6px 16px' }}
                         component={forwardRef<
                             HTMLAnchorElement,
                             Partial<LinkProps>
@@ -70,7 +90,13 @@ export default function CollectionType(props: {}): ReactElement {
                         Podcasty
                     </Button>
                     <Button
-                        color='secondary'
+                        variant={
+                            activeType === 'artists' ? 'contained' : 'text'
+                        }
+                        color={
+                            activeType === 'artists' ? 'primary' : 'secondary'
+                        }
+                        sx={{ padding: '6px 16px' }}
                         component={forwardRef<
                             HTMLAnchorElement,
                             Partial<LinkProps>

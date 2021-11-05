@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 
-// : { [target: string]: []; }
-
 export default function useContent(target: string): [] {
     const [content, setContent] = useState<[]>([]);
 
@@ -23,6 +21,5 @@ export default function useContent(target: string): [] {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // return { [target]: content };
     return content;
 }

@@ -1,7 +1,8 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import errorMiddleware from './middlewares/error.middleware';
-import routes from './routes/songs.route';
+import songsRoutes from './routes/songs.route';
+import albumsRoutes from './routes/albums.route';
 
 dotenv.config();
 
@@ -31,7 +32,8 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/api/v1', routes);
+app.use('/api/v1', songsRoutes);
+app.use('/api/v1', albumsRoutes);
 
 // Error middleware
 app.use(errorMiddleware);

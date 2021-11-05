@@ -1,21 +1,25 @@
 import { useState, useEffect, ReactElement, Fragment } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Grid, Box, Typography } from '@mui/material';
-import SongCard from '../components/songCard';
+import { SongCard } from '../components';
 
 interface IProps {
-    [key: string]: { title: string; data: [] | undefined }[];
+    slides: {
+        [key: string]: { title: string; data: [] }[];
+    };
 }
 
-export default function HomeContainer({ slides }: IProps): ReactElement {
-    const [slideRows, setSlideRows] = useState<any>([]);
+export default function CollectionContainer({ slides }: IProps): ReactElement {
+    const [category, setCategory] = useState('albums');
+    const location = useLocation();
 
     useEffect(() => {
-        setSlideRows(slides);
-    }, [slides]);
+        setCategory(location.pathname.split('/')[2]);
+    }, [location.pathname]);
 
-    return (
+    return slides && slides[category] ? (
         <>
-            {slideRows.map((slide: { title: string; data: [] }) => (
+            {slides[category].map((slide: { title: string; data: [] }) => (
                 <Fragment key={slide.title}>
                     <Box
                         sx={{
@@ -33,14 +37,9 @@ export default function HomeContainer({ slides }: IProps): ReactElement {
                         >
                             {slide.title}
                         </Typography>
-                        {slide.data.length > 6 && (
-                            <Typography variant='button' color='textSecondary'>
-                                POKAŻ WSZYSTKO
-                            </Typography>
-                        )}
                     </Box>
                     <Grid container spacing={3}>
-                        {slide.data.map(({ title, artist, slug }) => (
+                        {slide.data.map(({ name, artist, slug }) => (
                             <Grid
                                 item
                                 xs={12}
@@ -48,10 +47,10 @@ export default function HomeContainer({ slides }: IProps): ReactElement {
                                 md={4}
                                 lg={3}
                                 xl={2}
-                                key={title}
+                                key={name}
                             >
                                 <SongCard
-                                    title={title}
+                                    title={name}
                                     subtitle={artist}
                                     slug={slug}
                                 />
@@ -61,5 +60,7 @@ export default function HomeContainer({ slides }: IProps): ReactElement {
                 </Fragment>
             ))}
         </>
+    ) : (
+        <div>No results found</div>
     );
 }

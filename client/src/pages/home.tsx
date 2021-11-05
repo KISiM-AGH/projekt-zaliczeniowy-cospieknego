@@ -1,12 +1,12 @@
-import { useState, useEffect, ReactElement } from 'react';
+import { ReactElement } from 'react';
 import HomeContainer from '../containers/home';
 import useContent from '../hooks/useContent';
 import featureFilter from '../utils/featureFilter';
 
 export default function Home(props: {}): ReactElement {
-    const songs = useContent('songs');
-    const albums = useContent('songs');
-    const artists = useContent('songs');
+    const songs = useContent('tracks');
+    const albums = useContent('tracks');
+    const artists = useContent('tracks');
     const slides = featureFilter({
         songs,
         albums,

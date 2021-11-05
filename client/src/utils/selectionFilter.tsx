@@ -1,43 +1,39 @@
 interface IProps {
-    songs: [];
-    albums?: [];
-    artists?: [];
-    featured?: [];
+    albums: [];
+    playlists: [];
+    podcasts: [];
+    artists: [];
 }
 
 export default function selectionFilter({
-    songs,
     albums,
+    playlists,
+    podcasts,
     artists,
-    featured,
 }: IProps) {
     return {
-        songs: [
-            {
-                title: 'Polecane utwory',
-                data: songs,
-            },
-            {
-                title: 'Ostatnio odtwarzane',
-                data: songs,
-            },
-        ],
         albums: [
             {
                 title: 'Albumy',
                 data: albums,
             },
         ],
+        playlists: [
+            {
+                title: 'Playlisty',
+                data: playlists,
+            },
+        ],
+        podcasts: [
+            {
+                title: 'Podcasty',
+                data: podcasts,
+            },
+        ],
         artists: [
             {
                 title: 'Wykonawcy',
                 data: artists,
-            },
-        ],
-        featured: [
-            {
-                title: 'Warte uwagi',
-                data: featured,
             },
         ],
     };

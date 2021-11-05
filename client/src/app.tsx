@@ -1,14 +1,18 @@
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Redirect,
+} from 'react-router-dom';
 import { CssBaseline, createTheme, ThemeProvider } from '@mui/material';
-import { Main, NavBar, TopBar, MediaPlayer } from './components';
+import { ContentPane, NavBar, TopBar, MediaPlayer } from './components';
 import { Home, Search, Collection } from './pages';
 
 const theme = createTheme({
     palette: {
         mode: 'dark',
         primary: {
-            // main: '#28ff9e',
-            main: '#ff285a',
+            main: '#ff2850',
         },
         secondary: {
             main: '#edf2ff',
@@ -27,13 +31,31 @@ function App() {
             <Router>
                 <NavBar />
                 <TopBar />
-                <Main>
+                <ContentPane>
                     <Switch>
                         <Route exact path='/' component={Home} />
                         <Route path='/search' component={Search} />
-                        <Route path='/collection/:id' component={Collection} />
+                        <Route
+                            path='/collection/albums'
+                            component={Collection}
+                        />
+                        <Route
+                            path='/collection/playlists'
+                            component={Collection}
+                        />
+                        <Route
+                            path='/collection/podcasts'
+                            component={Collection}
+                        />
+                        <Route
+                            path='/collection/artists'
+                            component={Collection}
+                        />
+                        <Route path='/collection/*'>
+                            <Redirect to='/collection/albums' />
+                        </Route>
                     </Switch>
-                </Main>
+                </ContentPane>
                 <MediaPlayer />
             </Router>
         </ThemeProvider>

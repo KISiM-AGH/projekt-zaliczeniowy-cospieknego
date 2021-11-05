@@ -1,6 +1,19 @@
 import { ReactElement } from 'react';
-import LibraryContainer from '../containers/library';
+import useContent from '../hooks/useContent';
+import selectionFilter from '../utils/selectionFilter';
+import CollectionContainer from '../containers/collection';
 
-export default function Collection(props: {}): ReactElement {
-    return <LibraryContainer>LIBRARY PAGE</LibraryContainer>;
+export default function Collection(_props: {}): ReactElement {
+    const albums = useContent('albums');
+    const playlists = useContent('tracks');
+    const podcasts = useContent('tracks');
+    const artists = useContent('tracks');
+    const slides = selectionFilter({
+        albums,
+        playlists,
+        podcasts,
+        artists,
+    });
+
+    return <CollectionContainer slides={slides} />;
 }

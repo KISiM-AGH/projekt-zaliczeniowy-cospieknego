@@ -1,6 +1,6 @@
 import { multipleColumnSet } from '../utils/common.utils';
 import pool from '../db/db.config';
-import ISong from '../interfaces/song.interface';
+import IAlbum from '../interfaces/album.interface';
 
 interface IReturnedRows {
     fieldCount?: number;
@@ -12,42 +12,39 @@ interface IReturnedRows {
     changedRows?: number;
 }
 
-class songModel {
-    _table = 'songs';
+class albumModel {
+    _table = 'albums';
 
     read = async (params: object = {}) => {
-        let sql = `SELECT artists.name as artist, title, albums.name as album, albums.slug, duration, lyrics FROM ${this._table} INNER JOIN artists ON ${this._table}.artist_id = artists.id INNER JOIN albums ON songs.album_id = albums.id`;
+        let sql = `SELECT albums.name, year, albums.slug, artists.name as artist FROM ${this._table} INNER JOIN artists ON ${this._table}.artist_id = artists.id`;
 
         if (!Object.keys(params).length) {
-            const [rows] = await pool.query<ISong[]>(sql, []);
+            const [rows] = await pool.query<IAlbum[]>(sql, []);
             return rows;
         }
 
         const { columnSet, values } = multipleColumnSet(params);
         sql += ` WHERE ${columnSet}`;
-        const [rows] = await pool.query<ISong[]>(sql, [...values]);
+        const [rows] = await pool.query<IAlbum[]>(sql, [...values]);
 
         return rows;
     };
 
-    find = async (params: object): Promise<ISong> => {
+    find = async (params: object): Promise<IAlbum> => {
         const { columnSet, values } = multipleColumnSet(params);
         const sql = `SELECT * FROM ${this._table} WHERE ${columnSet}`;
-        const [rows] = await pool.query<ISong[]>(sql, [...values]);
+        const [rows] = await pool.query<IAlbum[]>(sql, [...values]);
         return rows[0];
     };
 
-    create = async (song: ISong) => {
-        const sql = `INSERT INTO ${this._table}(id, title, duration, audio_url, artist_id, album_id, lyrics) VALUES(NULL, ?, ?, ?, ?, ?, ?)`;
-        const { title, duration, audio_url, artist_id, album_id, lyrics } =
-            song;
-        const [rows] = await pool.query<ISong[]>(sql, [
-            title,
-            duration,
-            audio_url,
+    create = async (album: IAlbum) => {
+        const sql = `INSERT INTO ${this._table}(id, name, year, slug, artist_id) VALUES(NULL, ?, ?, ?, ?)`;
+        const { name, year, slug, artist_id } = album;
+        const [rows] = await pool.query<IAlbum[]>(sql, [
+            name,
+            year,
+            slug,
             artist_id,
-            album_id,
-            lyrics,
         ]);
         const result = rows as IReturnedRows;
 
@@ -72,4 +69,4 @@ class songModel {
     };
 }
 
-export default new songModel();
+export default new albumModel();

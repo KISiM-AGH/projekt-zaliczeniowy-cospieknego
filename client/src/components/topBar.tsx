@@ -99,7 +99,9 @@ export default function Topbar(props: {}): ReactElement {
             </Box>
             {matchPath(location.pathname, {
                 path: '/collection/:id',
-            }) && <CollectionType />}
+            }) && (
+                <CollectionType activeType={location.pathname.split('/')[2]} />
+            )}
             <Box
                 sx={{
                     display: 'flex',

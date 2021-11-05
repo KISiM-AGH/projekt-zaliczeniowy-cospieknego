@@ -39,7 +39,7 @@ const navItems: INavItem[] = [
         icon: <SearchIcon color='primary' fontSize='medium' />,
     },
     {
-        path: '/collection/albums',
+        path: '/collection/:id',
         text: 'Biblioteka',
         icon: <CollectionIcon color='primary' fontSize='medium' />,
     },
