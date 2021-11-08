@@ -5,6 +5,7 @@ const router = Router();
 
 router.get('/albums', controller.getAlbums);
 router.get('/albums/?year=:year', controller.getAlbums);
+router.get('/albums/?limit=:n', controller.getAlbums);
 router.get('/albums/:id', controller.getAlbumById);
 router.get('/albums/:title', controller.getAlbumByTitle);
 router.post('/albums', controller.addAlbum);

@@ -7,6 +7,7 @@ import {
 import { CssBaseline, createTheme, ThemeProvider } from '@mui/material';
 import { ContentPane, NavBar, TopBar, MediaPlayer } from './components';
 import { Home, Search, Collection } from './pages';
+import useAuth from './hooks/useAuth';
 
 const theme = createTheme({
     palette: {
@@ -25,6 +26,9 @@ const theme = createTheme({
 });
 
 function App() {
+    const user = useAuth();
+    console.log(user);
+
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
