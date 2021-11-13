@@ -1,5 +1,5 @@
 import { useState, ReactElement } from 'react';
-import { useHistory, useLocation, matchPath } from 'react-router-dom';
+import { useHistory, useLocation, Link, matchPath } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import {
     Box,
@@ -9,6 +9,8 @@ import {
     Menu,
     MenuItem,
     Typography,
+    CardMedia,
+    Button,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -17,25 +19,84 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CollectionType from './collectionType';
+import { useAuthState } from '../context/auth';
 
 const menuItems = [
     {
         text: 'Konto',
-        link: true,
+        isLink: true,
     },
     {
         text: 'Profil',
-        link: false,
+        isLink: false,
     },
     {
         text: 'Przejdź na Premium',
-        link: true,
+        isLink: true,
     },
     {
         text: 'Wyloguj',
-        link: false,
+        isLink: false,
     },
 ];
+
+const UserMenu = ({ isOpen, onClick }: { isOpen: any; onClick: any }) => {
+    const theme = useTheme();
+    const { currentUser }: { currentUser: any } = useAuthState();
+
+    return (
+        <IconButton
+            size='large'
+            aria-label='account of the current user'
+            aria-controls='menu-appbar'
+            aria-haspopup='true'
+            sx={{
+                p: 1,
+                height: '40px',
+                borderRadius: '20px',
+                bgcolor: theme.palette.background.default,
+            }}
+            onClick={onClick}
+        >
+            {currentUser.image_url ? (
+                <CardMedia
+                    component='img'
+                    src={currentUser.image_url}
+                    sx={{ width: '26px', borderRadius: '50%' }}
+                />
+            ) : (
+                <AccountCircle color='primary' sx={{ fontSize: '32px' }} />
+            )}
+            <Typography ml={1.5}>{currentUser.username}</Typography>
+            {isOpen ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+        </IconButton>
+    );
+};
+
+const JoinMenu = () => {
+    const theme = useTheme();
+
+    return (
+        <>
+            <Button
+                variant='text'
+                color='secondary'
+                component={Link}
+                to={'/register'}
+            >
+                ZAREJESTRUJ SIĘ
+            </Button>
+            <Button
+                variant='contained'
+                sx={{ ml: theme.spacing(3) }}
+                component={Link}
+                to={'/login'}
+            >
+                ZALOGUJ SIĘ
+            </Button>
+        </>
+    );
+};
 
 export default function Topbar(props: {}): ReactElement {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -43,8 +104,14 @@ export default function Topbar(props: {}): ReactElement {
     const history = useHistory();
     const theme = useTheme();
 
+    const {
+        isLoggedIn,
+    }: { currentUser: any; isLoggedIn: boolean; dispatch: any } =
+        useAuthState();
+
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
+        setAnchorEl(event.currentTarget.parentElement);
+        console.log(isLoggedIn);
     };
 
     const handleClose = () => {
@@ -89,8 +156,6 @@ export default function Topbar(props: {}): ReactElement {
                         }}
                         onClick={(prevHistory) => {
                             history.goForward();
-                            console.log(history);
-                            console.log(prevHistory);
                         }}
                     >
                         <ChevronRightIcon />
@@ -107,30 +172,14 @@ export default function Topbar(props: {}): ReactElement {
                     display: 'flex',
                     alignItems: 'center',
                     cursor: 'pointer',
+                    mr: 2,
                 }}
-                onClick={handleMenu}
             >
-                <IconButton
-                    size='large'
-                    aria-label='account of current user'
-                    aria-controls='menu-appbar'
-                    aria-haspopup='true'
-                    sx={{
-                        height: '40px',
-                        borderRadius: '20px',
-                        mr: 2,
-                        p: 1,
-                        bgcolor: theme.palette.background.default,
-                    }}
-                >
-                    <AccountCircle color='primary' sx={{ fontSize: '32px' }} />
-                    <Typography ml={1}>Admin</Typography>
-                    {Boolean(anchorEl) ? (
-                        <ArrowDropUpIcon />
-                    ) : (
-                        <ArrowDropDownIcon />
-                    )}
-                </IconButton>
+                {isLoggedIn ? (
+                    <UserMenu isOpen={Boolean(anchorEl)} onClick={handleMenu} />
+                ) : (
+                    <JoinMenu />
+                )}
             </Box>
             <Menu
                 anchorEl={anchorEl}
@@ -158,7 +207,7 @@ export default function Topbar(props: {}): ReactElement {
                         }}
                     >
                         <Typography variant='subtitle2'>{item.text}</Typography>
-                        {item.link && <OpenInNewIcon fontSize='small' />}
+                        {item.isLink && <OpenInNewIcon fontSize='small' />}
                     </MenuItem>
                 ))}
             </Menu>

@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
+import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import HttpException from '../utils/httpException.utils';
 import userModel from '../models/users.model';
 import {
     default as IUser,
     IGetUserAuthInfoRequest,
 } from '../interfaces/user.interface';
-import dotenv from 'dotenv';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
@@ -54,7 +54,7 @@ const getUserByName = async (req: Request, res: Response): Promise<void> => {
 };
 
 const getCurrentUser = async (req: IGetUserAuthInfoRequest, res: Response) => {
-    const { password, ...userWithoutPassword } = req.currentUser;
+    const { password_digest, ...userWithoutPassword } = req.currentUser;
 
     res.send(userWithoutPassword);
 };
@@ -130,7 +130,7 @@ const userLogin = async (req: Request, res: Response) => {
         });
 
     const secret = process.env.SECRET_JWT || '';
-    const token = jwt.sign({ user_id: user.id.toString() }, secret, {
+    const token = jwt.sign({ userId: user.id.toString() }, secret, {
         expiresIn: '24h',
     });
 

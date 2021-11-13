@@ -6,60 +6,49 @@ import {
     ReactNode,
     Dispatch,
     SetStateAction,
+    useReducer,
 } from 'react';
+import { AuthReducer } from '../reducers/auth';
+import { authorize, login } from './authActions';
 
 interface IProps {
     children: ReactNode;
 }
 
-interface Context {
+export interface AuthState {
+    currentUser: {};
     isLoggedIn: boolean;
-    // user: {};
-    setContext: Dispatch<SetStateAction<Context>>;
+    loading: boolean;
+    errorMessage: string | null;
+    dispatch: Dispatch<SetStateAction<AuthState>>;
 }
 
-const initialContext: Context = {
+const user: any = JSON.parse(localStorage.getItem('authUser') || '{}');
+
+const initialState: AuthState = {
+    currentUser: user,
     isLoggedIn: false,
-    // user: {},
-    setContext: (): void => {
-        throw new Error('setContext function must be overridden');
+    errorMessage: null,
+    loading: false,
+    dispatch: (): void => {
+        throw new Error('Dispatch function must be overridden');
     },
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const AuthContext = createContext(initialState);
 
-export const AuthContext = createContext<Context>(initialContext);
+export const useAuthState = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: IProps) => {
-    const [user, setUser] = useState({
-        isLoggedIn: false,
-        ...JSON.parse(localStorage.getItem('authUser') || '{}'),
-    });
+    const [authState, dispatch] = useReducer(AuthReducer, initialState);
 
     useEffect(() => {
-        const auth = async (token: string) => {
-            const response = await fetch('http://localhost:8080/api/v1/auth', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const currentUser = await response.json();
-            currentUser && setUser(currentUser);
-            if (currentUser) {
-                setUser(currentUser);
-            }
-        };
-        Object.keys(user).length !== 0 && auth(user.token);
+        //login(dispatch);
+        user?.token && authorize(dispatch, user.token);
     }, []);
 
-    const login = () => {
-        //
-    };
-
     return (
-        <AuthContext.Provider value={{ ...user, setUser }}>
+        <AuthContext.Provider value={{ ...authState, dispatch }}>
             {children}
         </AuthContext.Provider>
     );

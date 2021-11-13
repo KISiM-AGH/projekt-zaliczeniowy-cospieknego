@@ -22,7 +22,6 @@ router.get(
     auth(),
     awaitHandlerFactory(controller.getUserByName)
 );
-// router.get('/whoami', controller.getCurrentUser);
 router.post(
     '/users/',
     createUserSchema,
@@ -38,6 +37,11 @@ router.delete(
     auth(Role.Admin),
     awaitHandlerFactory(controller.deleteUser)
 );
-router.post('/login', validateLogin, awaitHandlerFactory(controller.userLogin));
+router.post(
+    '/login',
+    validateLogin,
+    awaitHandlerFactory(<any>controller.userLogin)
+);
+router.get('/auth', auth(), awaitHandlerFactory(controller.getCurrentUser));
 
 export = router;

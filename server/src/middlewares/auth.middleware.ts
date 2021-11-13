@@ -10,11 +10,11 @@ import {
 dotenv.config();
 
 interface JwtPayload {
-    _id: string;
+    userId: string;
 }
 
 const auth = (...roles: string[]) => {
-    return async function (req: Request, res: Response, next: NextFunction) {
+    return async function (req: any, res: Response, next: NextFunction) {
         try {
             const authHeader = req.headers.authorization;
             const bearer = 'Bearer ';
@@ -29,14 +29,14 @@ const auth = (...roles: string[]) => {
 
             const token = authHeader.replace(bearer, '');
             const secret = process.env.SECRET_JWT || '';
-            const { _id } = jwt.verify(token, secret) as JwtPayload;
-            const user = await UserModel.find({ id: _id });
+            const decoded = jwt.verify(token, secret) as JwtPayload;
+            const user = await UserModel.find({ id: decoded.userId });
 
             !user &&
                 res.status(401).send({
                     error: {
                         code: 'auth_failed',
-                        message: 'Authentication failed!',
+                        message: `Authentication failed! ${decoded}`,
                     },
                 });
 
@@ -52,7 +52,7 @@ const auth = (...roles: string[]) => {
                     },
                 });
 
-            //req.currentUser = user;
+            req.currentUser = user;
             next();
         } catch (e) {
             e.status = 401;

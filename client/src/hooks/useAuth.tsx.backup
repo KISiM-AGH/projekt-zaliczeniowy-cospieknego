@@ -1,36 +1,28 @@
 import { useState, useEffect, useContext } from 'react';
+
 import { AuthContext } from '../context/auth';
 
 interface IStoredUsed {
-    id: string;
-    email: string;
-    image_url: string;
     username: string;
-    role: string;
     token: string;
 }
 
 export default function useAuth() {
-    const [user, setUser] = useState<IStoredUsed | {}>(
+    const [user, setUser] = useState<IStoredUsed | undefined>(
         JSON.parse(localStorage.getItem('authUser') || '{}')
     );
 
+    const { auth } = useContext(AuthContext);
+
     useEffect(() => {
-        // login();
-        // const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
-        // auth(authUser.token);
+        // auth();
+        // console.log('Current user: ', user);
     }, []);
 
-    const auth = async (token: string) => {
-        const response = await fetch('http://localhost:8080/api/v1/auth', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-        });
+    const auth2 = async () => {
+        const response = await fetch('http://localhost:8080/api/v1/auth');
+        // add authorization
         const currentUser = await response.json();
-        console.log(user);
         setUser(currentUser);
     };
 
@@ -47,8 +39,7 @@ export default function useAuth() {
                 password: '1234',
             }),
         });
-        const authUser = await response.json();
-        localStorage.setItem('authUser', JSON.stringify(authUser));
+        const user = await response.json();
         setUser(user);
     };
 
