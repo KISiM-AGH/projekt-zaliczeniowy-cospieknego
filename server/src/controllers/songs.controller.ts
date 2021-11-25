@@ -10,7 +10,7 @@ const getSongs = async (req: Request, res: Response): Promise<void> => {
         ? res.status(200).send(songs)
         : res.status(204).send({
               error: {
-                  code: 'no_results',
+                  code: 'errorNoResults',
                   message: 'No content',
               },
           });
@@ -18,13 +18,13 @@ const getSongs = async (req: Request, res: Response): Promise<void> => {
 
 const getSongById = async (req: Request, res: Response): Promise<void> => {
     const id: string = req.params.id;
-    const song: ISong = await songModel.find({ id: id });
+    const song: ISong = await songModel.find({ id });
 
     song.length
         ? res.status(200).send(song)
         : res.status(204).send({
               error: {
-                  code: 'no_result',
+                  code: 'errorNoResults',
                   message: 'Failed to find a song with the specific ID',
               },
           });
@@ -32,13 +32,13 @@ const getSongById = async (req: Request, res: Response): Promise<void> => {
 
 const getSongByTitle = async (req: Request, res: Response): Promise<void> => {
     const title: string = req.params.title;
-    const song: ISong = await songModel.find({ title: title });
+    const song: ISong = await songModel.find({ title });
 
     song
         ? res.status(200).send(song)
         : res.status(204).send({
               error: {
-                  code: 'no_result',
+                  code: 'errorNoResults',
                   message: 'Failed to find a song with the specific name',
               },
           });
@@ -52,7 +52,7 @@ const addSong = async (req: Request, res: Response): Promise<void> => {
         ? res.status(201).send({ message: 'Added new song' })
         : res.status(304).send({
               error: {
-                  code: 'not_added',
+                  code: 'errorNotAdded',
                   message: 'Failed to add new song',
               },
           });
@@ -70,7 +70,7 @@ const updateSong = async (req: Request, res: Response): Promise<void> => {
         ? res.status(404).send({ message: 'Song not found', info })
         : affectedRows && changedRows
         ? res.status(200).send({ message: 'Song updated successfully', info })
-        : res.status(304).send({ message: 'Not modified', info });
+        : res.status(304).send({ message: 'Song not modified', info });
 };
 
 const deleteSong = async (req: Request, res: Response): Promise<void> => {
@@ -80,8 +80,8 @@ const deleteSong = async (req: Request, res: Response): Promise<void> => {
         ? res.status(200).send({ message: 'Song has been deleted' })
         : res.status(304).send({
               error: {
-                  code: 'not_deleted',
-                  message: 'Not deleted',
+                  code: 'errorNotDeleted',
+                  message: 'Song not deleted',
               },
           });
 };

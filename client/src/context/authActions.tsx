@@ -1,10 +1,29 @@
 import { Dispatch } from 'react';
 import * as ACTIONS from '../constants/actions';
 
-const API_URL = 'http://localhost:8080/api/v1/';
+interface IUserPromise {
+    user?: {
+        id: string;
+        email: string;
+        username: string;
+        image_url: string;
+        role: string;
+        token: string;
+    };
+    error?: {
+        code: string;
+        message: string;
+    };
+}
 
-export const authorize = async (dispatch: Dispatch<any>, token: string) => {
+const API_URL = 'http://localhost:8080/api/v1';
+
+export const authorize = async (
+    dispatch: Dispatch<any>,
+    token: string
+): Promise<void> => {
     try {
+        dispatch({ type: ACTIONS.VERIFY });
         const response = await fetch(`${API_URL}/auth`, {
             method: 'GET',
             headers: {
@@ -26,36 +45,41 @@ export const authorize = async (dispatch: Dispatch<any>, token: string) => {
     }
 };
 
-export const login = async (dispatch: Dispatch<any>) => {
-    // TEST
+export const login = async (
+    dispatch: Dispatch<any>,
+    payload: { email: string; password: string; remember: boolean }
+): Promise<any> => {
     try {
-        const input = { email: 'test@gmail.com', password: '1234' };
+        dispatch({ type: ACTIONS.LOGIN });
         const response = await fetch(`${API_URL}/login`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(input),
+            body: JSON.stringify(payload),
         });
-        const data = await response.json();
+        const data: IUserPromise = await response.json();
 
-        if (data.id) {
-            dispatch({ type: ACTIONS.LOGIN_SUCCESS, payload: data });
-            localStorage.setItem('authUser', JSON.stringify(data));
-            return;
+        if (data.user) {
+            dispatch({
+                type: ACTIONS.LOGIN_SUCCESS,
+                payload: data.user,
+            });
+            localStorage.setItem('authUser', JSON.stringify(data.user));
+            return data;
         }
 
-        dispatch({ type: ACTIONS.LOGIN_ERROR, error: data });
-        return;
+        dispatch({ type: ACTIONS.LOGIN_ERROR, errors: data.user });
+        return data;
     } catch (e) {
-        dispatch({ type: ACTIONS.LOGIN_ERROR, error: e });
+        dispatch({ type: ACTIONS.LOGIN_ERROR, errors: e });
     }
 };
 
-export const register = async () => {
+export const signup = async (): Promise<void> => {
     // TEST
-    const response = await fetch(`${API_URL}/login`, {
+    const response = await fetch(`${API_URL}/signup`, {
         method: 'POST',
         headers: {
             Accept: 'application/json',

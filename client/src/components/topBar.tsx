@@ -1,4 +1,4 @@
-import { useState, ReactElement } from 'react';
+import { useState, ReactElement, Dispatch } from 'react';
 import { useHistory, useLocation, Link, matchPath } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import {
@@ -19,30 +19,44 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CollectionType from './collectionType';
-import { useAuthState } from '../context/auth';
+import useAuth from '../hooks/useAuth';
+import { logout } from '../context/authActions';
 
 const menuItems = [
     {
+        type: 'accountSettings',
         text: 'Konto',
         isLink: true,
     },
     {
+        type: 'profileSettings',
         text: 'Profil',
         isLink: false,
     },
     {
+        type: 'goPremium',
         text: 'Przejdź na Premium',
         isLink: true,
     },
     {
+        type: 'logout',
         text: 'Wyloguj',
         isLink: false,
     },
 ];
 
+interface IUser {
+    id: string;
+    email: string;
+    username: string;
+    image_url: string;
+    token: string;
+    role?: string;
+}
+
 const UserMenu = ({ isOpen, onClick }: { isOpen: any; onClick: any }) => {
     const theme = useTheme();
-    const { currentUser }: { currentUser: any } = useAuthState();
+    const { currentUser }: { currentUser: any } = useAuth();
 
     return (
         <IconButton
@@ -82,7 +96,7 @@ const JoinMenu = () => {
                 variant='text'
                 color='secondary'
                 component={Link}
-                to={'/register'}
+                to={'/signup'}
             >
                 ZAREJESTRUJ SIĘ
             </Button>
@@ -106,12 +120,18 @@ export default function Topbar(props: {}): ReactElement {
 
     const {
         isLoggedIn,
-    }: { currentUser: any; isLoggedIn: boolean; dispatch: any } =
-        useAuthState();
+        loading,
+        dispatch,
+    }: { isLoggedIn: boolean; loading: boolean; dispatch: Dispatch<any> } =
+        useAuth();
+
+    const handleClick = () => {
+        logout(dispatch);
+        setAnchorEl(null);
+    };
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget.parentElement);
-        console.log(isLoggedIn);
     };
 
     const handleClose = () => {
@@ -175,11 +195,16 @@ export default function Topbar(props: {}): ReactElement {
                     mr: 2,
                 }}
             >
-                {isLoggedIn ? (
-                    <UserMenu isOpen={Boolean(anchorEl)} onClick={handleMenu} />
-                ) : (
-                    <JoinMenu />
-                )}
+                {!loading ? (
+                    isLoggedIn ? (
+                        <UserMenu
+                            isOpen={Boolean(anchorEl)}
+                            onClick={handleMenu}
+                        />
+                    ) : (
+                        <JoinMenu />
+                    )
+                ) : null}
             </Box>
             <Menu
                 anchorEl={anchorEl}
@@ -199,7 +224,9 @@ export default function Topbar(props: {}): ReactElement {
                 {menuItems.map((item) => (
                     <MenuItem
                         key={item.text}
-                        onClick={handleClose}
+                        onClick={
+                            item.type === 'logout' ? handleClick : handleClose
+                        }
                         sx={{
                             display: 'flex',
                             justifyContent: 'space-between',

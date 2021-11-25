@@ -37,17 +37,16 @@ export default function SongCard({
                     height='100%'
                     image={`/images/albums/${slug}.jpg`}
                     alt={title}
-                    sx={{ p: 3, pb: 2, pointerEvents: 'none' }}
+                    sx={{ p: 2, pb: 0, pointerEvents: 'none' }}
                 />
                 <CardContent
                     sx={{
-                        p: 3,
-                        pt: 0,
+                        p: 2,
                     }}
                 >
                     <Typography
                         noWrap
-                        variant='h6'
+                        variant='body1'
                         component='div'
                         title={title}
                     >
@@ -55,7 +54,8 @@ export default function SongCard({
                     </Typography>
                     <Typography
                         noWrap
-                        variant='body1'
+                        gutterBottom
+                        variant='body2'
                         color='text.secondary'
                         title={subtitle}
                     >

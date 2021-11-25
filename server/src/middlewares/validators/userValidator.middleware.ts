@@ -18,7 +18,7 @@ export const createUserSchema = [
         .normalizeEmail(),
     body('username')
         .exists()
-        .withMessage('username is required')
+        .withMessage('Username is required')
         .isLength({ min: 3 })
         .withMessage('Must be at least 3 chars long'),
     body('password')
@@ -55,13 +55,13 @@ export const updateUserSchema = [
         .notEmpty()
         .isLength({ min: 6 })
         .withMessage('Password must contain at least 6 characters')
-        //.custom((value, { req }) => !!req.body.confirm_password)
+        // .custom((value, { req }) => !!req.body.confirm_password)
         .withMessage('Please confirm your password'),
     body('confirm_password')
         .optional()
         .custom(doPasswordsMatch)
         .withMessage(
-            'confirm_password field must have the same value as the password field'
+            '"Confirm password" field must have the same value as the password field'
         ),
     body('image_url').optional(),
     body('role')
@@ -89,12 +89,10 @@ export const updateUserSchema = [
 ];
 
 export const validateLogin = [
-    body('email')
-        .exists()
-        .withMessage('Email is required')
-        .isEmail()
-        .withMessage('Must be a valid email')
-        .normalizeEmail(),
+    body('email').exists().withMessage('Email/username is required'),
+    //.isEmail()
+    //.withMessage('Must be a valid email')
+    //.normalizeEmail(),
     body('password')
         .exists()
         .withMessage('Password is required')

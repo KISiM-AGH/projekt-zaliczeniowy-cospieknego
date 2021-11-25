@@ -40,7 +40,7 @@ router.delete(
 router.post(
     '/login',
     validateLogin,
-    awaitHandlerFactory(<any>controller.userLogin)
+    awaitHandlerFactory(controller.userLogin as any)
 );
 router.get('/auth', auth(), awaitHandlerFactory(controller.getCurrentUser));
 

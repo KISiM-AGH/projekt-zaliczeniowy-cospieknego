@@ -21,8 +21,7 @@ export const AuthReducer = (state: AuthState, action: any) => {
         case ACTIONS.LOGIN_ERROR:
             return {
                 ...state,
-                isLoggedIn: false,
-                errorMessage: action.error,
+                errors: action.errors,
             };
         case ACTIONS.LOGOUT:
             return {

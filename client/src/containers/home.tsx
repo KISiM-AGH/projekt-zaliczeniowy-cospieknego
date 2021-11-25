@@ -43,11 +43,11 @@ export default function HomeContainer({ slides }: IProps): ReactElement {
                         {slide.data.map(({ title, artist, slug }) => (
                             <Grid
                                 item
-                                xs={12}
-                                sm={5}
-                                md={4}
-                                lg={3}
-                                xl={2}
+                                xs={8}
+                                sm={4}
+                                md={2}
+                                lg={2}
+                                xl={1}
                                 key={title}
                             >
                                 <SongCard

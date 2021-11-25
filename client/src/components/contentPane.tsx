@@ -66,7 +66,7 @@ export default function ContentPane({
     return (
         <>
             <Box sx={styles.root} position='relative'>
-                <Grid container sx={styles.container}>
+                <Grid container sx={styles.container} columns={8}>
                     {children}
                 </Grid>
             </Box>

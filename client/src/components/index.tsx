@@ -1,3 +1,4 @@
+export { default as Logo } from './logo';
 export { default as TopBar } from './topBar';
 export { default as NavBar } from './navBar';
 export { default as SongCard } from './songCard';

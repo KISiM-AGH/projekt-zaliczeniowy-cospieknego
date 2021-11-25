@@ -19,7 +19,7 @@ const getUsers = async (req: Request, res: Response): Promise<void> => {
         ? res.status(200).send(users)
         : res.status(204).send({
               error: {
-                  code: 'no_results',
+                  code: 'errorNoResults',
                   message: 'No content',
               },
           });
@@ -27,13 +27,13 @@ const getUsers = async (req: Request, res: Response): Promise<void> => {
 
 const getUserById = async (req: Request, res: Response): Promise<void> => {
     const id: string = req.params.id;
-    const user: IUser = await userModel.find({ id: id });
+    const user: IUser = await userModel.find({ id });
 
     user.length
         ? res.status(200).send(user)
         : res.status(204).send({
               error: {
-                  code: 'no_result',
+                  code: 'errorNoResults',
                   message: 'Failed to find a user with the specific ID',
               },
           });
@@ -41,13 +41,13 @@ const getUserById = async (req: Request, res: Response): Promise<void> => {
 
 const getUserByName = async (req: Request, res: Response): Promise<void> => {
     const name: string = req.params.name;
-    const user: IUser = await userModel.find({ name: name });
+    const user: IUser = await userModel.find({ name });
 
     user
         ? res.status(200).send(user)
         : res.status(204).send({
               error: {
-                  code: 'no_result',
+                  code: 'errorNoResults',
                   message: 'Failed to find a user with the specific name',
               },
           });
@@ -70,7 +70,7 @@ const addUser = async (req: Request, res: Response): Promise<void> => {
         ? res.status(201).send({ message: 'Added new user' })
         : res.status(304).send({
               error: {
-                  code: 'not_added',
+                  code: 'errorNotAdded',
                   message: 'Failed to add new user',
               },
           });
@@ -90,7 +90,7 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
         ? res.status(404).send({ message: 'User not found', info })
         : affectedRows && changedRows
         ? res.status(200).send({ message: 'User updated successfully', info })
-        : res.status(304).send({ message: 'Not modified', info });
+        : res.status(304).send({ message: 'User not modified', info });
 };
 
 const deleteUser = async (req: Request, res: Response): Promise<void> => {
@@ -100,22 +100,22 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
         ? res.status(200).send({ message: 'User has been deleted' })
         : res.status(304).send({
               error: {
-                  code: 'not_deleted',
-                  message: 'Not deleted',
+                  code: 'errorNotDeleted',
+                  message: 'User not deleted',
               },
           });
 };
 
 const userLogin = async (req: Request, res: Response) => {
     checkValidation(req, res);
-    const { email, password } = req.body;
+    const { email, password, remember } = req.body;
     const user = await userModel.find({ email });
 
     !user &&
         res.status(401).send({
             error: {
-                code: 'login_failed',
-                message: 'Unable to login',
+                code: 'errorInvalidCredentials',
+                message: 'Invalid email or username',
             },
         });
 
@@ -124,28 +124,29 @@ const userLogin = async (req: Request, res: Response) => {
     !isMatch &&
         res.status(401).send({
             error: {
-                code: 'login_failed',
+                code: 'errorInvalidCredentials',
                 message: 'Incorrect password',
             },
         });
 
     const secret = process.env.SECRET_JWT || '';
     const token = jwt.sign({ userId: user.id.toString() }, secret, {
-        expiresIn: '24h',
+        expiresIn: remember ? '7d' : '24h',
     });
 
     const { password_digest, ...userWithoutPassword } = user;
-    res.send({ ...userWithoutPassword, token });
+    res.send({ user: { ...userWithoutPassword, token } });
 };
 
 const checkValidation = (req: Request, res: Response) => {
     const errors = validationResult(req);
 
-    !errors.isEmpty() &&
-        res.status(401).json({
-            code: 'validation_failed',
+    if (!errors.isEmpty()) {
+        return res.status(400).send({
+            code: 'errorValidationFailed',
             errors: errors.array(),
         });
+    }
 };
 
 const hashPassword = async (req: Request) => {

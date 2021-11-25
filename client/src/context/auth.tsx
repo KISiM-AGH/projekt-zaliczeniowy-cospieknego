@@ -1,7 +1,5 @@
 import {
-    useState,
     useEffect,
-    useContext,
     createContext,
     ReactNode,
     Dispatch,
@@ -9,7 +7,7 @@ import {
     useReducer,
 } from 'react';
 import { AuthReducer } from '../reducers/auth';
-import { authorize, login } from './authActions';
+import { authorize } from './authActions';
 
 interface IProps {
     children: ReactNode;
@@ -19,7 +17,7 @@ export interface AuthState {
     currentUser: {};
     isLoggedIn: boolean;
     loading: boolean;
-    errorMessage: string | null;
+    errors: [];
     dispatch: Dispatch<SetStateAction<AuthState>>;
 }
 
@@ -28,8 +26,8 @@ const user: any = JSON.parse(localStorage.getItem('authUser') || '{}');
 const initialState: AuthState = {
     currentUser: user,
     isLoggedIn: false,
-    errorMessage: null,
     loading: false,
+    errors: [],
     dispatch: (): void => {
         throw new Error('Dispatch function must be overridden');
     },
@@ -37,13 +35,10 @@ const initialState: AuthState = {
 
 export const AuthContext = createContext(initialState);
 
-export const useAuthState = () => useContext(AuthContext);
-
 export const AuthProvider = ({ children }: IProps) => {
     const [authState, dispatch] = useReducer(AuthReducer, initialState);
 
     useEffect(() => {
-        //login(dispatch);
         user?.token && authorize(dispatch, user.token);
     }, []);
 

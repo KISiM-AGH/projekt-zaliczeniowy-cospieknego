@@ -10,7 +10,7 @@ const getAlbums = async (req: Request, res: Response): Promise<void> => {
         ? res.status(200).send(albums)
         : res.status(204).send({
               error: {
-                  code: 'no_results',
+                  code: 'errorNoResults',
                   message: 'No content',
               },
           });
@@ -18,13 +18,13 @@ const getAlbums = async (req: Request, res: Response): Promise<void> => {
 
 const getAlbumById = async (req: Request, res: Response): Promise<void> => {
     const id: string = req.params.id;
-    const album: IAlbum = await albumModel.find({ id: id });
+    const album: IAlbum = await albumModel.find({ id });
 
     album.length
         ? res.status(200).send(album)
         : res.status(204).send({
               error: {
-                  code: 'no_result',
+                  code: 'errorNoResults',
                   message: 'Failed to find an album with the specific ID',
               },
           });
@@ -32,13 +32,13 @@ const getAlbumById = async (req: Request, res: Response): Promise<void> => {
 
 const getAlbumByTitle = async (req: Request, res: Response): Promise<void> => {
     const title: string = req.params.title;
-    const album: IAlbum = await albumModel.find({ title: title });
+    const album: IAlbum = await albumModel.find({ title });
 
     album
         ? res.status(200).send(album)
         : res.status(204).send({
               error: {
-                  code: 'no_result',
+                  code: 'errorNoResults',
                   message: 'Failed to find an album with the specific name',
               },
           });
@@ -52,7 +52,7 @@ const addAlbum = async (req: Request, res: Response): Promise<void> => {
         ? res.status(201).send({ message: 'Added new album' })
         : res.status(304).send({
               error: {
-                  code: 'not_added',
+                  code: 'errorNotAdded',
                   message: 'Failed to add new album',
               },
           });
@@ -70,7 +70,7 @@ const updateAlbum = async (req: Request, res: Response): Promise<void> => {
         ? res.status(404).send({ message: 'Album not found', info })
         : affectedRows && changedRows
         ? res.status(200).send({ message: 'Album updated successfully', info })
-        : res.status(304).send({ message: 'Not modified', info });
+        : res.status(304).send({ message: 'Album not modified', info });
 };
 
 const deleteAlbum = async (req: Request, res: Response): Promise<void> => {
@@ -80,8 +80,8 @@ const deleteAlbum = async (req: Request, res: Response): Promise<void> => {
         ? res.status(200).send({ message: 'Album has been deleted' })
         : res.status(304).send({
               error: {
-                  code: 'not_deleted',
-                  message: 'Not deleted',
+                  code: 'errorNotDeleted',
+                  message: 'Album not deleted',
               },
           });
 };
