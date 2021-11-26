@@ -23,6 +23,7 @@ import {
 import { Logo } from '../components';
 import { signup } from '../context/authActions';
 import useAuth from '../hooks/useAuth';
+import { useForm } from '../hooks/useForm';
 
 const initialValues = {
     email: '',
@@ -108,85 +109,108 @@ const months = [
     'Grudzień',
 ];
 
+type Gender = 'male' | 'female' | 'non-binary';
+
+interface IUser {
+    email: string;
+    confirmEmail: string;
+    password: string;
+    username: string;
+    gender: Gender;
+    birthDay: string;
+    birthMonth: string;
+    birthYear: string;
+    isSubscribedToNewsletter: boolean;
+    hasAcceptedTos: boolean;
+}
+
 export default function SignUp(props: {}): ReactElement {
-    const [formValues, setFormValues] = useState(initialValues);
-    const [formErrors, setFormErrors] = useState(initialErrors);
-    const history = useHistory();
-    const { dispatch } = useAuth();
-
-    const handleSubmit = async (e: ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        validateForm();
-
-        // const payload = {
-        //     email: formValues.email,
-        //     password: formValues.password,
-        // };
-
-        // try {
-        //     const response = await login(dispatch, payload);
-
-        //     if (response?.user) history.push('/');
-
-        //     // Errors from express-validator
-        //     if (response?.error?.code === 'errorValidationFailed') return;
-        //     if (response?.error?.code === 'errorInvalidCredentials') {
-        //         setFormErrors({
-        //             ...formErrors,
-        //             email: {
-        //                 ...formErrors.email,
-        //                 isInvalid: true,
-        //                 showMessage: false,
-        //             },
-        //             password: {
-        //                 ...formErrors.password,
-        //                 isInvalid: true,
-        //                 showMessage: false,
-        //             },
-        //             incorrectCredentials: {
-        //                 ...formErrors.incorrectCredentials, // or response message
-        //                 isInvalid: true,
-        //             },
-        //         });
-        //         return;
-        //     }
-        // } catch (e) {
-        //     console.error(e);
-        // }
+    const printUser = () => {
+        console.log('hello');
     };
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value }: { name: string; value: string } = e.target;
-
-        setFormValues({
-            ...formValues,
-            [name]: value,
-        });
-
-        value.length === 0
-            ? setFormErrors({
-                  ...formErrors,
-                  [name]: {
-                      message: (formErrors as any)[name].message,
-                      isInvalid: true,
-                      showMessage: true,
-                  },
-              })
-            : setFormErrors({
-                  ...formErrors,
-                  [name]: {
-                      message: (formErrors as any)[name].message,
-                      isInvalid: false,
-                      showMessage: false,
-                  },
-              });
-    };
-
-    const validateForm = () => {
-        Object.entries(initialErrors).forEach(([key, value]) => {
-            value.showMessage = value.isInvalid ? true : false;
-        });
-    };
+    const {
+        data: user,
+        errors,
+        handleChange,
+        handleClick,
+        handleSubmit,
+    } = useForm<IUser>({
+        validations: {
+            email: {
+                pattern: {
+                    value: `^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$`,
+                    message:
+                        '✕  Podany adres jest nieprawidłowy. Sprawdź, czy wpisujesz go zgodnie z formatem przyklad@email.com.',
+                },
+                required: {
+                    value: true,
+                    message: '✕  Podaj swój adres e-mail.',
+                },
+            },
+            confirmEmail: {
+                required: {
+                    value: true,
+                    message: '✕  Potwierdź swój adres e-mail.',
+                },
+                custom: {
+                    isValid: (value: string) => value === 'test@gmail.com',
+                    message: '✕  Podane adresy e-mail są różne.',
+                },
+            },
+            password: {
+                required: {
+                    value: true,
+                    message: '✕  Wprowadź hasło.',
+                },
+                custom: {
+                    isValid: (value: string) => value.length > 8,
+                    message: '✕  Twoje hasło jest za krótkie.',
+                },
+            },
+            username: {
+                required: {
+                    value: true,
+                    message:
+                        '✕  Wprowadź nazwę użytkownika dla swojego profilu.',
+                },
+            },
+            birthDay: {
+                pattern: {
+                    value: '^([1-9]|1[0-9]|2[0-9]|3[0-1])$',
+                    message: '✕  Podaj prawidłowy dzień miesiąca.',
+                },
+            },
+            birthMonth: {
+                required: {
+                    value: true,
+                    message: '✕  Wybierz miesiąc z listy.',
+                },
+                custom: {
+                    isValid: (value: string) => months.includes(value),
+                    message: '✕  Twoje hasło jest za krótkie.',
+                },
+            },
+            birthYear: {
+                pattern: {
+                    value: `^(19[0-9][0-9]|(201[0-9]|202[0-2]))$`,
+                    message: '✕  Podaj prawidłowy rok.',
+                },
+            },
+            gender: {
+                required: {
+                    value: true,
+                    message: '✕  Wybierz swoją płeć.',
+                },
+            },
+            hasAcceptedTos: {
+                required: {
+                    value: true,
+                    message: '✕  Zaakceptuj warunki, aby kontynuować.',
+                },
+            },
+        },
+        onSubmit: printUser,
+    });
 
     return (
         <>
@@ -217,11 +241,6 @@ export default function SignUp(props: {}): ReactElement {
                     <Typography component='h1' variant='h6' textAlign='center'>
                         Zarejestruj się za pomocą adresu e-mail
                     </Typography>
-                    {formErrors.incorrectCredentials.isInvalid && (
-                        <Alert severity='error' sx={{ mb: 2 }}>
-                            {formErrors.incorrectCredentials.message}
-                        </Alert>
-                    )}
                     <Box>
                         <FormLabel>Twój adres e-mail</FormLabel>
                         <TextField
@@ -232,13 +251,10 @@ export default function SignUp(props: {}): ReactElement {
                             margin='dense'
                             autoComplete='email'
                             placeholder='Podaj adres e-mail'
-                            value={formValues.email}
-                            error={formErrors.email.isInvalid}
-                            helperText={
-                                formErrors.email.showMessage &&
-                                formErrors.email.message
-                            }
-                            onChange={handleChange}
+                            value={user.email || ''}
+                            error={errors.email ? true : false}
+                            helperText={errors?.email}
+                            onChange={handleChange('email')}
                         />
                     </Box>
                     <Box>
@@ -251,13 +267,10 @@ export default function SignUp(props: {}): ReactElement {
                             margin='dense'
                             autoComplete='email'
                             placeholder='Wpisz e-mail ponownie'
-                            value={formValues.confirmEmail}
-                            error={formErrors.email.isInvalid}
-                            helperText={
-                                formErrors.confirmEmail.showMessage &&
-                                formErrors.confirmEmail.message
-                            }
-                            onChange={handleChange}
+                            value={user.confirmEmail || ''}
+                            error={errors.confirmEmail ? true : false}
+                            helperText={errors?.confirmEmail}
+                            onChange={handleChange('confirmEmail')}
                         />
                     </Box>
                     <Box>
@@ -269,13 +282,10 @@ export default function SignUp(props: {}): ReactElement {
                             type='password'
                             margin='dense'
                             placeholder='Stwórz hasło'
-                            error={formErrors.password.isInvalid}
-                            value={formValues.password}
-                            helperText={
-                                formErrors.password.showMessage &&
-                                formErrors.password.message
-                            }
-                            onChange={handleChange}
+                            value={user.password || ''}
+                            error={errors.password ? true : false}
+                            helperText={errors?.password}
+                            onChange={handleChange('password')}
                         />
                     </Box>
                     <Box>
@@ -287,14 +297,10 @@ export default function SignUp(props: {}): ReactElement {
                             type='text'
                             margin='dense'
                             placeholder='Wpisz nazwę użytkownika'
-                            value={formValues.username}
-                            error={formErrors.email.isInvalid}
-                            helperText={
-                                formErrors.username.showMessage
-                                    ? formErrors.username.message
-                                    : 'Ta nazwa pojawi się na Twoim profilu'
-                            }
-                            onChange={handleChange}
+                            value={user.username || ''}
+                            error={errors.username ? true : false}
+                            helperText={errors?.username}
+                            onChange={handleChange('username')}
                         />
                     </Box>
                     <FormLabel>Podaj swoją datę urodzenia</FormLabel>
@@ -308,18 +314,17 @@ export default function SignUp(props: {}): ReactElement {
                                 type='text'
                                 margin='dense'
                                 placeholder='DD'
-                                value={formValues.birthDate.day}
-                                error={formErrors.email.isInvalid}
-                                onChange={handleChange}
+                                value={user.birthDay || ''}
+                                error={errors.birthDay ? true : false}
+                                onChange={handleChange('birthDay')}
                             />
                         </FormControl>
                         <FormControl sx={{ minWidth: 200 }} size='small'>
                             <Typography variant='subtitle2'>Miesiąc</Typography>
                             <Select
                                 displayEmpty
-                                value={formValues.birthDate.month}
                                 input={<OutlinedInput />}
-                                renderValue={(selected) => {
+                                renderValue={(selected: any) => {
                                     if (selected.length === 0) {
                                         return (
                                             <Typography
@@ -331,6 +336,8 @@ export default function SignUp(props: {}): ReactElement {
                                         );
                                     }
                                 }}
+                                value={user.birthMonth || ''}
+                                error={errors.birthMonth ? true : false}
                                 //onChange={handleSelect}
                             >
                                 <MenuItem disabled>
@@ -352,92 +359,114 @@ export default function SignUp(props: {}): ReactElement {
                                 type='text'
                                 margin='dense'
                                 placeholder='RRRR'
-                                value={formValues.birthDate.year}
-                                error={formErrors.email.isInvalid}
-                                onChange={handleChange}
+                                value={user.birthYear || ''}
+                                error={errors.birthYear ? true : false}
+                                onChange={handleChange('birthYear')}
                             />
+                        </FormControl>
+                        <FormControl>
+                            {errors.birthDay && (
+                                <FormHelperText error>
+                                    {errors.birthDay}
+                                </FormHelperText>
+                            )}
+                            {errors.birthMonth && (
+                                <FormHelperText error>
+                                    {errors.birthMonth}
+                                </FormHelperText>
+                            )}
+                            {errors.birthYear && (
+                                <FormHelperText error>
+                                    {errors.birthYear}
+                                </FormHelperText>
+                            )}
                         </FormControl>
                     </FormGroup>
                     <Box>
-                        {formErrors.day.isInvalid &&
-                            formErrors.day.showMessage && (
-                                <FormHelperText error>
-                                    {formErrors.day.message}
-                                </FormHelperText>
-                            )}
-                        {formErrors.month.isInvalid &&
-                            formErrors.month.showMessage && (
-                                <FormHelperText error>
-                                    {formErrors.month.message}
-                                </FormHelperText>
-                            )}
-                        {formErrors.year.isInvalid &&
-                            formErrors.year.showMessage && (
-                                <FormHelperText error>
-                                    {formErrors.year.message}
-                                </FormHelperText>
-                            )}
-                    </Box>
-                    <Box>
                         <FormLabel>Podaj swoją płeć</FormLabel>
-                        <RadioGroup row aria-label='gender' name='gender'>
+                        <RadioGroup
+                            row
+                            aria-label='gender'
+                            name='gender'
+                            value={user.gender || ''}
+                            onChange={handleChange('gender')}
+                        >
                             <FormControlLabel
                                 label='Mężczyzna'
                                 value='male'
-                                control={<Radio />}
+                                control={
+                                    <Radio
+                                        inputProps={{ 'aria-label': 'male' }}
+                                    />
+                                }
                             />
                             <FormControlLabel
                                 label='Kobieta'
                                 value='female'
-                                control={<Radio />}
+                                control={
+                                    <Radio
+                                        inputProps={{ 'aria-label': 'female' }}
+                                    />
+                                }
                             />
                             <FormControlLabel
                                 label='Osoba niebinarna'
-                                value='nonbinary'
-                                control={<Radio />}
+                                value='non-binary'
+                                control={
+                                    <Radio
+                                        inputProps={{
+                                            'aria-label': 'non-binary',
+                                        }}
+                                    />
+                                }
                             />
                         </RadioGroup>
+                        <FormHelperText error={errors.gender ? true : false}>
+                            {errors?.gender}
+                        </FormHelperText>
                     </Box>
                     <FormControlLabel
                         label='Chcę otrzymywać wiadomości i oferty od Spotify'
                         control={
                             <Checkbox
-                                value={formValues.newsletter}
-                                // onClick={() =>
-                                //     setFormValues({
-                                //         ...formValues,
-                                //         remember: !formValues.remember,
-                                //     })
-                                // }
+                            // value={formValues.newsletter}
+                            // onClick={() =>
+                            //     setFormValues({
+                            //         ...formValues,
+                            //         remember: !formValues.remember,
+                            //     })
+                            // }
                             />
                         }
                     />
-                    <FormControlLabel
-                        label={
-                            <div>
-                                <span>Akceptuję </span>
-                                <Link
-                                    color='primary'
-                                    target='_blank'
-                                    href='https://www.spotify.com/pl/legal/end-user-agreement/'
-                                >
-                                    Warunki korzystania z serwisu Spotify
-                                </Link>
-                                <span>.</span>
-                            </div>
-                        }
-                        control={
-                            <Checkbox
-                                value={formValues.newsletter}
-                                // onClick={() =>
-                                //     setFormValues({
-                                //         ...formValues,
-                                //         remember: !formValues.remember,
-                                //     })
-                                // }
-                            />
-                        }
-                    />
+                    <Box>
+                        <FormControlLabel
+                            label={
+                                <div>
+                                    <span>Akceptuję </span>
+                                    <Link
+                                        color='primary'
+                                        target='_blank'
+                                        href='https://www.spotify.com/pl/legal/end-user-agreement/'
+                                    >
+                                        Warunki korzystania z serwisu Spotify
+                                    </Link>
+                                    <span>.</span>
+                                </div>
+                            }
+                            control={
+                                <Checkbox
+                                    value={user.hasAcceptedTos || false}
+                                    onClick={handleClick('hasAcceptedTos')}
+                                />
+                            }
+                        />
+                        <FormHelperText
+                            error={errors.hasAcceptedTos ? true : false}
+                        >
+                            {errors?.hasAcceptedTos}
+                        </FormHelperText>
+                    </Box>
                     <Typography
                         gutterBottom
                         align='center'
