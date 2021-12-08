@@ -1,4 +1,9 @@
-import { useState, ReactElement, ChangeEvent } from 'react';
+import {
+    useState,
+    ReactElement,
+    ChangeEvent,
+    ReactComponentElement,
+} from 'react';
 import { useHistory } from 'react-router-dom';
 import {
     Container,
@@ -19,6 +24,8 @@ import {
     RadioGroup,
     Radio,
     FormHelperText,
+    SelectClassKey,
+    Stack,
 } from '@mui/material';
 import { Logo } from '../components';
 import { signup } from '../context/authActions';
@@ -304,25 +311,30 @@ export default function SignUp(props: {}): ReactElement {
                         />
                     </Box>
                     <FormLabel>Podaj swoją datę urodzenia</FormLabel>
-                    <FormGroup row={true}>
-                        <FormControl sx={{ width: 100 }}>
+                    <Stack
+                        direction='row'
+                        justifyContent='center'
+                        alignItems='center'
+                        spacing={2}
+                    >
+                        <FormControl sx={{ maxWidth: 60 }}>
                             <Typography variant='subtitle2'>Dzień</Typography>
                             <TextField
-                                fullWidth
                                 size='small'
-                                name='birthDay'
                                 type='text'
-                                margin='dense'
                                 placeholder='DD'
+                                margin='dense'
+                                name='birthDay'
                                 value={user.birthDay || ''}
                                 error={errors.birthDay ? true : false}
                                 onChange={handleChange('birthDay')}
                             />
                         </FormControl>
-                        <FormControl sx={{ minWidth: 200 }} size='small'>
+                        <FormControl fullWidth>
                             <Typography variant='subtitle2'>Miesiąc</Typography>
                             <Select
                                 displayEmpty
+                                size='small'
                                 input={<OutlinedInput />}
                                 renderValue={(selected: any) => {
                                     if (selected.length === 0) {
@@ -350,7 +362,7 @@ export default function SignUp(props: {}): ReactElement {
                                 ))}
                             </Select>
                         </FormControl>
-                        <FormControl sx={{ width: 120 }}>
+                        <FormControl sx={{ maxWidth: 120 }}>
                             <Typography variant='subtitle2'>Rok</Typography>
                             <TextField
                                 fullWidth
@@ -364,25 +376,25 @@ export default function SignUp(props: {}): ReactElement {
                                 onChange={handleChange('birthYear')}
                             />
                         </FormControl>
-                        <FormControl>
-                            {errors.birthDay && (
-                                <FormHelperText error>
-                                    {errors.birthDay}
-                                </FormHelperText>
-                            )}
-                            {errors.birthMonth && (
-                                <FormHelperText error>
-                                    {errors.birthMonth}
-                                </FormHelperText>
-                            )}
-                            {errors.birthYear && (
-                                <FormHelperText error>
-                                    {errors.birthYear}
-                                </FormHelperText>
-                            )}
-                        </FormControl>
-                    </FormGroup>
-                    <Box>
+                    </Stack>
+                    <FormControl>
+                        {errors.birthDay && (
+                            <FormHelperText error>
+                                {errors.birthDay}
+                            </FormHelperText>
+                        )}
+                        {errors.birthMonth && (
+                            <FormHelperText error>
+                                {errors.birthMonth}
+                            </FormHelperText>
+                        )}
+                        {errors.birthYear && (
+                            <FormHelperText error>
+                                {errors.birthYear}
+                            </FormHelperText>
+                        )}
+                    </FormControl>
+                    <FormGroup>
                         <FormLabel>Podaj swoją płeć</FormLabel>
                         <RadioGroup
                             row
@@ -421,10 +433,14 @@ export default function SignUp(props: {}): ReactElement {
                                 }
                             />
                         </RadioGroup>
-                        <FormHelperText error={errors.gender ? true : false}>
-                            {errors?.gender}
-                        </FormHelperText>
-                    </Box>
+                        <FormControl>
+                            <FormHelperText
+                                error={errors.gender ? true : false}
+                            >
+                                {errors?.gender}
+                            </FormHelperText>
+                        </FormControl>
+                    </FormGroup>
                     <FormControlLabel
                         label='Chcę otrzymywać wiadomości i oferty od Spotify'
                         control={
@@ -439,7 +455,7 @@ export default function SignUp(props: {}): ReactElement {
                             />
                         }
                     />
-                    <Box>
+                    <FormGroup>
                         <FormControlLabel
                             label={
                                 <div>
@@ -461,12 +477,14 @@ export default function SignUp(props: {}): ReactElement {
                                 />
                             }
                         />
-                        <FormHelperText
-                            error={errors.hasAcceptedTos ? true : false}
-                        >
-                            {errors?.hasAcceptedTos}
-                        </FormHelperText>
-                    </Box>
+                        <FormControl>
+                            <FormHelperText
+                                error={errors.hasAcceptedTos ? true : false}
+                            >
+                                {errors?.hasAcceptedTos}
+                            </FormHelperText>
+                        </FormControl>
+                    </FormGroup>
                     <Typography
                         gutterBottom
                         align='center'
