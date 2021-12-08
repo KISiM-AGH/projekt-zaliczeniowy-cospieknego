@@ -3,12 +3,12 @@ import controller from '../controllers/songs.controller';
 
 const router = Router();
 
-router.get('/songs', controller.getSongs);
-router.get('/songs/?duration=:time', controller.getSongs);
-router.get('/songs/:id', controller.getSongById);
-router.get('/songs/:title', controller.getSongById);
-router.post('/songs', controller.addSong);
-router.patch('/songs/:id', controller.updateSong);
-router.delete('/songs/:id', controller.deleteSong);
+router.get('/tracks', controller.getSongs);
+router.get('/tracks/?duration=:time', controller.getSongs);
+router.get('/tracks/:id', controller.getSongById);
+router.get('/tracks/:title', controller.getSongByTitle);
+router.post('/tracks', controller.addSong);
+router.patch('/tracks/:id', controller.updateSong);
+router.delete('/tracks/:id', controller.deleteSong);
 
 export = router;

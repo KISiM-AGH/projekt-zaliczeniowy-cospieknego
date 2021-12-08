@@ -1,9 +1,10 @@
 import { ReactElement } from 'react';
 import useContent from '../hooks/useContent';
 import selectionFilter from '../utils/selectionFilter';
+import CollectionContainer from '../containers/collection';
 
-export default function Search(props: {}): ReactElement {
-    const albums = useContent('tracks');
+export default function Collection(_props: {}): ReactElement {
+    const albums = useContent('albums');
     const playlists = useContent('tracks');
     const podcasts = useContent('tracks');
     const artists = useContent('tracks');
@@ -14,5 +15,5 @@ export default function Search(props: {}): ReactElement {
         artists,
     });
 
-    return <div>SEARCH PAGE</div>;
+    return <CollectionContainer slides={slides} />;
 }

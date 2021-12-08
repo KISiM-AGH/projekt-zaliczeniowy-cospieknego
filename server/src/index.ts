@@ -1,7 +1,9 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import errorMiddleware from './middlewares/error.middleware';
-import routes from './routes/songs.route';
+import songsRoutes from './routes/songs.route';
+import albumsRoutes from './routes/albums.route';
+import usersRoutes from './routes/users.route';
 
 dotenv.config();
 
@@ -22,7 +24,7 @@ app.use((req, res, next) => {
     if (req.method === 'OPTIONS') {
         res.header(
             'Access-Control-Allow-Methods',
-            'GET PATCH DELETE POST OPTIONS'
+            'GET,PATCH,DELETE,POST,OPTIONS'
         );
 
         return res.status(200).json({});
@@ -31,7 +33,9 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/api/v1', routes);
+app.use('/api/v1', songsRoutes);
+app.use('/api/v1', albumsRoutes);
+app.use('/api/v1', usersRoutes);
 
 // Error middleware
 app.use(errorMiddleware);
