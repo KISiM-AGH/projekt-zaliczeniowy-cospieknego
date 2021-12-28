@@ -54,11 +54,7 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
         (e: ChangeEvent<HTMLInputElement>) => {
             const value = sanitizeFn
                 ? sanitizeFn(e.target.value)
-<<<<<<< HEAD
                 : (e.target.value as string);
-=======
-                : e.target.value;
->>>>>>> 2e42d270165c3db1a4f75a0ff9d1c1a21263a99c
 
             setKey(key);
             setData({
@@ -87,7 +83,6 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
     ) => {
         e.preventDefault();
         performFullCheck();
-<<<<<<< HEAD
     };
 
     const performCheck = (key: keyof T) => {
@@ -128,54 +123,6 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
         // options?.onClick && options?.onClick();
     };
 
-=======
-    };
-
-    const validate = () => {
-        //
-    };
-
-    const performCheck = (key: keyof T) => {
-        const validations = options?.validations;
-        const validation = validations && validations[key];
-
-        const value = data[key];
-        const newErrors: ErrorRecord<T> = {};
-        let isValid = true;
-
-        // Required
-        const required = validation?.required;
-        if (required?.value && value) {
-            isValid = false;
-            newErrors[key] = required?.message;
-        }
-
-        // Pattern
-        const pattern = validation?.pattern;
-        if (pattern?.value && !RegExp(pattern.value).test(value)) {
-            isValid = false;
-            newErrors[key] = pattern.message;
-        }
-
-        // Custom
-        const custom = validation?.custom;
-        if (value && custom?.isValid && !custom.isValid(value)) {
-            isValid = false;
-            newErrors[key] = custom.message;
-        }
-
-        if (!isValid) {
-            setErrors({ ...errors, newErrors });
-            return;
-        }
-
-        const { [key]: val, ...restErrors } = errors;
-        // const neuErrors: Omit<ErrorRecord<T>, keyof T> = restErrors;
-        // setErrors(neuErrors);
-        options?.onClick && options?.onClick();
-    };
-
->>>>>>> 2e42d270165c3db1a4f75a0ff9d1c1a21263a99c
     const performFullCheck = () => {
         const validations = options?.validations;
 
