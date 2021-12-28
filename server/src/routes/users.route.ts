@@ -25,7 +25,7 @@ router.get(
 router.post(
     '/users/',
     createUserSchema,
-    awaitHandlerFactory(controller.addUser)
+    awaitHandlerFactory(controller.createUser)
 );
 router.patch(
     '/users/id/:id',

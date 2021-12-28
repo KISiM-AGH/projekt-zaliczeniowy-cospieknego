@@ -1,4 +1,4 @@
-import { useState, ReactElement, ChangeEvent } from 'react';
+import { useState, ReactElement } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import {
     Divider,
@@ -17,47 +17,25 @@ import {
 import { Logo } from '../components';
 import { login } from '../context/authActions';
 import useAuth from '../hooks/useAuth';
+import { useForm } from '../hooks/useForm';
+import * as CODES from '../constants/errorCodes';
 
-const initialValues = {
-    email: '',
-    password: '',
-    remember: true,
-};
-
-const initialErrors = {
-    email: {
-        isInvalid: false,
-        showMessage: false,
-        message: 'Wprowadź nazwę użytkownika Spotify lub adres e-mail.',
-    },
-    password: {
-        isInvalid: false,
-        showMessage: false,
-        message: 'Wpisz swoje hasło.',
-    },
-    incorrectCredentials: {
-        isInvalid: false,
-        showMessage: false,
-        message: 'Nieprawidłowa nazwa użytkownika lub błędne hasło.',
-    },
-};
+interface ILoginUser {
+    login: string;
+    password: string;
+    remember: boolean;
+}
 
 export default function SignIn(props: {}): ReactElement {
-    const [formValues, setFormValues] = useState(initialValues);
-    const [formErrors, setFormErrors] = useState(initialErrors);
+    const [areCredentialsValid, setAreCredentialsValid] = useState(true);
     const history = useHistory();
     const { dispatch } = useAuth();
 
-    const handleSubmit = async (e: ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
-
-        if (formErrors.email.isInvalid && formErrors.password.isInvalid)
-            console.log('true');
-
+    const loginUser = async () => {
         const payload = {
-            email: formValues.email,
-            password: formValues.password,
-            remember: formValues.remember,
+            login: user.login, // email or username
+            password: user.password,
+            remember: user.remember,
         };
 
         try {
@@ -66,25 +44,9 @@ export default function SignIn(props: {}): ReactElement {
             if (response?.user) history.push('/');
 
             // Errors from express-validator
-            if (response?.error?.code === 'errorValidationFailed') return;
-            if (response?.error?.code === 'errorInvalidCredentials') {
-                setFormErrors({
-                    ...formErrors,
-                    email: {
-                        ...formErrors.email,
-                        isInvalid: true,
-                        showMessage: false,
-                    },
-                    password: {
-                        ...formErrors.password,
-                        isInvalid: true,
-                        showMessage: false,
-                    },
-                    incorrectCredentials: {
-                        ...formErrors.incorrectCredentials, // or response message
-                        isInvalid: true,
-                    },
-                });
+            if (response?.error?.code === CODES.FAILED) return;
+            if (response?.error?.code === CODES.INVALID) {
+                setAreCredentialsValid(false);
                 return;
             }
         } catch (e) {
@@ -92,32 +54,34 @@ export default function SignIn(props: {}): ReactElement {
         }
     };
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value }: { name: string; value: string } = e.target;
-
-        setFormValues({
-            ...formValues,
-            [name]: value,
-        });
-
-        value.length === 0
-            ? setFormErrors({
-                  ...formErrors,
-                  [name]: {
-                      message: (formErrors as any)[name].message,
-                      isInvalid: true,
-                      showMessage: true,
-                  },
-              })
-            : setFormErrors({
-                  ...formErrors,
-                  [name]: {
-                      message: (formErrors as any)[name].message,
-                      isInvalid: false,
-                      showMessage: false,
-                  },
-              });
+    const handleFocusEvent = () => {
+        setAreCredentialsValid(true);
     };
+
+    const {
+        data: user,
+        errors,
+        handleClick,
+        handleSubmit,
+        handleChange,
+    } = useForm<ILoginUser>({
+        validations: {
+            login: {
+                required: {
+                    value: true,
+                    message:
+                        'Wprowadź nazwę użytkownika Spotify lub adres e-mail.',
+                },
+            },
+            password: {
+                required: {
+                    value: true,
+                    message: 'Wpisz swoje hasło.',
+                },
+            },
+        },
+        onSubmit: loginUser,
+    });
 
     return (
         <>
@@ -155,9 +119,13 @@ export default function SignIn(props: {}): ReactElement {
                     >
                         Aby kontynuować, zaloguj się do Spotify.
                     </Typography>
-                    {formErrors.incorrectCredentials.isInvalid && (
-                        <Alert severity='error' sx={{ mb: 2 }}>
-                            {formErrors.incorrectCredentials.message}
+                    {!areCredentialsValid && (
+                        <Alert
+                            variant='outlined'
+                            severity='error'
+                            sx={{ mb: 2 }}
+                        >
+                            Nieprawidłowa nazwa użytkownika lub błędne hasło.
                         </Alert>
                     )}
                     <Box>
@@ -167,18 +135,20 @@ export default function SignIn(props: {}): ReactElement {
                         <TextField
                             fullWidth
                             size='small'
-                            name='email'
+                            name='login'
                             type='text'
                             margin='dense'
                             autoComplete='email'
                             placeholder='Adres e-mail lub nazwa użytkownika'
-                            value={formValues.email}
-                            error={formErrors.email.isInvalid}
-                            helperText={
-                                formErrors.email.showMessage &&
-                                formErrors.email.message
+                            value={user.login || ''}
+                            error={
+                                errors.login || !areCredentialsValid
+                                    ? true
+                                    : false
                             }
-                            onChange={handleChange}
+                            helperText={errors?.login}
+                            onBlur={handleFocusEvent}
+                            onChange={handleChange('login')}
                         />
                     </Box>
                     <Box>
@@ -191,13 +161,15 @@ export default function SignIn(props: {}): ReactElement {
                             margin='dense'
                             autoComplete='current-password'
                             placeholder='Hasło'
-                            error={formErrors.password.isInvalid}
-                            value={formValues.password}
-                            helperText={
-                                formErrors.password.showMessage &&
-                                formErrors.password.message
+                            value={user.password || ''}
+                            error={
+                                errors.password || !areCredentialsValid
+                                    ? true
+                                    : false
                             }
-                            onChange={handleChange}
+                            helperText={errors?.password}
+                            onBlur={handleFocusEvent}
+                            onChange={handleChange('password')}
                         />
                     </Box>
                     <Link color='textSecondary' href='password-reset'>
@@ -210,13 +182,8 @@ export default function SignIn(props: {}): ReactElement {
                                 control={
                                     <Checkbox
                                         defaultChecked
-                                        value={formValues.remember}
-                                        onClick={() =>
-                                            setFormValues({
-                                                ...formValues,
-                                                remember: !formValues.remember,
-                                            })
-                                        }
+                                        value={user.remember}
+                                        onClick={handleClick('remember')}
                                     />
                                 }
                             />

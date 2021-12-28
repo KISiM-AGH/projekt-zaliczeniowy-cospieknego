@@ -9,6 +9,14 @@ const doPasswordsMatch: CustomValidator = (value, { req }) => {
     return value === req.body.password;
 };
 
+const doEmailsMatch: CustomValidator = (value, { req }) => {
+    return req.body.confirmEmail === req.body.email;
+};
+
+const isChecked: CustomValidator = (value) => {
+    return value === true;
+};
+
 export const createUserSchema = [
     body('email')
         .exists()
@@ -16,23 +24,28 @@ export const createUserSchema = [
         .isEmail()
         .withMessage('Must be a valid email')
         .normalizeEmail(),
+    body('confirmEmail')
+        .exists()
+        .normalizeEmail()
+        .custom(doEmailsMatch)
+        .withMessage('Both email fields must have the same value'),
+    body('password')
+        .exists()
+        .withMessage('Password is required')
+        .notEmpty()
+        .isLength({ min: 8 })
+        .withMessage('Password must contain at least 8 characters'),
     body('username')
         .exists()
         .withMessage('Username is required')
         .isLength({ min: 3 })
         .withMessage('Must be at least 3 chars long'),
-    body('password')
-        .exists()
-        .withMessage('Password is required')
-        .notEmpty()
-        .isLength({ min: 4 })
-        .withMessage('Password must contain at least 4 characters'),
-    body('confirm_password')
-        .exists()
-        .custom(isPasswordLongEnough)
-        .withMessage(
-            'confirm_password field must have the same value as the password field'
-        ),
+    // birthDate
+    body('hasAcceptedTos')
+        .isBoolean()
+        .withMessage('Must be a boolean value')
+        .custom(isChecked)
+        .withMessage('User did not agree to Terms of Service'),
     body('image_url').optional(),
     body('role')
         .optional()
@@ -89,10 +102,7 @@ export const updateUserSchema = [
 ];
 
 export const validateLogin = [
-    body('email').exists().withMessage('Email/username is required'),
-    //.isEmail()
-    //.withMessage('Must be a valid email')
-    //.normalizeEmail(),
+    body('login').exists().withMessage('Email/username is required'),
     body('password')
         .exists()
         .withMessage('Password is required')

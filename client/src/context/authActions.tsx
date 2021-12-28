@@ -5,6 +5,7 @@ interface IUserPromise {
     user?: {
         id: string;
         email: string;
+        login: string;
         username: string;
         image_url: string;
         role: string;
@@ -33,7 +34,7 @@ export const authorize = async (
         });
         const data = await response.json();
 
-        if (data.id) {
+        if (data.username) {
             dispatch({ type: ACTIONS.VERIFY_SUCCESS, payload: data });
             return;
         }
@@ -47,7 +48,7 @@ export const authorize = async (
 
 export const login = async (
     dispatch: Dispatch<any>,
-    payload: { email: string; password: string; remember: boolean }
+    payload: { login: string; password: string; remember: boolean }
 ): Promise<any> => {
     try {
         dispatch({ type: ACTIONS.LOGIN });
@@ -77,21 +78,47 @@ export const login = async (
     }
 };
 
-export const signup = async (): Promise<void> => {
-    // TEST
-    const response = await fetch(`${API_URL}/signup`, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            email: 'test@gmail.com',
-            password: '1234',
-        }),
-    });
-    const authUser = await response.json();
-    localStorage.setItem('authUser', JSON.stringify(authUser));
+export const signup = async (
+    dispatch: Dispatch<any>,
+    payload: {
+        email: string;
+        confirmEmail: string;
+        password: string;
+        username: string;
+        birthDay: string;
+        birthMonth: string;
+        birthYear: string;
+        gender: string;
+        isSubscribedToNewsletter: boolean;
+        hasAcceptedTos: boolean;
+    }
+): Promise<any> => {
+    try {
+        dispatch({ type: ACTIONS.LOGIN });
+        const response = await fetch(`${API_URL}/users`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+        const data: IUserPromise = await response.json();
+
+        if (data?.user) {
+            dispatch({
+                type: ACTIONS.LOGIN_SUCCESS,
+                payload: data.user,
+            });
+            localStorage.setItem('authUser', JSON.stringify(data.user));
+            return data;
+        }
+
+        dispatch({ type: ACTIONS.LOGIN_ERROR, errors: data.user });
+        return data;
+    } catch (e) {
+        dispatch({ type: ACTIONS.LOGIN_ERROR, errors: e });
+    }
 };
 
 export const logout = async (dispatch: Dispatch<any>) => {

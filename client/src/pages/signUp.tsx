@@ -1,4 +1,4 @@
-import { useState, ReactElement, ChangeEvent } from 'react';
+import { useState, useEffect, ReactElement } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
     Container,
@@ -15,99 +15,34 @@ import {
     Button,
     Link,
     Typography,
-    Alert,
     RadioGroup,
     Radio,
     FormHelperText,
+    Stack,
 } from '@mui/material';
 import { Logo } from '../components';
 import { signup } from '../context/authActions';
-import useAuth from '../hooks/useAuth';
 import { useForm } from '../hooks/useForm';
+import useAuth from '../hooks/useAuth';
 
-const initialValues = {
-    email: '',
-    confirmEmail: '',
-    password: '',
-    username: '',
-    birthDate: {
-        day: '',
-        month: '',
-        year: '',
-    },
-    gender: '',
-    newsletter: false,
-    agreed: false,
+interface IMonth {
+    [num: string]: string;
+}
+
+const months: IMonth = {
+    '01': 'styczeń',
+    '02': 'luty',
+    '03': 'marzec',
+    '04': 'kwiecień',
+    '05': 'maj',
+    '06': 'czerwiec',
+    '07': 'lipiec',
+    '08': 'sierpień',
+    '09': 'wrzesień',
+    '10': 'październik',
+    '11': 'listopad',
+    '12': 'grudzień',
 };
-
-const initialErrors = {
-    email: {
-        isInvalid: false,
-        showMessage: false,
-        message:
-            '✕  Podany adres jest nieprawidłowy. Sprawdź, czy wpisujesz go zgodnie z formatem przyklad@email.com.',
-    },
-    confirmEmail: {
-        isInvalid: false,
-        showMessage: false,
-        message: '✕  Potwierdź swój adres e-mail.',
-    },
-    password: {
-        isInvalid: false,
-        showMessage: false,
-        message: '✕  Wprowadź hasło.',
-    },
-    username: {
-        isInvalid: false,
-        showMessage: false,
-        message: '✕  Wprowadź nazwę użytkownika dla swojego profilu.',
-    },
-    day: {
-        isInvalid: false,
-        showMessage: false,
-        message: '✕  Podaj prawidłowy dzień miesiąca.',
-    },
-    month: {
-        isInvalid: false,
-        showMessage: false,
-        message: '✕  Wybierz miesiąc z listy.',
-    },
-    year: {
-        isInvalid: false,
-        showMessage: false,
-        message: '✕  Podaj prawidłowy rok.',
-    },
-    gender: {
-        isInvalid: false,
-        showMessage: false,
-        message: '✕  Wybierz swoją płeć.',
-    },
-    agreed: {
-        isInvalid: false,
-        showMessage: false,
-        message: '✕  Zaakceptuj warunki, aby kontynuować.',
-    },
-    incorrectCredentials: {
-        isInvalid: false,
-        showMessage: false,
-        message: '✕  Nieprawidłowa nazwa użytkownika lub błędne hasło.',
-    },
-};
-
-const months = [
-    'Styczeń',
-    'Luty',
-    'Marzec',
-    'Kwiecień',
-    'Maj',
-    'Czerwiec',
-    'Lipiec',
-    'Sierpień',
-    'Wrzesień',
-    'Październik',
-    'Listopad',
-    'Grudzień',
-];
 
 type Gender = 'male' | 'female' | 'non-binary';
 
@@ -125,27 +60,54 @@ interface IUser {
 }
 
 export default function SignUp(props: {}): ReactElement {
-    const printUser = () => {
-        console.log('hello');
+    const [emailToMatch, setEmailToMatch] = useState<string>('');
+    const { dispatch } = useAuth();
+    const history = useHistory();
+
+    const createAccount = async () => {
+        const payload = {
+            email: user.email,
+            confirmEmail: user.confirmEmail,
+            password: user.password,
+            username: user.username,
+            birthDay: user.birthDay,
+            birthMonth: user.birthMonth,
+            birthYear: user.birthYear,
+            gender: user.gender,
+            isSubscribedToNewsletter: user.isSubscribedToNewsletter,
+            hasAcceptedTos: user.hasAcceptedTos,
+        };
+
+        try {
+            const response = await signup(dispatch, payload);
+            if (response?.user) history.push('/');
+        } catch (e) {
+            console.error(e);
+        }
     };
+
     const {
         data: user,
         errors,
-        handleChange,
         handleClick,
         handleSubmit,
+        handleChange,
+        handleSelect,
+        handleFocusEvent,
     } = useForm<IUser>({
         validations: {
             email: {
-                pattern: {
-                    value: `^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$`,
-                    message:
-                        '✕  Podany adres jest nieprawidłowy. Sprawdź, czy wpisujesz go zgodnie z formatem przyklad@email.com.',
-                },
                 required: {
                     value: true,
                     message: '✕  Podaj swój adres e-mail.',
                 },
+                pattern: {
+                    value: `^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$`,
+                    // value: `^S+@S+.S+$`, // Spotify alike
+                    message:
+                        '✕  Podany adres jest nieprawidłowy. Sprawdź, czy wpisujesz go zgodnie z formatem przyklad@email.com.',
+                },
+                onBlur: true,
             },
             confirmEmail: {
                 required: {
@@ -153,7 +115,7 @@ export default function SignUp(props: {}): ReactElement {
                     message: '✕  Potwierdź swój adres e-mail.',
                 },
                 custom: {
-                    isValid: (value: string) => value === 'test@gmail.com',
+                    isValid: (value: string) => value === emailToMatch,
                     message: '✕  Podane adresy e-mail są różne.',
                 },
             },
@@ -163,7 +125,7 @@ export default function SignUp(props: {}): ReactElement {
                     message: '✕  Wprowadź hasło.',
                 },
                 custom: {
-                    isValid: (value: string) => value.length > 8,
+                    isValid: (value: string) => value.length >= 8,
                     message: '✕  Twoje hasło jest za krótkie.',
                 },
             },
@@ -175,6 +137,10 @@ export default function SignUp(props: {}): ReactElement {
                 },
             },
             birthDay: {
+                required: {
+                    value: true,
+                    message: '✕  Podaj prawidłowy dzień miesiąca.',
+                },
                 pattern: {
                     value: '^([1-9]|1[0-9]|2[0-9]|3[0-1])$',
                     message: '✕  Podaj prawidłowy dzień miesiąca.',
@@ -186,13 +152,18 @@ export default function SignUp(props: {}): ReactElement {
                     message: '✕  Wybierz miesiąc z listy.',
                 },
                 custom: {
-                    isValid: (value: string) => months.includes(value),
-                    message: '✕  Twoje hasło jest za krótkie.',
+                    isValid: (value: string) =>
+                        Object.keys(months).includes(value),
+                    message: '✕  Wybierz prawidłowy miesiąc.',
                 },
             },
             birthYear: {
+                required: {
+                    value: true,
+                    message: '✕  Podaj prawidłowy rok.',
+                },
                 pattern: {
-                    value: `^(19[0-9][0-9]|(201[0-9]|202[0-2]))$`,
+                    value: `^(19[0-9][0-9]|(20[0-9][0-9]))$`,
                     message: '✕  Podaj prawidłowy rok.',
                 },
             },
@@ -209,13 +180,16 @@ export default function SignUp(props: {}): ReactElement {
                 },
             },
         },
-        onSubmit: printUser,
+        onSubmit: createAccount,
     });
 
+    useEffect(() => {
+        setEmailToMatch(user.email);
+    }, [user.email]);
+
     return (
-        <>
+        <Container maxWidth={false} sx={{ bgcolor: 'background.paper', py: 3 }}>
             <Box
-                p={3}
                 sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -238,6 +212,14 @@ export default function SignUp(props: {}): ReactElement {
                     }}
                     onSubmit={handleSubmit}
                 >
+                    <Typography
+                        component='h1'
+                        textAlign='center'
+                        py={2}
+                        sx={{ fontSize: 32, marginBottom: '-12px' }}
+                    >
+                        Zarejestruj się za darmo i zacznij słuchać.
+                    </Typography>
                     <Typography component='h1' variant='h6' textAlign='center'>
                         Zarejestruj się za pomocą adresu e-mail
                     </Typography>
@@ -255,6 +237,7 @@ export default function SignUp(props: {}): ReactElement {
                             error={errors.email ? true : false}
                             helperText={errors?.email}
                             onChange={handleChange('email')}
+                            onBlur={handleFocusEvent('email')}
                         />
                     </Box>
                     <Box>
@@ -271,6 +254,7 @@ export default function SignUp(props: {}): ReactElement {
                             error={errors.confirmEmail ? true : false}
                             helperText={errors?.confirmEmail}
                             onChange={handleChange('confirmEmail')}
+                            onBlur={handleFocusEvent('confirmEmail')}
                         />
                     </Box>
                     <Box>
@@ -286,6 +270,7 @@ export default function SignUp(props: {}): ReactElement {
                             error={errors.password ? true : false}
                             helperText={errors?.password}
                             onChange={handleChange('password')}
+                            onBlur={handleFocusEvent('password')}
                         />
                     </Box>
                     <Box>
@@ -301,28 +286,35 @@ export default function SignUp(props: {}): ReactElement {
                             error={errors.username ? true : false}
                             helperText={errors?.username}
                             onChange={handleChange('username')}
+                            onBlur={handleFocusEvent('username')}
                         />
                     </Box>
                     <FormLabel>Podaj swoją datę urodzenia</FormLabel>
-                    <FormGroup row={true}>
-                        <FormControl sx={{ width: 100 }}>
+                    <Stack
+                        direction='row'
+                        justifyContent='center'
+                        alignItems='center'
+                        spacing={2}
+                    >
+                        <FormControl sx={{ maxWidth: 60 }}>
                             <Typography variant='subtitle2'>Dzień</Typography>
                             <TextField
-                                fullWidth
                                 size='small'
-                                name='birthDay'
                                 type='text'
-                                margin='dense'
                                 placeholder='DD'
+                                margin='dense'
+                                name='birthDay'
                                 value={user.birthDay || ''}
                                 error={errors.birthDay ? true : false}
                                 onChange={handleChange('birthDay')}
+                                onBlur={handleFocusEvent('birthDay')}
                             />
                         </FormControl>
-                        <FormControl sx={{ minWidth: 200 }} size='small'>
+                        <FormControl fullWidth>
                             <Typography variant='subtitle2'>Miesiąc</Typography>
                             <Select
                                 displayEmpty
+                                size='small'
                                 input={<OutlinedInput />}
                                 renderValue={(selected: any) => {
                                     if (selected.length === 0) {
@@ -335,22 +327,32 @@ export default function SignUp(props: {}): ReactElement {
                                             </Typography>
                                         );
                                     }
+
+                                    return months[user.birthMonth];
+                                }}
+                                sx={{
+                                    mt: 1,
+                                    mb: 0.5,
+                                    height: '40px',
+                                    boxSizing: 'border-box',
                                 }}
                                 value={user.birthMonth || ''}
                                 error={errors.birthMonth ? true : false}
-                                //onChange={handleSelect}
+                                onChange={handleSelect('birthMonth')}
                             >
                                 <MenuItem disabled>
                                     <div>Miesiąc</div>
                                 </MenuItem>
-                                {months.map((month) => (
-                                    <MenuItem key={month} value={month}>
-                                        {month}
-                                    </MenuItem>
-                                ))}
+                                {Object.entries(months)
+                                    .sort((a, b) => a[0].localeCompare(b[0]))
+                                    .map(([key, month], i) => (
+                                        <MenuItem key={key} value={key}>
+                                            {month}
+                                        </MenuItem>
+                                    ))}
                             </Select>
                         </FormControl>
-                        <FormControl sx={{ width: 120 }}>
+                        <FormControl sx={{ maxWidth: 120 }}>
                             <Typography variant='subtitle2'>Rok</Typography>
                             <TextField
                                 fullWidth
@@ -362,27 +364,28 @@ export default function SignUp(props: {}): ReactElement {
                                 value={user.birthYear || ''}
                                 error={errors.birthYear ? true : false}
                                 onChange={handleChange('birthYear')}
+                                onBlur={handleFocusEvent('birthYear')}
                             />
                         </FormControl>
-                        <FormControl>
-                            {errors.birthDay && (
-                                <FormHelperText error>
-                                    {errors.birthDay}
-                                </FormHelperText>
-                            )}
-                            {errors.birthMonth && (
-                                <FormHelperText error>
-                                    {errors.birthMonth}
-                                </FormHelperText>
-                            )}
-                            {errors.birthYear && (
-                                <FormHelperText error>
-                                    {errors.birthYear}
-                                </FormHelperText>
-                            )}
-                        </FormControl>
-                    </FormGroup>
-                    <Box>
+                    </Stack>
+                    <FormControl>
+                        {errors.birthDay && (
+                            <FormHelperText error>
+                                {errors.birthDay}
+                            </FormHelperText>
+                        )}
+                        {errors.birthMonth && (
+                            <FormHelperText error>
+                                {errors.birthMonth}
+                            </FormHelperText>
+                        )}
+                        {errors.birthYear && (
+                            <FormHelperText error>
+                                {errors.birthYear}
+                            </FormHelperText>
+                        )}
+                    </FormControl>
+                    <FormGroup>
                         <FormLabel>Podaj swoją płeć</FormLabel>
                         <RadioGroup
                             row
@@ -421,25 +424,27 @@ export default function SignUp(props: {}): ReactElement {
                                 }
                             />
                         </RadioGroup>
-                        <FormHelperText error={errors.gender ? true : false}>
-                            {errors?.gender}
-                        </FormHelperText>
-                    </Box>
+                        <FormControl>
+                            <FormHelperText
+                                error={errors.gender ? true : false}
+                            >
+                                {errors?.gender}
+                            </FormHelperText>
+                        </FormControl>
+                    </FormGroup>
                     <FormControlLabel
                         label='Chcę otrzymywać wiadomości i oferty od Spotify'
                         control={
                             <Checkbox
-                            // value={formValues.newsletter}
-                            // onClick={() =>
-                            //     setFormValues({
-                            //         ...formValues,
-                            //         remember: !formValues.remember,
-                            //     })
-                            // }
+                                name='isSubscribedToNewsletter'
+                                value={user.isSubscribedToNewsletter || false}
+                                onClick={handleClick(
+                                    'isSubscribedToNewsletter'
+                                )}
                             />
                         }
                     />
-                    <Box>
+                    <FormGroup>
                         <FormControlLabel
                             label={
                                 <div>
@@ -456,17 +461,20 @@ export default function SignUp(props: {}): ReactElement {
                             }
                             control={
                                 <Checkbox
+                                    name='hasAcceptedTos'
                                     value={user.hasAcceptedTos || false}
                                     onClick={handleClick('hasAcceptedTos')}
                                 />
                             }
                         />
-                        <FormHelperText
-                            error={errors.hasAcceptedTos ? true : false}
-                        >
-                            {errors?.hasAcceptedTos}
-                        </FormHelperText>
-                    </Box>
+                        <FormControl>
+                            <FormHelperText
+                                error={errors.hasAcceptedTos ? true : false}
+                            >
+                                {errors?.hasAcceptedTos}
+                            </FormHelperText>
+                        </FormControl>
+                    </FormGroup>
                     <Typography
                         gutterBottom
                         align='center'
@@ -508,6 +516,6 @@ export default function SignUp(props: {}): ReactElement {
                     </Typography>
                 </Box>
             </Container>
-        </>
+        </Container>
     );
 }

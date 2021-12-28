@@ -37,18 +37,26 @@ class userModel {
         return rows[0];
     };
 
-    create = async (song: IUser) => {
+    create = async (user: IUser) => {
         // uuid lub NULL
-        const sql = `INSERT INTO ${this._table}(id, email, password_digest, name, image_url, role) VALUES(?, ?, ?, ?, ?, ?)`;
-        const { title, duration, audio_url, artist_id, album_id, lyrics } =
-            song;
+        const sql = `INSERT INTO ${this._table}(id, email, password_digest, username, birth_date, gender, send_newsletter) VALUES(NULL, ?, ?, ?, ?, ?, ?)`;
+        const {
+            email,
+            password,
+            username,
+            birthDay,
+            birthMonth,
+            birthYear,
+            gender,
+            isSubscribedToNewsletter,
+        } = user;
         const [rows] = await pool.query<IUser[]>(sql, [
-            title,
-            duration,
-            audio_url,
-            artist_id,
-            album_id,
-            lyrics,
+            email,
+            password,
+            username,
+            `${birthYear}-${birthMonth}-${birthDay}`,
+            gender,
+            isSubscribedToNewsletter,
         ]);
         const result = rows as IReturnedRows;
 

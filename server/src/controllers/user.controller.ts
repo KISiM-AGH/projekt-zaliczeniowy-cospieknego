@@ -55,29 +55,50 @@ const getUserByName = async (req: Request, res: Response): Promise<void> => {
 
 const getCurrentUser = async (req: IGetUserAuthInfoRequest, res: Response) => {
     const { password_digest, ...userWithoutPassword } = req.currentUser;
-
     res.send(userWithoutPassword);
 };
 
-const addUser = async (req: Request, res: Response): Promise<void> => {
+const createUser = async (req: Request, res: Response): Promise<void> => {
     checkValidation(req, res);
-    hashPassword(req);
+    await hashPassword(req);
 
-    const data: IUser = req.body;
-    const result = await userModel.create(data);
+    const user: IUser = req.body;
+    let foundUser = await userModel.find({ email: user.email });
+    foundUser = !foundUser
+        ? await userModel.find({ username: user.username })
+        : foundUser;
 
-    result
-        ? res.status(201).send({ message: 'Added new user' })
-        : res.status(304).send({
-              error: {
-                  code: 'errorNotAdded',
-                  message: 'Failed to add new user',
-              },
-          });
+    if (foundUser) {
+        res.status(401).send({
+            error: {
+                code: 'errorAccountExists',
+                message: 'Account with that email or username already exists',
+            },
+        });
+        return;
+    }
+
+    const result = await userModel.create(user);
+
+    if (result) {
+        const secret = process.env.SECRET_JWT || '';
+        const token = jwt.sign({ userId: user.id.toString() }, secret, {
+            expiresIn: '7d',
+        });
+        const { password_digest, ...userWithoutPassword } = user;
+        res.send({ user: { ...userWithoutPassword, token } });
+    }
+    res.status(304).send({
+        error: {
+            code: 'errorNotAdded',
+            message: 'Failed to add new user',
+        },
+    });
 };
 
 const updateUser = async (req: Request, res: Response): Promise<void> => {
     checkValidation(req, res);
+    await hashPassword(req);
 
     const id: string = req.params.id;
     const data: IUser = req.body;
@@ -108,8 +129,9 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
 
 const userLogin = async (req: Request, res: Response) => {
     checkValidation(req, res);
-    const { email, password, remember } = req.body;
-    const user = await userModel.find({ email });
+    const { login, password, remember } = req.body;
+    let user = await userModel.find({ email: login });
+    user = !user ? await userModel.find({ username: login }) : user;
 
     !user &&
         res.status(401).send({
@@ -150,8 +172,9 @@ const checkValidation = (req: Request, res: Response) => {
 };
 
 const hashPassword = async (req: Request) => {
-    const { password } = req.body.password;
-    if (password) req.body.password = await bcrypt.hash(password, 8);
+    const salt = 8;
+    if (req.body.password)
+        req.body.password = await bcrypt.hash(req.body.password, salt);
 };
 
 export default {
@@ -159,7 +182,7 @@ export default {
     getUserById,
     getUserByName,
     getCurrentUser,
-    addUser,
+    createUser,
     updateUser,
     deleteUser,
     userLogin,
