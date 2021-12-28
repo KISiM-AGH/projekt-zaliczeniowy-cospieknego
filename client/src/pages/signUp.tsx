@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 import { useState, useEffect, ReactElement } from 'react';
+=======
+import {
+    useState,
+    ReactElement,
+    ChangeEvent,
+    ReactComponentElement,
+} from 'react';
+>>>>>>> 2e42d270165c3db1a4f75a0ff9d1c1a21263a99c
 import { useHistory } from 'react-router-dom';
 import {
     Container,
@@ -18,6 +27,10 @@ import {
     RadioGroup,
     Radio,
     FormHelperText,
+<<<<<<< HEAD
+=======
+    SelectClassKey,
+>>>>>>> 2e42d270165c3db1a4f75a0ff9d1c1a21263a99c
     Stack,
 } from '@mui/material';
 import { Logo } from '../components';
