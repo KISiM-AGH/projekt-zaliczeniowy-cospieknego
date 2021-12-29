@@ -4,15 +4,33 @@ import {
     Route,
     Redirect,
 } from 'react-router-dom';
-import { ContentPane, NavBar, TopBar, MediaPlayer } from './components';
+import { ContentPane, NavBar, TopBar, NowPlaying } from './components';
 import { Home, Search, Collection, SignIn, SignUp, NotFound } from './pages';
+import { PrivateRoute, IsUserRedirect } from './helpers/routes';
+import useAuth from './hooks/useAuth';
 
 function App() {
+    const { isLoggedIn }: { isLoggedIn: boolean } = useAuth();
+
     return (
         <Router>
             <Switch>
-                <Route exact path='/login' component={SignIn} />
-                <Route exact path='/signup' component={SignUp} />
+                <IsUserRedirect
+                    exact
+                    path='/login'
+                    isLoggedIn={isLoggedIn}
+                    loggedInPath={''}
+                >
+                    <SignIn />
+                </IsUserRedirect>
+                <IsUserRedirect
+                    exact
+                    path='/signup'
+                    isLoggedIn={isLoggedIn}
+                    loggedInPath={''}
+                >
+                    <SignUp />
+                </IsUserRedirect>
                 <Route>
                     <NavBar />
                     <TopBar />
@@ -20,32 +38,48 @@ function App() {
                         <Switch>
                             <Route exact path='/' component={Home} />
                             <Route path='/search' component={Search} />
-                            <Route
+                            <PrivateRoute
                                 exact
                                 path='/collection/albums'
                                 component={Collection}
+                                isLoggedIn={isLoggedIn}
+                                loggedInPath={''}
                             />
-                            <Route
+                            <PrivateRoute
                                 exact
                                 path='/collection/playlists'
                                 component={Collection}
+                                isLoggedIn={isLoggedIn}
+                                loggedInPath={''}
                             />
-                            <Route
+                            <PrivateRoute
                                 exact
                                 path='/collection/podcasts'
                                 component={Collection}
+                                isLoggedIn={isLoggedIn}
+                                loggedInPath={''}
                             />
-                            <Route
+                            <PrivateRoute
                                 exact
                                 path='/collection/artists'
                                 component={Collection}
+                                isLoggedIn={isLoggedIn}
+                                loggedInPath={''}
                             />
-                            <Route path='/collection/*'>
-                                <Redirect to='/collection/albums' />
-                            </Route>
+                            <PrivateRoute
+                                path='/collection*'
+                                isLoggedIn={isLoggedIn}
+                                loggedInPath={''}
+                            >
+                                {isLoggedIn ? (
+                                    <Redirect to='/collection/albums' />
+                                ) : (
+                                    <Redirect to='/' />
+                                )}
+                            </PrivateRoute>
                         </Switch>
                     </ContentPane>
-                    <MediaPlayer />
+                    <NowPlaying />
                 </Route>
                 <Route path='*' component={NotFound} />
             </Switch>
