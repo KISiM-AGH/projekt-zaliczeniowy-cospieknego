@@ -3,15 +3,11 @@ import { RowDataPacket } from 'mysql2';
 export default interface IUser extends RowDataPacket {
     id: number;
     email: string;
-    confirmEmail: string;
-    password: string;
+    password_digest: string;
     username: string;
-    birthDay: string;
-    birthMonth: string;
-    birthYear: string;
+    birth_date: string;
     gender: string;
-    isSubscribedToNewsletter: boolean;
-    hasAcceptedTos: boolean;
+    send_newsletter: boolean;
     image_url?: string;
     role?: string;
 }

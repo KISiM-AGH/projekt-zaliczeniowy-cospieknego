@@ -1,16 +1,7 @@
 import { multipleColumnSet } from '../utils/common.utils';
 import pool from '../db/db.config';
+import IReturnedRows from '../interfaces/returnedRow.interface';
 import ISong from '../interfaces/song.interface';
-
-interface IReturnedRows {
-    fieldCount?: number;
-    affectedRows?: number;
-    insertId?: number;
-    info?: string;
-    serverStatus?: number;
-    warningStatus?: number;
-    changedRows?: number;
-}
 
 class songModel {
     _table = 'songs';

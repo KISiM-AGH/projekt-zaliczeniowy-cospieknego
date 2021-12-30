@@ -17,7 +17,7 @@ export default function SignupBar(): ReactElement {
             }}
         >
             <Box ml={3}>
-                <Typography>Podgląd Spotify</Typography>
+                <Typography variant='button'>Podgląd Spotify</Typography>
                 <Typography>
                     Zarejestruj się, aby słuchać utworów i podcastów
                     przerywanych sporadycznie reklamami. Nie wymagamy podania

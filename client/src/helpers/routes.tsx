@@ -7,26 +7,28 @@ interface IProps extends RouteProps {
     children?: ReactNode;
 }
 
-export function IsUserRedirect({ isLoggedIn, loggedInPath, children }: IProps) {
-    return (
-        <Route>
-            {!isLoggedIn ? (
-                children
-            ) : (
-                <Redirect to={{ pathname: loggedInPath }} />
-            )}
-        </Route>
+export function IsUserRedirect({
+    isLoggedIn,
+    loggedInPath,
+    component,
+    children,
+}: IProps) {
+    return !isLoggedIn ? (
+        <Route component={component}>{children}</Route>
+    ) : (
+        <Redirect to={{ pathname: loggedInPath }} />
     );
 }
 
-export function PrivateRoute({ isLoggedIn, loggedInPath, children }: IProps) {
-    return (
-        <Route>
-            {isLoggedIn ? (
-                children
-            ) : (
-                <Redirect to={{ pathname: loggedInPath }} />
-            )}
-        </Route>
+export function PrivateRoute({
+    isLoggedIn,
+    loggedInPath,
+    component,
+    children,
+}: IProps) {
+    return isLoggedIn ? (
+        <Route component={component}>{children}</Route>
+    ) : (
+        <Redirect to={{ pathname: loggedInPath }} />
     );
 }

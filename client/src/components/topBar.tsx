@@ -11,7 +11,9 @@ import {
     Typography,
     CardMedia,
     Button,
+    Skeleton,
 } from '@mui/material';
+import { SearchBar } from '../components';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -21,96 +23,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CollectionType from './collectionType';
 import useAuth from '../hooks/useAuth';
 import { logout } from '../context/authActions';
-
-const menuItems = [
-    {
-        type: 'accountSettings',
-        text: 'Konto',
-        isLink: true,
-    },
-    {
-        type: 'profileSettings',
-        text: 'Profil',
-        isLink: false,
-    },
-    {
-        type: 'goPremium',
-        text: 'Przejdź na Premium',
-        isLink: true,
-    },
-    {
-        type: 'logout',
-        text: 'Wyloguj',
-        isLink: false,
-    },
-];
-
-interface IUser {
-    id: string;
-    email: string;
-    username: string;
-    image_url: string;
-    token: string;
-    role?: string;
-}
-
-const UserMenu = ({ isOpen, onClick }: { isOpen: any; onClick: any }) => {
-    const theme = useTheme();
-    const { currentUser }: { currentUser: any } = useAuth();
-
-    return (
-        <IconButton
-            size='large'
-            aria-label='account of the current user'
-            aria-controls='menu-appbar'
-            aria-haspopup='true'
-            sx={{
-                p: 1,
-                height: '40px',
-                borderRadius: '20px',
-                bgcolor: theme.palette.background.default,
-            }}
-            onClick={onClick}
-        >
-            {currentUser.image_url ? (
-                <CardMedia
-                    component='img'
-                    src={currentUser.image_url}
-                    sx={{ width: '26px', borderRadius: '50%' }}
-                />
-            ) : (
-                <AccountCircle color='primary' sx={{ fontSize: '32px' }} />
-            )}
-            <Typography ml={1.5}>{currentUser.username}</Typography>
-            {isOpen ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
-        </IconButton>
-    );
-};
-
-const JoinMenu = () => {
-    const theme = useTheme();
-
-    return (
-        <>
-            <Button
-                variant='text'
-                color='secondary'
-                component={Link}
-                to={'/signup'}
-            >
-                ZAREJESTRUJ SIĘ
-            </Button>
-            <Button
-                variant='contained'
-                sx={{ ml: theme.spacing(3) }}
-                component={Link}
-                to={'/login'}
-            >
-                ZALOGUJ SIĘ
-            </Button>
-        </>
-    );
-};
+import * as ROUTES from '../constants/routes';
 
 export default function Topbar(props: {}): ReactElement {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -152,7 +65,7 @@ export default function Topbar(props: {}): ReactElement {
                     <IconButton
                         aria-label='back'
                         sx={{
-                            ml: 1,
+                            ml: 2,
                             bgcolor: theme.palette.primary.main,
                             '&:hover': {
                                 bgcolor: theme.palette.primary.dark,
@@ -183,10 +96,13 @@ export default function Topbar(props: {}): ReactElement {
                 </Tooltip>
             </Box>
             {matchPath(location.pathname, {
-                path: '/collection/:id',
+                path: `${ROUTES.COLLECTION}/:id`,
             }) && (
                 <CollectionType activeType={location.pathname.split('/')[2]} />
             )}
+            {matchPath(location.pathname, {
+                path: `${ROUTES.BROWSE}`,
+            }) && <SearchBar />}
             <Box
                 sx={{
                     display: 'flex',
@@ -204,7 +120,9 @@ export default function Topbar(props: {}): ReactElement {
                     ) : (
                         <JoinMenu />
                     )
-                ) : null}
+                ) : (
+                    <Skeleton animation='wave' />
+                )}
             </Box>
             <Menu
                 anchorEl={anchorEl}
@@ -241,3 +159,88 @@ export default function Topbar(props: {}): ReactElement {
         </Toolbar>
     );
 }
+
+const UserMenu = ({ isOpen, onClick }: { isOpen: any; onClick: any }) => {
+    const theme = useTheme();
+    const { currentUser } = useAuth();
+
+    return (
+        <IconButton
+            size='large'
+            aria-label='account of the current user'
+            aria-controls='menu-appbar'
+            aria-haspopup='true'
+            sx={{
+                px: 1,
+                py: 0.5,
+                height: '40px',
+                borderRadius: '20px',
+                bgcolor: theme.palette.background.default,
+            }}
+            onClick={onClick}
+        >
+            {currentUser && currentUser.image_url ? (
+                <CardMedia
+                    component='img'
+                    src={currentUser.image_url}
+                    alt='avatar'
+                    width={28}
+                    height={28}
+                    sx={{ borderRadius: '50%' }}
+                />
+            ) : (
+                <AccountCircle color='primary' sx={{ fontSize: '32px' }} />
+            )}
+            <Typography ml={1}>{currentUser?.username}</Typography>
+            {isOpen ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+        </IconButton>
+    );
+};
+
+const JoinMenu = () => {
+    const theme = useTheme();
+
+    return (
+        <>
+            <Button
+                variant='text'
+                color='secondary'
+                component={Link}
+                to={ROUTES.SIGNUP}
+            >
+                ZAREJESTRUJ SIĘ
+            </Button>
+            <Button
+                variant='contained'
+                sx={{ ml: theme.spacing(3) }}
+                component={Link}
+                to={ROUTES.LOGIN}
+            >
+                ZALOGUJ SIĘ
+            </Button>
+        </>
+    );
+};
+
+const menuItems = [
+    {
+        type: 'accountSettings',
+        text: 'Konto',
+        isLink: true,
+    },
+    {
+        type: 'profileSettings',
+        text: 'Profil',
+        isLink: false,
+    },
+    {
+        type: 'goPremium',
+        text: 'Przejdź na Premium',
+        isLink: true,
+    },
+    {
+        type: 'logout',
+        text: 'Wyloguj',
+        isLink: false,
+    },
+];

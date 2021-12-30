@@ -4,30 +4,40 @@ import {
     Route,
     Redirect,
 } from 'react-router-dom';
+import { Skeleton } from '@mui/material';
 import { ContentPane, NavBar, TopBar, NowPlaying } from './components';
-import { Home, Search, Collection, SignIn, SignUp, NotFound } from './pages';
+import {
+    Home,
+    Search,
+    Collection,
+    SignIn,
+    SignUp,
+    NotFound,
+    Genre,
+} from './pages';
 import { PrivateRoute, IsUserRedirect } from './helpers/routes';
 import useAuth from './hooks/useAuth';
+import * as ROUTES from './constants/routes';
 
 function App() {
-    const { isLoggedIn }: { isLoggedIn: boolean } = useAuth();
+    const { isLoggedIn, loading } = useAuth();
 
-    return (
+    return !loading ? (
         <Router>
             <Switch>
                 <IsUserRedirect
                     exact
-                    path='/login'
+                    path={ROUTES.LOGIN}
+                    loggedInPath={ROUTES.HOME}
                     isLoggedIn={isLoggedIn}
-                    loggedInPath={''}
                 >
                     <SignIn />
                 </IsUserRedirect>
                 <IsUserRedirect
                     exact
-                    path='/signup'
+                    path={ROUTES.SIGNUP}
+                    loggedInPath={ROUTES.HOME}
                     isLoggedIn={isLoggedIn}
-                    loggedInPath={''}
                 >
                     <SignUp />
                 </IsUserRedirect>
@@ -36,47 +46,62 @@ function App() {
                     <TopBar />
                     <ContentPane>
                         <Switch>
-                            <Route exact path='/' component={Home} />
-                            <Route path='/search' component={Search} />
+                            <Route exact path={ROUTES.HOME} component={Home} />
+                            <Route path={ROUTES.BROWSE} component={Search} />
                             <PrivateRoute
                                 exact
-                                path='/collection/albums'
-                                component={Collection}
+                                path={ROUTES.ALBUMS}
+                                loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
-                                loggedInPath={''}
+                                component={Collection}
                             />
                             <PrivateRoute
                                 exact
-                                path='/collection/playlists'
-                                component={Collection}
+                                path={ROUTES.PLAYLISTS}
+                                loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
-                                loggedInPath={''}
+                                component={Collection}
                             />
                             <PrivateRoute
                                 exact
-                                path='/collection/podcasts'
-                                component={Collection}
+                                path={ROUTES.PODCASTS}
+                                loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
-                                loggedInPath={''}
+                                component={Collection}
                             />
                             <PrivateRoute
                                 exact
-                                path='/collection/artists'
-                                component={Collection}
+                                path={ROUTES.ARTISTS}
+                                loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
-                                loggedInPath={''}
+                                component={Collection}
                             />
                             <PrivateRoute
-                                path='/collection*'
+                                exact
+                                path={ROUTES.TRACKS}
+                                loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
-                                loggedInPath={''}
+                                component={Collection}
+                            />
+                            <PrivateRoute
+                                path={`${ROUTES.COLLECTION}*`}
+                                loggedInPath={ROUTES.HOME}
+                                isLoggedIn={isLoggedIn}
                             >
                                 {isLoggedIn ? (
-                                    <Redirect to='/collection/albums' />
+                                    <Redirect to={ROUTES.ALBUMS} />
                                 ) : (
-                                    <Redirect to='/' />
+                                    <Redirect to={ROUTES.HOME} />
                                 )}
                             </PrivateRoute>
+                            <Route
+                                exact
+                                path={`${ROUTES.GENRES}/:genre`}
+                                component={Genre}
+                            />
+                            <Route exact path={`${ROUTES.GENRES}`}>
+                                <Redirect to={ROUTES.HOME} />
+                            </Route>
                         </Switch>
                     </ContentPane>
                     <NowPlaying />
@@ -84,6 +109,8 @@ function App() {
                 <Route path='*' component={NotFound} />
             </Switch>
         </Router>
+    ) : (
+        <Skeleton variant='rectangular' width='100%' height='100%' />
     );
 }
 

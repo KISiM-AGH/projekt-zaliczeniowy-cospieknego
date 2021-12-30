@@ -31,8 +31,8 @@ const getAlbumById = async (req: Request, res: Response): Promise<void> => {
 };
 
 const getAlbumByTitle = async (req: Request, res: Response): Promise<void> => {
-    const title: string = req.params.title;
-    const album: IAlbum = await albumModel.find({ title });
+    const name: string = req.params.title;
+    const album: IAlbum = await albumModel.find({ name });
 
     album
         ? res.status(200).send(album)

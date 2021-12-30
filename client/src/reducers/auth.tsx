@@ -8,6 +8,7 @@ export const AuthReducer = (state: AuthState, action: any) => {
             return {
                 ...state,
                 loading: true,
+                isLoggedIn: false,
             };
         case ACTIONS.VERIFY_SUCCESS:
         case ACTIONS.LOGIN_SUCCESS:
@@ -16,6 +17,13 @@ export const AuthReducer = (state: AuthState, action: any) => {
                 currentUser: action.payload,
                 isLoggedIn: true,
                 loading: false,
+            };
+        case ACTIONS.VERIFY_FAILED:
+        case ACTIONS.LOGIN_FAILED:
+            return {
+                ...state,
+                loading: false,
+                isLoggedIn: false,
             };
         case ACTIONS.VERIFY_ERROR:
         case ACTIONS.LOGIN_ERROR:

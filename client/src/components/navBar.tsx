@@ -1,6 +1,6 @@
 import { useState, ReactElement, Fragment, MouseEvent } from 'react';
 import { Link, matchPath, useLocation } from 'react-router-dom';
-import { styled, useTheme, Theme } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import {
     Drawer,
     List,
@@ -18,10 +18,11 @@ import CollectionIcon from '../icons/collectionIcon';
 import Logo from './logo';
 import useAuth from '../hooks/useAuth';
 import LoginPopover from './loginPopover';
+import * as ROUTES from '../constants/routes';
 
 interface INavItem {
     id: number;
-    path?: string;
+    path: string;
     text: string;
     icon: ReactElement<SvgIconProps>;
     loggedInOnly: boolean;
@@ -78,7 +79,10 @@ export default function NavBar(): ReactElement {
     return (
         <DrawerBody variant='permanent' anchor='left'>
             <DrawerHeader>
-                <Link to='/' style={{ paddingRight: theme.spacing(5) }}>
+                <Link
+                    to={ROUTES.HOME}
+                    style={{ paddingRight: theme.spacing(5) }}
+                >
                     <Logo height={40} />
                 </Link>
             </DrawerHeader>
@@ -116,7 +120,9 @@ function NavList(): ReactElement {
     const [anchorEl, setAnchorEl] = useState<{
         [id: number]: HTMLElement;
     } | null>(null);
-    const location = useLocation();
+
+    const { isLoggedIn, loading }: { isLoggedIn: boolean; loading: boolean } =
+        useAuth();
 
     const handleOpen = (event: MouseEvent<HTMLElement>, id: number) => {
         setAnchorEl({ [id]: event.currentTarget });
@@ -134,6 +140,7 @@ function NavList(): ReactElement {
                         key={i}
                         item={item}
                         anchorEl={anchorEl}
+                        isLoggedIn={loading ? false : isLoggedIn}
                         handleOpen={handleOpen}
                         handleClose={handleClose}
                     />
@@ -145,6 +152,7 @@ function NavList(): ReactElement {
                         key={i}
                         item={item}
                         anchorEl={anchorEl}
+                        isLoggedIn={isLoggedIn}
                         handleOpen={handleOpen}
                         handleClose={handleClose}
                     />
@@ -157,6 +165,7 @@ function NavList(): ReactElement {
 function NavListItem({
     item,
     anchorEl,
+    isLoggedIn,
     handleOpen,
     handleClose,
 }: {
@@ -164,6 +173,7 @@ function NavListItem({
     anchorEl: {
         [id: number]: HTMLElement;
     } | null;
+    isLoggedIn: boolean;
     handleOpen: (event: MouseEvent<HTMLElement>, id: number) => void;
     handleClose: () => void;
 }): ReactElement {
@@ -171,24 +181,33 @@ function NavListItem({
     const location = useLocation();
 
     const isSelected = (path: string) => {
-        return matchPath(location.pathname, {
-            path: path === '/collection/albums' ? '/collection/:id' : path!,
+        const isCollection = matchPath(location.pathname, {
+            path: path === ROUTES.ALBUMS ? `${ROUTES.COLLECTION}/:id` : path,
             exact: true,
-        })
-            ? true
-            : false;
+        });
+
+        const isFavorites = matchPath(location.pathname, {
+            path: path === ROUTES.TRACKS ? `${ROUTES.COLLECTION}/:id` : path,
+            exact: true,
+        });
+
+        return isCollection ? true : false;
     };
 
     return (
         <Fragment key={id}>
             <div
-                onClick={loggedInOnly ? (e) => handleOpen(e, id) : handleClose}
+                onClick={
+                    loggedInOnly && !isLoggedIn
+                        ? (e) => handleOpen(e, id)
+                        : handleClose
+                }
             >
                 <ListItem
                     button
                     selected={isSelected(path!)}
                     component={Link}
-                    to={item.loggedInOnly ? '#' : item.path!}
+                    to={item.loggedInOnly && !isLoggedIn ? '#' : path!}
                 >
                     <ListItemIcon sx={{ minWidth: '40px' }}>
                         {icon}
@@ -214,21 +233,21 @@ function NavListItem({
 const navItems: INavItem[] = [
     {
         id: 1,
-        path: '/',
+        path: ROUTES.HOME,
         text: 'Home',
         icon: <HomeIcon color='primary' fontSize='medium' />,
         loggedInOnly: false,
     },
     {
         id: 2,
-        path: '/search',
+        path: ROUTES.BROWSE,
         text: 'Szukaj',
         icon: <SearchIcon color='primary' fontSize='medium' />,
         loggedInOnly: false,
     },
     {
         id: 3,
-        path: '/collection/albums',
+        path: ROUTES.ALBUMS,
         text: 'Biblioteka',
         icon: <CollectionIcon color='primary' fontSize='medium' />,
         loggedInOnly: true,
@@ -242,6 +261,7 @@ const navItems: INavItem[] = [
 const navOptions: INavItem[] = [
     {
         id: 4,
+        path: '#',
         text: 'Utwórz playlistę',
         icon: <AddOutlinedIcon color='primary' fontSize='medium' />,
         loggedInOnly: true,
@@ -252,6 +272,7 @@ const navOptions: INavItem[] = [
     },
     {
         id: 5,
+        path: ROUTES.TRACKS,
         text: 'Polubione utwory',
         icon: <FavoriteBorderOutlinedIcon color='primary' fontSize='medium' />,
         loggedInOnly: true,

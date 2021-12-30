@@ -5,7 +5,10 @@ import { SongCard } from '../components';
 
 interface IProps {
     slides: {
-        [key: string]: { title: string; data: [] }[];
+        [key: string]: {
+            title: string;
+            data: any;
+        }[];
     };
 }
 

@@ -1,18 +1,62 @@
 import { ReactElement } from 'react';
+import { Grid, Skeleton, Typography } from '@mui/material';
+import { GenreCard } from '../components';
 import useContent from '../hooks/useContent';
-import selectionFilter from '../utils/selectionFilter';
+import { Box } from '@mui/system';
 
-export default function Search(props: {}): ReactElement {
-    const albums = useContent('tracks');
-    const playlists = useContent('tracks');
-    const podcasts = useContent('tracks');
-    const artists = useContent('tracks');
-    const slides = selectionFilter({
-        albums,
-        playlists,
-        podcasts,
-        artists,
-    });
+export default function Search(): ReactElement {
+    const genres = useContent('genres');
 
-    return <div>SEARCH PAGE</div>;
+    if (!genres) {
+        return <div>Loading ...</div>;
+    }
+
+    return (
+        <>
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'self-end',
+                    width: '100%',
+                    mb: 2,
+                }}
+            >
+                <Typography
+                    variant='h5'
+                    component='h2'
+                    color='textPrimary'
+                    sx={{ flexGrow: 1 }}
+                >
+                    Przeglądaj wszystko
+                </Typography>
+            </Box>
+            <Grid container spacing={3}>
+                {genres.map(
+                    ({
+                        name,
+                        slug,
+                        theme_color,
+                    }: {
+                        name: string;
+                        slug: string;
+                        theme_color: string;
+                    }) =>
+                        name ? (
+                            <GenreCard
+                                key={name}
+                                title={name}
+                                slug={slug}
+                                themeColor={theme_color}
+                            />
+                        ) : (
+                            <Skeleton
+                                variant='rectangular'
+                                width={180}
+                                height={180}
+                            />
+                        )
+                )}
+            </Grid>
+        </>
+    );
 }

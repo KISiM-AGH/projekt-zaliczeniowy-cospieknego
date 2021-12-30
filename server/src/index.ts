@@ -4,6 +4,7 @@ import errorMiddleware from './middlewares/error.middleware';
 import songsRoutes from './routes/songs.route';
 import albumsRoutes from './routes/albums.route';
 import usersRoutes from './routes/users.route';
+import genresRoutes from './routes/genre.route';
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use((req, res, next) => {
 app.use('/api/v1', songsRoutes);
 app.use('/api/v1', albumsRoutes);
 app.use('/api/v1', usersRoutes);
+app.use('/api/v1', genresRoutes);
 
 // Error middleware
 app.use(errorMiddleware);

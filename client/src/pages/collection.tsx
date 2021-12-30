@@ -3,7 +3,7 @@ import useContent from '../hooks/useContent';
 import selectionFilter from '../utils/selectionFilter';
 import CollectionContainer from '../containers/collection';
 
-export default function Collection(_props: {}): ReactElement {
+export default function Collection(): ReactElement {
     const albums = useContent('albums');
     const playlists = useContent('tracks');
     const podcasts = useContent('tracks');

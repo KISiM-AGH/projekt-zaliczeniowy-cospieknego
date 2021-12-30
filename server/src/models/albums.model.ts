@@ -1,16 +1,7 @@
 import { multipleColumnSet } from '../utils/common.utils';
 import pool from '../db/db.config';
+import IReturnedRows from '../interfaces/returnedRow.interface';
 import IAlbum from '../interfaces/album.interface';
-
-interface IReturnedRows {
-    fieldCount?: number;
-    affectedRows?: number;
-    insertId?: number;
-    info?: string;
-    serverStatus?: number;
-    warningStatus?: number;
-    changedRows?: number;
-}
 
 class albumModel {
     _table = 'albums';

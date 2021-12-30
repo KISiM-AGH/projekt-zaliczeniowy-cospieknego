@@ -58,7 +58,7 @@ const getCurrentUser = async (req: IGetUserAuthInfoRequest, res: Response) => {
     res.send(userWithoutPassword);
 };
 
-const createUser = async (req: Request, res: Response): Promise<void> => {
+const addUser = async (req: Request, res: Response): Promise<void> => {
     checkValidation(req, res);
     await hashPassword(req);
 
@@ -182,7 +182,7 @@ export default {
     getUserById,
     getUserByName,
     getCurrentUser,
-    createUser,
+    addUser,
     updateUser,
     deleteUser,
     userLogin,

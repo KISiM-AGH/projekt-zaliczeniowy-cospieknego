@@ -1,7 +1,5 @@
 import { ReactElement } from 'react';
 
-interface Props {}
-
-export default function SearchContainer({}: Props): ReactElement {
+export default function SearchContainer(): ReactElement {
     return <div>S</div>;
 }
