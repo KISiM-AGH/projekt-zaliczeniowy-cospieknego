@@ -14,7 +14,7 @@ interface ICard {
     slug: string;
 }
 
-export default function SongCard({
+export default function TrackCard({
     title,
     subtitle,
     slug,

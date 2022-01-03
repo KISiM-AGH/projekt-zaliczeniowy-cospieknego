@@ -1,8 +1,7 @@
 import { useState, ReactElement, forwardRef } from 'react';
-import { useHistory, Link, LinkProps } from 'react-router-dom';
+import { Link, LinkProps } from 'react-router-dom';
 import { Stack, Button, Menu, MenuItem } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { useTheme } from '@mui/material/styles';
 import useWindowSize from '../hooks/useWindowSize';
 
 interface IProps {
@@ -12,8 +11,6 @@ interface IProps {
 export default function CollectionType({ activeType }: IProps): ReactElement {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const windowSize = useWindowSize();
-    const history = useHistory();
-    const theme = useTheme();
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);

@@ -34,17 +34,6 @@ export default function LoginPopover({
                     p: 2,
                     maxWidth: '336px',
                     minWidth: '300px',
-
-                    overflowX: 'visible',
-                    // '&::before': {
-                    //     content: '" "',
-                    //     display: 'block',
-                    //     position: 'absolute',
-                    //     background: 'red',
-                    //     width: '20px',
-                    //     height: '20px',
-                    //     transform: 'translateX(-130%) rotate(45deg)',
-                    // },
                 },
             }}
             onClose={handleClose}

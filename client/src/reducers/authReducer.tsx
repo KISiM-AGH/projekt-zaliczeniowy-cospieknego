@@ -1,4 +1,4 @@
-import { AuthState } from '../context/auth';
+import { AuthState } from '../context/authContext';
 import * as ACTIONS from '../constants/actions';
 
 export const AuthReducer = (state: AuthState, action: any) => {

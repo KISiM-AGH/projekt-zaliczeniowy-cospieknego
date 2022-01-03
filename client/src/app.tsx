@@ -5,15 +5,16 @@ import {
     Redirect,
 } from 'react-router-dom';
 import { Skeleton } from '@mui/material';
-import { ContentPane, NavBar, TopBar, NowPlaying } from './components';
+import { ContentPane } from './components';
+import { NavBar, TopBar, NowPlaying } from './containers';
 import {
-    Home,
-    Search,
-    Collection,
-    SignIn,
-    SignUp,
-    Tracks,
-    NotFound,
+    HomePage,
+    SearchPage,
+    CollectionPage,
+    SignInPage,
+    SignUpPage,
+    TracksPage,
+    NotFoundPage,
 } from './pages';
 import { PrivateRoute, IsUserRedirect } from './helpers/routes';
 import useAuth from './hooks/useAuth';
@@ -31,7 +32,7 @@ function App() {
                     loggedInPath={ROUTES.HOME}
                     isLoggedIn={isLoggedIn}
                 >
-                    <SignIn />
+                    <SignInPage />
                 </IsUserRedirect>
                 <IsUserRedirect
                     exact
@@ -39,49 +40,56 @@ function App() {
                     loggedInPath={ROUTES.HOME}
                     isLoggedIn={isLoggedIn}
                 >
-                    <SignUp />
+                    <SignUpPage />
                 </IsUserRedirect>
                 <Route>
                     <NavBar />
                     <TopBar />
                     <ContentPane>
                         <Switch>
-                            <Route exact path={ROUTES.HOME} component={Home} />
-                            <Route path={ROUTES.BROWSE} component={Search} />
+                            <Route
+                                exact
+                                path={ROUTES.HOME}
+                                component={HomePage}
+                            />
+                            <Route
+                                path={ROUTES.BROWSE}
+                                component={SearchPage}
+                            />
                             <PrivateRoute
                                 exact
                                 path={ROUTES.ALBUMS}
                                 loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
-                                component={Collection}
+                                component={CollectionPage}
                             />
                             <PrivateRoute
                                 exact
                                 path={ROUTES.PLAYLISTS}
                                 loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
-                                component={Collection}
+                                component={CollectionPage}
                             />
                             <PrivateRoute
                                 exact
                                 path={ROUTES.PODCASTS}
                                 loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
-                                component={Collection}
+                                component={CollectionPage}
                             />
                             <PrivateRoute
                                 exact
                                 path={ROUTES.ARTISTS}
                                 loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
-                                component={Collection}
+                                component={CollectionPage}
                             />
                             <PrivateRoute
                                 exact
                                 path={ROUTES.TRACKS}
                                 loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
-                                component={Collection}
+                                component={CollectionPage}
                             />
                             <PrivateRoute
                                 path={`${ROUTES.COLLECTION}*`}
@@ -97,7 +105,7 @@ function App() {
                             <Route
                                 exact
                                 path={`${ROUTES.GENRE}/:genre`}
-                                component={Tracks}
+                                component={TracksPage}
                             />
                             <Route exact path={`${ROUTES.GENRE}`}>
                                 <Redirect to={ROUTES.HOME} />
@@ -106,7 +114,7 @@ function App() {
                     </ContentPane>
                     <NowPlaying />
                 </Route>
-                <Route path='*' component={NotFound} />
+                <Route path='*' component={NotFoundPage} />
             </Switch>
         </Router>
     ) : (

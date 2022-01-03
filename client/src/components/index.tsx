@@ -1,12 +1,9 @@
 export { default as Logo } from './logo';
-export { default as TopBar } from './topBar';
-export { default as NavBar } from './navBar';
-export { default as SongCard } from './songCard';
+export { default as TrackCard } from './trackCard';
 export { default as GenreCard } from './genreCard';
-export { default as NowPlaying } from './nowPlaying';
+export { default as ContentPane } from './contentPane';
 export { default as MediaPlayer } from './mediaPlayer';
 export { default as SignupBar } from './signupBar';
 export { default as SearchBar } from './searchBar';
-export { default as ContentPane } from './contentPane';
 export { default as TracksTable } from './tracksTable';
 export { default as CollectionType } from './collectionType';

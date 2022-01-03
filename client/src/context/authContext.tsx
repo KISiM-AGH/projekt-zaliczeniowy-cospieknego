@@ -6,8 +6,8 @@ import {
     SetStateAction,
     useReducer,
 } from 'react';
-import { AuthReducer } from '../reducers/auth';
-import { authorize } from './authActions';
+import { AuthReducer } from '../reducers/authReducer';
+import { authorize } from '../actions/authActions';
 import * as ACTIONS from '../constants/actions';
 
 interface IProps {

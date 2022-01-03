@@ -1,12 +1,12 @@
 import { useState, useEffect, ReactElement, Fragment } from 'react';
 import { Grid, Box, Typography } from '@mui/material';
-import SongCard from '../components/songCard';
+import SongCard from '../components/trackCard';
 
 interface IProps {
     [key: string]: { title: string; data: [] | undefined }[];
 }
 
-export default function HomeContainer({ slides }: IProps): ReactElement {
+export default function HomeLayout({ slides }: IProps): ReactElement {
     const [slideRows, setSlideRows] = useState<any>([]);
 
     useEffect(() => {

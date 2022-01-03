@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useContext } from 'react';
-import { AuthContext, AuthState } from '../context/auth';
+import { AuthContext, AuthState } from '../context/authContext';
 
 interface IUser {
     id: string;

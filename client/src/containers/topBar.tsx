@@ -20,12 +20,12 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import CollectionType from './collectionType';
+import CollectionType from '../components/collectionType';
 import useAuth from '../hooks/useAuth';
-import { logout } from '../context/authActions';
+import { logout } from '../actions/authActions';
 import * as ROUTES from '../constants/routes';
 
-export default function Topbar(props: {}): ReactElement {
+export default function Topbar(): ReactElement {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const location = useLocation();
     const history = useHistory();

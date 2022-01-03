@@ -67,7 +67,7 @@ const Hero = styled('div')(({ theme }) => ({
     alignItems: 'flex-start',
 }));
 
-export default function Tracks(): ReactElement {
+export default function TracksPage(): ReactElement {
     const location = useLocation();
     const slug = location.pathname.split('/')[2];
     const content = useContent(`genres/${slug}`) as unknown as IContent;

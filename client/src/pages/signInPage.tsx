@@ -1,4 +1,4 @@
-import { useState, ReactElement, FormEvent } from 'react';
+import { useState, ReactElement } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import {
     Divider,
@@ -15,7 +15,7 @@ import {
     Alert,
 } from '@mui/material';
 import { Logo } from '../components';
-import { login } from '../context/authActions';
+import { login } from '../actions/authActions';
 import useAuth from '../hooks/useAuth';
 import { useForm } from '../hooks/useForm';
 import * as CODES from '../constants/errorCodes';
@@ -27,7 +27,7 @@ interface ILoginUser {
     remember: boolean;
 }
 
-export default function SignIn(): ReactElement {
+export default function SignInPage(): ReactElement {
     const [areCredentialsValid, setAreCredentialsValid] = useState(true);
     const history = useHistory();
     const { dispatch } = useAuth();

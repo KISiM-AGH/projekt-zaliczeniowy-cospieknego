@@ -53,7 +53,7 @@ export default function MediaPlayer(): ReactElement {
     useMemo(() => {
         setPrevVolume(volume > 0 ? volume : prevVolume);
         setVolume(muted ? 0 : prevVolume);
-    }, [muted]);
+    }, [prevVolume, volume, muted]);
 
     const handleClick = (): void => {
         setMuted((muted) => !muted);

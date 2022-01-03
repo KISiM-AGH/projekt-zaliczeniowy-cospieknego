@@ -21,7 +21,7 @@ import {
     Stack,
 } from '@mui/material';
 import { Logo } from '../components';
-import { signup } from '../context/authActions';
+import { signup } from '../actions/authActions';
 import { useForm } from '../hooks/useForm';
 import useAuth from '../hooks/useAuth';
 
@@ -59,7 +59,7 @@ interface IUser {
     hasAcceptedTos: boolean;
 }
 
-export default function SignUp(props: {}): ReactElement {
+export default function SignUpPage(): ReactElement {
     const [emailToMatch, setEmailToMatch] = useState<string>('');
     const { dispatch } = useAuth();
     const history = useHistory();

@@ -1,7 +1,9 @@
 import { useState, useEffect, ReactElement, Fragment } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Grid, Box, Typography } from '@mui/material';
-import { SongCard } from '../components';
+import { TrackCard } from '../components';
+import useContent from '../hooks/useContent';
+import selectionFilter from '../utils/selectionFilter';
 
 interface IProps {
     slides: {
@@ -12,7 +14,22 @@ interface IProps {
     };
 }
 
-export default function CollectionContainer({ slides }: IProps): ReactElement {
+export default function CollectionPage(): ReactElement {
+    const albums = useContent('albums');
+    const playlists = useContent('tracks');
+    const podcasts = useContent('tracks');
+    const artists = useContent('tracks');
+    const slides = selectionFilter({
+        albums,
+        playlists,
+        podcasts,
+        artists,
+    });
+
+    return <CollectionContainer slides={slides} />;
+}
+
+function CollectionContainer({ slides }: IProps): ReactElement {
     const [category, setCategory] = useState('albums');
     const location = useLocation();
 
@@ -52,7 +69,7 @@ export default function CollectionContainer({ slides }: IProps): ReactElement {
                                 xl={1}
                                 key={name}
                             >
-                                <SongCard
+                                <TrackCard
                                     title={name}
                                     subtitle={artist}
                                     slug={album_slug}

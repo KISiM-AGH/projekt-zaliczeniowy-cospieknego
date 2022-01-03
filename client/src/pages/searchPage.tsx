@@ -3,7 +3,7 @@ import { Grid, Box, Skeleton, Typography } from '@mui/material';
 import { GenreCard } from '../components';
 import useContent from '../hooks/useContent';
 
-export default function Search(): ReactElement {
+export default function SearchPage(): ReactElement {
     const genres = useContent('genres');
 
     if (!genres) {

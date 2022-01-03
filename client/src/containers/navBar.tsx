@@ -15,9 +15,9 @@ import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlin
 import HomeIcon from '../icons/homeIcon';
 import SearchIcon from '../icons/searchIcon';
 import CollectionIcon from '../icons/collectionIcon';
-import Logo from './logo';
+import Logo from '../components/logo';
 import useAuth from '../hooks/useAuth';
-import LoginPopover from './loginPopover';
+import LoginPopover from '../components/loginPopover';
 import * as ROUTES from '../constants/routes';
 
 interface INavItem {

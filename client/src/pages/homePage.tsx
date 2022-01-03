@@ -1,9 +1,9 @@
 import { ReactElement } from 'react';
-import HomeContainer from '../containers/home';
+import HomeContainer from '../containers/homeLayout';
 import useContent from '../hooks/useContent';
 import featureFilter from '../utils/featureFilter';
 
-export default function Home(props: {}): ReactElement {
+export default function HomePage(): ReactElement {
     const songs = useContent('tracks');
     const albums = useContent('tracks');
     const artists = useContent('tracks');
