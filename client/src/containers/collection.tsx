@@ -42,7 +42,7 @@ export default function CollectionContainer({ slides }: IProps): ReactElement {
                         </Typography>
                     </Box>
                     <Grid container spacing={3}>
-                        {slide.data.map(({ name, artist, slug }) => (
+                        {slide.data.map(({ name, artist, album_slug }) => (
                             <Grid
                                 item
                                 xs={8}
@@ -55,7 +55,7 @@ export default function CollectionContainer({ slides }: IProps): ReactElement {
                                 <SongCard
                                     title={name}
                                     subtitle={artist}
-                                    slug={slug}
+                                    slug={album_slug}
                                 />
                             </Grid>
                         ))}

@@ -4,10 +4,14 @@ import * as ACTIONS from '../constants/actions';
 export const AuthReducer = (state: AuthState, action: any) => {
     switch (action.type) {
         case ACTIONS.VERIFY:
-        case ACTIONS.LOGIN:
             return {
                 ...state,
                 loading: true,
+                isLoggedIn: false,
+            };
+        case ACTIONS.LOGIN:
+            return {
+                ...state,
                 isLoggedIn: false,
             };
         case ACTIONS.VERIFY_SUCCESS:
@@ -18,6 +22,7 @@ export const AuthReducer = (state: AuthState, action: any) => {
                 isLoggedIn: true,
                 loading: false,
             };
+        // @TEST
         case ACTIONS.VERIFY_FAILED:
         case ACTIONS.LOGIN_FAILED:
             return {
@@ -29,6 +34,7 @@ export const AuthReducer = (state: AuthState, action: any) => {
         case ACTIONS.LOGIN_ERROR:
             return {
                 ...state,
+                loading: false,
                 errors: action.errors,
             };
         case ACTIONS.LOGOUT:

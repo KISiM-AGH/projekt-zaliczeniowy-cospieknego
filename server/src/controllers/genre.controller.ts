@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import genreModel from '../models/genre.model';
+import songModel from '../models/songs.model';
 import IGenre from '../interfaces/genre.interface';
 
 dotenv.config();
@@ -23,28 +24,44 @@ const getGenres = async (req: Request, res: Response): Promise<void> => {
 
 const getGenreById = async (req: Request, res: Response): Promise<void> => {
     const id: string = req.params.id;
-    const genre: IGenre = await genreModel.find({ id });
+    const genres: IGenre | IGenre[] = await genreModel.find({ id });
 
-    genre.length
-        ? res.status(200).send(genre)
+    genres.length
+        ? res.status(200).send(genres)
         : res.status(204).send({
               error: {
                   code: 'errorNoResults',
-                  message: 'Failed to find a genre with the specific ID',
+                  message: 'Failed to find tracks with the specific genre ID',
               },
           });
 };
 
 const getGenreBySlug = async (req: Request, res: Response): Promise<void> => {
     const slug: string = req.params.slug;
-    const genre: IGenre = await genreModel.find({ slug });
+    const genres: IGenre | IGenre[] = await genreModel.find({ slug });
 
-    genre
-        ? res.status(200).send(genre)
+    genres
+        ? res.status(200).send(genres)
         : res.status(204).send({
               error: {
                   code: 'errorNoResults',
-                  message: 'Failed to find a genre with the specific name/slug',
+                  message:
+                      'Failed to find tracks with the specific genre name/slug',
+              },
+          });
+};
+
+const getLatestGenres = async (req: Request, res: Response): Promise<void> => {
+    const tracks: any = await songModel.read(); // ORDER BY DESC !!!
+
+    tracks
+        ? res
+              .status(200)
+              .send({ genre: 'Nowe wydania', theme_color: '#e8115b', tracks })
+        : res.status(204).send({
+              error: {
+                  code: 'errorNoResults',
+                  message: 'Failed to find newest tracks',
               },
           });
 };
@@ -95,6 +112,7 @@ export default {
     getGenres,
     getGenreById,
     getGenreBySlug,
+    getLatestGenres,
     addGenre,
     updateGenre,
     deleteGenre,

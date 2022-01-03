@@ -6,6 +6,7 @@ const router = Router();
 try {
     router.get('/genres', controller.getGenres);
     // router.get('/genres/:id', controller.getGenreById);
+    router.get('/genres/new-releases', controller.getLatestGenres);
     router.get('/genres/:slug', controller.getGenreBySlug);
     router.post('/genres', controller.addGenre);
     router.patch('/genres/:id', controller.updateGenre);

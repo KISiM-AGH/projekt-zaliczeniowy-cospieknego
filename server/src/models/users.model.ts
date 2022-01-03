@@ -15,7 +15,7 @@ class userModel {
         }
 
         const { columnSet, values } = multipleColumnSet(params);
-        sql += ` WHERE ${columnSet}`;
+        sql += ` WHERE ${columnSet};`;
         const [rows] = await pool.query<IUser[]>(sql, [...values]);
 
         return rows;
@@ -23,14 +23,14 @@ class userModel {
 
     find = async (params: object): Promise<IUser> => {
         const { columnSet, values } = multipleColumnSet(params);
-        const sql = `SELECT * FROM ${this._table} WHERE ${columnSet}`;
+        const sql = `SELECT * FROM ${this._table} WHERE ${columnSet};`;
         const [rows] = await pool.query<IUser[]>(sql, [...values]);
         return rows[0];
     };
 
     create = async (user: IUser) => {
         // uuid lub NULL
-        const sql = `INSERT INTO ${this._table}(id, email, password_digest, username, birth_date, gender, send_newsletter) VALUES(NULL, ?, ?, ?, ?, ?, ?)`;
+        const sql = `INSERT INTO ${this._table}(id, email, password_digest, username, birth_date, gender, send_newsletter) VALUES(NULL, ?, ?, ?, ?, ?, ?);`;
         const {
             email,
             password,
@@ -56,7 +56,7 @@ class userModel {
 
     update = async (id: string, params: object) => {
         const { columnSet, values } = multipleColumnSet(params);
-        const sql = `UPDATE ${this._table} SET ${columnSet} WHERE id = ?`;
+        const sql = `UPDATE ${this._table} SET ${columnSet} WHERE id = ?;`;
         const [rows] = await pool.query(sql, [...values, id]);
         const result = rows as IReturnedRows;
 
@@ -64,7 +64,7 @@ class userModel {
     };
 
     delete = async (id: string) => {
-        const sql = `DELETE FROM ${this._table} WHERE id = ?`;
+        const sql = `DELETE FROM ${this._table} WHERE id = ?;`;
         const [rows] = await pool.query(sql, [id]);
         const result = rows as IReturnedRows;
 

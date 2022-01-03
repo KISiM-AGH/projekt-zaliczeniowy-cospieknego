@@ -5,7 +5,8 @@ export default interface ISong extends RowDataPacket {
     title: string;
     duration: number;
     audio_url: string;
+    lyrics?: string;
     artist_id: number;
     album_id?: number;
-    lyrics?: string;
+    is_explicit?: boolean;
 }

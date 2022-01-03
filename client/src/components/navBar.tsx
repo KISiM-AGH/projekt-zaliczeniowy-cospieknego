@@ -54,17 +54,6 @@ const DrawerBody = styled(Drawer)(({ theme }) => ({
         height: `calc(100vh - ${theme.spacing(6)} - ${mediaPlayerHeight}px)`,
         boxSizing: 'border-box',
         overflowX: 'hidden',
-        '&::-webkit-scrollbar': {
-            width: '8px',
-        },
-        '&::-webkit-scrollbar-track': {
-            boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-            bgcolor: '#2a0b12',
-        },
-        '&::-webkit-scrollbar-thumb': {
-            backgroundColor: theme.palette.primary.main,
-            backgroundClip: 'content-box',
-        },
     },
 }));
 

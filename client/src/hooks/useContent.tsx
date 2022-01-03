@@ -4,6 +4,9 @@ export default function useContent(target: string): [] {
     const [content, setContent] = useState<[]>([]);
 
     useEffect(() => {
+        let abortController = new AbortController();
+        let aborted = abortController.signal.aborted;
+
         async function fetchData() {
             const response: Response = await fetch(
                 `http://localhost:8080/api/v1/${target}`
@@ -15,9 +18,13 @@ export default function useContent(target: string): [] {
             }
 
             const data = await response.json();
-            setContent(data);
+            aborted === false && setContent(data);
         }
+
         fetchData();
+        return () => {
+            abortController.abort();
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

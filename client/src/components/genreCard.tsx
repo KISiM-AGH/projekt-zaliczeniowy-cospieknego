@@ -25,7 +25,7 @@ export default function GenreCard({
             lg={2}
             xl={1}
             component={Link}
-            to={`${ROUTES.GENRES}/${slug}`}
+            to={`${ROUTES.GENRE}/${slug}`}
         >
             <Box
                 bgcolor={themeColor ? themeColor : 'primary.main'}
@@ -55,6 +55,7 @@ export default function GenreCard({
                         zIndex: '1',
                         position: 'absolute',
                         overflowWrap: 'break-word',
+                        textShadow: '0 0 4px rgba(0,0,0,0.3)',
                     }}
                 >
                     {title}

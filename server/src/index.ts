@@ -10,6 +10,7 @@ dotenv.config();
 
 const port = process.env.PORT || 8080;
 const app: Express = express();
+const version: string = 'api/v1';
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -34,10 +35,10 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/api/v1', songsRoutes);
-app.use('/api/v1', albumsRoutes);
-app.use('/api/v1', usersRoutes);
-app.use('/api/v1', genresRoutes);
+app.use(`/${version}`, songsRoutes);
+app.use(`/${version}`, albumsRoutes);
+app.use(`/${version}`, usersRoutes);
+app.use(`/${version}`, genresRoutes);
 
 // Error middleware
 app.use(errorMiddleware);
@@ -56,5 +57,5 @@ app.use('*', (req: Request, res: Response) => {
 
 app.listen(port, () =>
     // tslint:disable-next-line:no-console
-    console.log(`Running on http://localhost:${port}/api/v1`)
+    console.log(`Running on http://localhost:${port}/${version}`)
 );

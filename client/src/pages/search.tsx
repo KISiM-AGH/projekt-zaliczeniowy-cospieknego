@@ -1,13 +1,13 @@
 import { ReactElement } from 'react';
-import { Grid, Skeleton, Typography } from '@mui/material';
+import { Grid, Box, Skeleton, Typography } from '@mui/material';
 import { GenreCard } from '../components';
 import useContent from '../hooks/useContent';
-import { Box } from '@mui/system';
 
 export default function Search(): ReactElement {
     const genres = useContent('genres');
 
     if (!genres) {
+        // @TO_CHANGE
         return <div>Loading ...</div>;
     }
 

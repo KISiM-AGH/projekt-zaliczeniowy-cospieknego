@@ -12,8 +12,8 @@ import {
     Collection,
     SignIn,
     SignUp,
+    Tracks,
     NotFound,
-    Genre,
 } from './pages';
 import { PrivateRoute, IsUserRedirect } from './helpers/routes';
 import useAuth from './hooks/useAuth';
@@ -96,10 +96,10 @@ function App() {
                             </PrivateRoute>
                             <Route
                                 exact
-                                path={`${ROUTES.GENRES}/:genre`}
-                                component={Genre}
+                                path={`${ROUTES.GENRE}/:genre`}
+                                component={Tracks}
                             />
-                            <Route exact path={`${ROUTES.GENRES}`}>
+                            <Route exact path={`${ROUTES.GENRE}`}>
                                 <Redirect to={ROUTES.HOME} />
                             </Route>
                         </Switch>

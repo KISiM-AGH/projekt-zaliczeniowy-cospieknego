@@ -1,4 +1,4 @@
-import { useState, ReactElement } from 'react';
+import { useState, ReactElement, FormEvent } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import {
     Divider,
@@ -19,6 +19,7 @@ import { login } from '../context/authActions';
 import useAuth from '../hooks/useAuth';
 import { useForm } from '../hooks/useForm';
 import * as CODES from '../constants/errorCodes';
+import { HOME } from '../constants/routes';
 
 interface ILoginUser {
     login: string;
@@ -26,7 +27,7 @@ interface ILoginUser {
     remember: boolean;
 }
 
-export default function SignIn(props: {}): ReactElement {
+export default function SignIn(): ReactElement {
     const [areCredentialsValid, setAreCredentialsValid] = useState(true);
     const history = useHistory();
     const { dispatch } = useAuth();
@@ -37,11 +38,9 @@ export default function SignIn(props: {}): ReactElement {
             password: user.password,
             remember: user.remember,
         };
-
         try {
             const response = await login(dispatch, payload);
-
-            if (response?.user) history.push('/');
+            if (response?.user) history.push(HOME);
 
             // Errors from express-validator
             if (response?.error?.code === CODES.FAILED) return;
@@ -93,7 +92,7 @@ export default function SignIn(props: {}): ReactElement {
                     justifyContent: 'center',
                 }}
             >
-                <Link href='/' sx={{ height: 60 }}>
+                <Link href={HOME} sx={{ height: 60 }}>
                     <Logo height={60} />
                 </Link>
             </Box>
