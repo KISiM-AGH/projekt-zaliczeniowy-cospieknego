@@ -1,5 +1,5 @@
 import { useState, ReactElement } from 'react';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import {
     Divider,
     Container,
@@ -204,8 +204,8 @@ export default function SignInPage(): ReactElement {
                     </Typography>
                     <Button
                         variant='outlined'
-                        component={RouterLink}
-                        to='/signup'
+                        component={Link}
+                        href='/signup'
                         size='large'
                     >
                         ZAREJESTRUJ SIĘ W SPOTiFY

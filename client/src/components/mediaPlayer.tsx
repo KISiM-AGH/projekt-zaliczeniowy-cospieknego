@@ -53,7 +53,8 @@ export default function MediaPlayer(): ReactElement {
     useMemo(() => {
         setPrevVolume(volume > 0 ? volume : prevVolume);
         setVolume(muted ? 0 : prevVolume);
-    }, [prevVolume, volume, muted]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [muted]);
 
     const handleClick = (): void => {
         setMuted((muted) => !muted);

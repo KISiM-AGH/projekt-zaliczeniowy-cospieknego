@@ -1,14 +1,5 @@
 import { useEffect, useState } from 'react';
-// import { Link } from 'react-router-dom';
-import {
-    alpha,
-    Link,
-    Stack,
-    Typography,
-    styled,
-    Box,
-    Button,
-} from '@mui/material';
+import { alpha, Link, Stack, Typography, Button, styled } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ExplicitIcon from '@mui/icons-material/Explicit';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -18,6 +9,21 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import * as RESOURCES from '../constants/resources';
 import * as ROUTES from '../constants/routes';
+
+interface ITrack {
+    title: string;
+    artist: string;
+    artist_slug: string;
+    album: string;
+    album_slug: string;
+    duration: number;
+    is_explicit: boolean;
+    audio_url: string;
+}
+
+interface IProps {
+    tracks: ITrack[];
+}
 
 const convertToTimeFormat = (duration: number): string => {
     const value = (duration / 60).toFixed(2);
@@ -174,21 +180,6 @@ const columns: GridColDef[] = [
     },
 ];
 
-interface ITrack {
-    title: string;
-    artist: string;
-    artist_slug: string;
-    album: string;
-    album_slug: string;
-    duration: number;
-    is_explicit: number;
-    audio_url: string;
-}
-
-interface IProps {
-    tracks: ITrack[];
-}
-
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     border: 0,
     color: theme.palette.text.secondary,
@@ -231,7 +222,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     },
 }));
 
-export default function TracksTable({ tracks }: IProps) {
+export default function Tracklist({ tracks }: IProps) {
     const [rows, setRows] = useState<any>([]);
 
     const addRow = (id: number, track: ITrack) => ({

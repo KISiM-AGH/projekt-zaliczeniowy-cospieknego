@@ -24,6 +24,7 @@ import { Logo } from '../components';
 import { signup } from '../actions/authActions';
 import { useForm } from '../hooks/useForm';
 import useAuth from '../hooks/useAuth';
+import * as ROUTES from '../constants/routes';
 
 interface IMonth {
     [num: string]: string;
@@ -80,7 +81,7 @@ export default function SignUpPage(): ReactElement {
 
         try {
             const response = await signup(dispatch, payload);
-            if (response?.user) history.push('/');
+            if (response?.user) history.push(ROUTES.HOME);
         } catch (e) {
             console.error(e);
         }
@@ -196,7 +197,7 @@ export default function SignUpPage(): ReactElement {
                     justifyContent: 'center',
                 }}
             >
-                <Link href='/' sx={{ height: 40 }}>
+                <Link href={ROUTES.HOME} sx={{ height: 40 }}>
                     <Logo height={40} />
                 </Link>
             </Box>
@@ -452,7 +453,7 @@ export default function SignUpPage(): ReactElement {
                                     <Link
                                         color='primary'
                                         target='_blank'
-                                        href='https://www.spotify.com/pl/legal/end-user-agreement/'
+                                        href={ROUTES.USER_AGREEMENT}
                                     >
                                         Warunki korzystania z serwisu Spotify
                                     </Link>
@@ -487,7 +488,7 @@ export default function SignUpPage(): ReactElement {
                         <Link
                             color='primary'
                             target='_blank'
-                            href='https://www.spotify.com/pl/legal/privacy-policy/'
+                            href={ROUTES.PRIVACY_POLICY}
                         >
                             Polityką prywatności Spotify
                         </Link>
@@ -509,7 +510,7 @@ export default function SignUpPage(): ReactElement {
                         variant='body1'
                     >
                         Masz już konto?{' '}
-                        <Link color='primary' href='/login'>
+                        <Link color='primary' href={ROUTES.LOGIN}>
                             Zaloguj się
                         </Link>
                         .

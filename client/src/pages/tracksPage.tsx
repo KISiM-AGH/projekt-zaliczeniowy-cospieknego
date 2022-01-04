@@ -10,7 +10,7 @@ import {
     Skeleton,
 } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { TracksTable } from '../components';
+import { Tracklist } from '../components';
 import useContent from '../hooks/useContent';
 import * as RESOURCES from '../constants/resources';
 
@@ -28,7 +28,7 @@ interface IContent {
             album: string;
             album_slug: string;
             duration: number;
-            is_explicit: number;
+            is_explicit: boolean;
             audio_url: string;
         }
     ];
@@ -190,7 +190,7 @@ export default function TracksPage(): ReactElement {
                     </Stack>
                 </Stack>
             </Hero>
-            <TracksTable tracks={tracks} />
+            <Tracklist tracks={tracks} />
         </>
     );
 }

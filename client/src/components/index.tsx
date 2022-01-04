@@ -5,5 +5,5 @@ export { default as ContentPane } from './contentPane';
 export { default as MediaPlayer } from './mediaPlayer';
 export { default as SignupBar } from './signupBar';
 export { default as SearchBar } from './searchBar';
-export { default as TracksTable } from './tracksTable';
+export { default as Tracklist } from './tracklist';
 export { default as CollectionType } from './collectionType';

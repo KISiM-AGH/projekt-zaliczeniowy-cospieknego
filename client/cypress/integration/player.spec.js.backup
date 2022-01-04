@@ -1,0 +1,39 @@
+/// <reference types="cypress"/>
+
+describe('Media player / now playing', () => {
+    beforeEach(() => {
+        cy.visit('http://localhost:3000/');
+    });
+
+    it('play/pause the currently playing track', () => {
+        //
+    });
+
+    it('shows the name of the song, artist and album cover', () => {
+        //
+    });
+
+    it('tracks the song progress', () => {
+        //
+    });
+
+    it('skips to the next track or return to previous track', () => {
+        //
+    });
+
+    it('shuffles the playlist when the option is selected', () => {
+        //
+    });
+
+    it('plays the same playlist again when the option is selected', () => {
+        //
+    });
+
+    it('allows to change the volume with the slider / mute it with a mouse click', () => {
+        //
+    });
+
+    it('shows the queue when the `queue` button is clicked', () => {
+        //
+    });
+});

@@ -81,10 +81,7 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
         e: FormEvent<HTMLInputElement & HTMLSelectElement>
     ) => {
         e.preventDefault();
-        if (options?.onSubmit) {
-            options.onSubmit();
-        }
-        // performFullCheck();
+        performFullCheck();
     };
 
     const performCheck = (key: keyof T) => {
@@ -164,7 +161,7 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
             }
 
             setErrors({});
-            // options?.onSubmit && options?.onSubmit();
+            options?.onSubmit && options?.onSubmit();
         }
     };
 

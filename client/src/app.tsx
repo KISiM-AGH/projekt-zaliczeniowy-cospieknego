@@ -11,6 +11,7 @@ import {
     HomePage,
     SearchPage,
     CollectionPage,
+    FavoritePage,
     SignInPage,
     SignUpPage,
     TracksPage,
@@ -89,7 +90,7 @@ function App() {
                                 path={ROUTES.TRACKS}
                                 loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
-                                component={CollectionPage}
+                                component={FavoritePage}
                             />
                             <PrivateRoute
                                 path={`${ROUTES.COLLECTION}*`}

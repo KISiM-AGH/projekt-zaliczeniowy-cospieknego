@@ -24,6 +24,8 @@ export default function GenreCard({
             md={2}
             lg={2}
             xl={1}
+            aria-label={slug}
+            draggable={false}
             component={Link}
             to={`${ROUTES.GENRE}/${slug}`}
         >
