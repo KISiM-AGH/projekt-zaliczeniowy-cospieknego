@@ -7,7 +7,7 @@ class albumModel {
     _table = 'albums';
 
     read = async (params: object = {}) => {
-        let sql = `SELECT ab.name, year, ab.slug as album_slug, a.name as artist, a.slug as artist_slug FROM ${this._table} ab INNER JOIN artists a ON ab.artist_id = a.id`;
+        let sql = `SELECT ab.name as album, year, ab.slug as album_slug, a.name as artist, a.slug as artist_slug FROM ${this._table} ab INNER JOIN artists a ON ab.artist_id = a.id`;
 
         if (!Object.keys(params).length) {
             const [rows] = await pool.query<IAlbum[]>(sql, []);
@@ -15,17 +15,22 @@ class albumModel {
         }
 
         const { columnSet, values } = multipleColumnSet(params);
-        sql += ` WHERE ${columnSet};`;
+        columnSet === 'limit = ?'
+            ? (sql += ` LIMIT ${values[0]};`)
+            : (sql += ` WHERE ${columnSet};`);
         const [rows] = await pool.query<IAlbum[]>(sql, [...values]);
-
         return rows;
     };
 
-    find = async (params: object): Promise<IAlbum> => {
+    find = async (params: object): Promise<IAlbum | IAlbum[]> => {
         const { columnSet, values } = multipleColumnSet(params);
-        const sql = `SELECT * FROM ${this._table} WHERE ${columnSet};`;
+
+        // const album = `SELECT ab.id, ab.name as album, ab.slug as album_slug, year, a.name as artist FROM ${this._table} ab
+        //             INNER JOIN artists a on ab.artist_id = a.id
+        //             WHERE ab.${columnSet};`;
+        const sql = `SELECT * FROM albums ab WHERE ${columnSet};`;
         const [rows] = await pool.query<IAlbum[]>(sql, [...values]);
-        return rows[0];
+        return rows;
     };
 
     create = async (album: IAlbum) => {
