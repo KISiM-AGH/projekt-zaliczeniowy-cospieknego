@@ -4,14 +4,20 @@ import useContent from '../hooks/useContent';
 import featureFilter from '../utils/featureFilter';
 
 export default function HomePage(): ReactElement {
-    const songs = useContent('tracks');
+    const tracks = useContent('tracks');
     const albums = useContent('tracks');
     const artists = useContent('tracks');
     const slides = featureFilter({
-        songs,
+        tracks,
         albums,
         artists,
     });
+
+    console.log(slides);
+
+    if (!slides) {
+        return <div>Loading...</div>;
+    }
 
     return <HomeContainer slides={slides} />;
 }

@@ -1,75 +1,70 @@
-import { multipleColumnSet } from '../utils/common.utils';
-import pool from '../db/db.config';
-import IReturnedRows from '../interfaces/returnedRow.interface';
-import IUser from '../interfaces/user.interface';
+import { Schema } from 'mongoose';
 
-class userModel {
-    _table = 'users';
+const PLANS = ['premium', 'free'];
+const GENDERS = ['male', 'female', 'non-binary'];
 
-    read = async (params: object = {}) => {
-        let sql = `SELECT * FROM ${this._table}`;
+const userSchema = new Schema({
+    email: {
+        type: String,
+        unique: true,
+        required: [true, 'Email is required'],
+    },
+    username: {
+        type: String,
+        unique: true,
+        required: [true, 'Username is required'],
+    },
+    password: {
+        type: String,
+        minlength: 6,
+        required: [true, 'Password is required'],
+    },
+    gender: {
+        type: String,
+        enum: GENDERS,
+        required: true,
+    },
+    birth_date: {
+        type: String,
+        required: true,
+    },
+    send_newsletter: {
+        type: Boolean,
+        default: false,
+    },
+    product: {
+        type: String,
+        enum: PLANS,
+        default: 'free',
+    },
+    signup_date: {
+        type: Date,
+        default: Date.now(),
+    },
+    type: {
+        type: String,
+        default: 'user',
+    },
+    images: [
+        {
+            url: String,
+            height: Number,
+            width: Number,
+        },
+    ],
+});
 
-        if (!Object.keys(params).length) {
-            const [rows] = await pool.query<IUser[]>(sql, []);
-            return rows;
-        }
+userSchema.virtual('uri').get(function () {
+    return `spotify:${this.type}:${this._id}`;
+});
 
-        const { columnSet, values } = multipleColumnSet(params);
-        sql += ` WHERE ${columnSet};`;
-        const [rows] = await pool.query<IUser[]>(sql, [...values]);
+userSchema.method('toJSON', function () {
+    const { __v, _id, ...object } = this.toObject();
+    object.id = _id;
+    return object;
+});
 
-        return rows;
-    };
+userSchema.set('toJSON', { virtuals: true });
+userSchema.set('toObject', { virtuals: false });
 
-    find = async (params: object): Promise<IUser> => {
-        const { columnSet, values } = multipleColumnSet(params);
-        const sql = `SELECT * FROM ${this._table} WHERE ${columnSet};`;
-        const [rows] = await pool.query<IUser[]>(sql, [...values]);
-        return rows[0];
-    };
-
-    create = async (user: IUser) => {
-        // uuid lub NULL
-        const sql = `INSERT INTO ${this._table}(id, email, password_digest, username, birth_date, gender, send_newsletter) VALUES(NULL, ?, ?, ?, ?, ?, ?);`;
-        const {
-            email,
-            password,
-            username,
-            birthDay,
-            birthMonth,
-            birthYear,
-            gender,
-            isSubscribedToNewsletter,
-        } = user;
-        const [rows] = await pool.query<IUser[]>(sql, [
-            email,
-            password,
-            username,
-            `${birthYear}-${birthMonth}-${birthDay}`,
-            gender,
-            isSubscribedToNewsletter,
-        ]);
-        const result = rows as IReturnedRows;
-
-        return result ? result.affectedRows : 0;
-    };
-
-    update = async (id: string, params: object) => {
-        const { columnSet, values } = multipleColumnSet(params);
-        const sql = `UPDATE ${this._table} SET ${columnSet} WHERE id = ?;`;
-        const [rows] = await pool.query(sql, [...values, id]);
-        const result = rows as IReturnedRows;
-
-        return result;
-    };
-
-    delete = async (id: string) => {
-        const sql = `DELETE FROM ${this._table} WHERE id = ?;`;
-        const [rows] = await pool.query(sql, [id]);
-        const result = rows as IReturnedRows;
-
-        return result ? result.affectedRows : 0;
-    };
-}
-
-export default new userModel();
+export default userSchema;

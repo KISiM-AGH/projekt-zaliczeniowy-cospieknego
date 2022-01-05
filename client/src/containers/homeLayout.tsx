@@ -40,7 +40,7 @@ export default function HomeLayout({ slides }: IProps): ReactElement {
                         )}
                     </Box>
                     <Grid container spacing={3}>
-                        {slide.data.map(({ title, artist, album_slug }) => (
+                        {slide.data.map(({ name, artists, album }) => (
                             <Grid
                                 item
                                 xs={8}
@@ -48,12 +48,12 @@ export default function HomeLayout({ slides }: IProps): ReactElement {
                                 md={2}
                                 lg={2}
                                 xl={1}
-                                key={title}
+                                key={name}
                             >
                                 <SongCard
-                                    title={title}
-                                    subtitle={artist}
-                                    slug={album_slug}
+                                    title={name}
+                                    subtitle={artists}
+                                    slug={album}
                                 />
                             </Grid>
                         ))}

@@ -1,15 +1,15 @@
 interface IProps {
-    songs: [];
+    tracks: [];
     albums?: [];
     artists?: [];
     featured?: [];
 }
 
-export default function featureFilter({ songs, albums, artists }: IProps) {
+export default function featureFilter({ tracks, albums, artists }: IProps) {
     return [
         {
             title: 'Ostatnio odtwarzane',
-            data: songs,
+            data: tracks,
         },
         {
             title: 'Polecane dziś dla Ciebie',

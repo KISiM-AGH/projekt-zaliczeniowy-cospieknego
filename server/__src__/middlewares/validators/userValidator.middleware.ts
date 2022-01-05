@@ -1,5 +1,5 @@
 import { body, CustomValidator } from 'express-validator';
-import ROLES from '../../utils/userRoles.utils';
+import Role from '../../utils/userRoles.utils';
 
 const isPasswordLongEnough: CustomValidator = (value, { req }) => {
     return !!req.body.confirm_password;
@@ -24,7 +24,7 @@ export const createUserSchema = [
         .isEmail()
         .withMessage('Must be a valid email')
         .normalizeEmail(),
-    body('confirm_email')
+    body('confirmEmail')
         .exists()
         .normalizeEmail()
         .custom(doEmailsMatch)
@@ -33,7 +33,7 @@ export const createUserSchema = [
         .exists()
         .withMessage('Password is required')
         .notEmpty()
-        .isLength({ min: 6 })
+        .isLength({ min: 8 })
         .withMessage('Password must contain at least 8 characters'),
     body('username')
         .exists()
@@ -41,11 +41,16 @@ export const createUserSchema = [
         .isLength({ min: 3 })
         .withMessage('Must be at least 3 chars long'),
     // birthDate
-    body('tos_accepted')
+    body('hasAcceptedTos')
         .isBoolean()
         .withMessage('Must be a boolean value')
         .custom(isChecked)
         .withMessage('User did not agree to Terms of Service'),
+    body('image_url').optional(),
+    body('role')
+        .optional()
+        .isIn([Role.Admin, Role.RegularUser, Role.PremiumUser])
+        .withMessage('Invalid Role type'),
 ];
 
 export const updateUserSchema = [
@@ -62,7 +67,20 @@ export const updateUserSchema = [
         .optional()
         .notEmpty()
         .isLength({ min: 6 })
-        .withMessage('Password must contain at least 6 characters'),
+        .withMessage('Password must contain at least 6 characters')
+        // .custom((value, { req }) => !!req.body.confirm_password)
+        .withMessage('Please confirm your password'),
+    body('confirm_password')
+        .optional()
+        .custom(doPasswordsMatch)
+        .withMessage(
+            '"Confirm password" field must have the same value as the password field'
+        ),
+    body('image_url').optional(),
+    body('role')
+        .optional()
+        .isIn([Role.Admin, Role.RegularUser, Role.PremiumUser])
+        .withMessage('Invalid Role type'),
     body()
         .custom((value: string) => {
             return !!Object.keys(value).length;
@@ -74,15 +92,13 @@ export const updateUserSchema = [
                 'email',
                 'username',
                 'password',
-                'gender',
-                'birth_date',
-                'image',
-                'product',
-                'send_newsletter',
+                'confirm_password',
+                'image_url',
+                'role',
             ];
             return updates.every((update) => allowUpdates.includes(update));
         })
-        .withMessage('Invalid updates! Not allowed field.'),
+        .withMessage('Invalid updates!'),
 ];
 
 export const validateLogin = [

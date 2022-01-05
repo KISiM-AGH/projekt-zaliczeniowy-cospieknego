@@ -1,96 +1,62 @@
 import { Request, Response } from 'express';
-import albumModel from '../models/albums.model';
-import HttpException from '../utils/httpException.utils';
-import IAlbum from '../interfaces/album.interface';
+import { Album } from '../models';
 
-const getAlbums = async (req: Request, res: Response): Promise<void> => {
-    const albums = await albumModel.read(req.query);
-
-    albums.length
-        ? res.status(200).send(albums)
-        : res.status(204).send({
-              error: {
-                  code: 'errorNoResults',
-                  message: 'No content',
-              },
-          });
+export const getAlbums = async (req: Request, res: Response) => {
+    try {
+        const albums = await Album.find()
+            .lean()
+            .populate('artists')
+            .populate('tracks')
+            .exec();
+        res.json(albums);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
-const getAlbumById = async (req: Request, res: Response): Promise<void> => {
-    const id: string = req.params.id;
-    const album: IAlbum = await albumModel.find({ id });
-
-    album.length
-        ? res.status(200).send(album)
-        : res.status(204).send({
-              error: {
-                  code: 'errorNoResults',
-                  message: 'Failed to find an album with the specific ID',
-              },
-          });
+export const getAlbumById = async (req: Request, res: Response) => {
+    try {
+        const album = await Album.findById(req.params.id).exec();
+        res.json(album);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
 };
 
-const getAlbumByTitle = async (req: Request, res: Response): Promise<void> => {
-    const name: string = req.params.title;
-    const album: IAlbum = await albumModel.find({ name });
+export const saveAlbum = async (req: Request, res: Response) => {
+    const album = new Album(req.body);
 
-    album
-        ? res.status(200).send(album)
-        : res.status(204).send({
-              error: {
-                  code: 'errorNoResults',
-                  message: 'Failed to find an album with the specific name',
-              },
-          });
+    try {
+        const saved = await album.save().exec();
+        res.status(201).json(saved);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
 };
 
-const addAlbum = async (req: Request, res: Response): Promise<void> => {
-    const data: IAlbum = req.body;
-    const result = await albumModel.create(data);
+export const updateAlbum = async (req: Request, res: Response) => {
+    const album = await Album.findById(req.params.id).exec();
+    if (!album) return res.status(404).json({ message: 'Album was not found' });
 
-    result
-        ? res.status(201).send({ message: 'Added new album' })
-        : res.status(304).send({
-              error: {
-                  code: 'errorNotAdded',
-                  message: 'Failed to add new album',
-              },
-          });
+    try {
+        const updated = await Album.updateOne(
+            { _id: req.params.id },
+            { $set: req.body }
+        );
+        res.status(200).json(updated);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
 };
 
-const updateAlbum = async (req: Request, res: Response): Promise<void> => {
-    const id: string = req.params.id;
-    const data: IAlbum = req.body;
-    const { affectedRows, changedRows, info } = await albumModel.update(
-        id,
-        data
-    );
+export const deleteAlbum = async (req: Request, res: Response) => {
+    const album = await Album.findById(req.params.id).exec();
+    if (!album) return res.status(404).json({ message: 'Album not found' });
 
-    !affectedRows
-        ? res.status(404).send({ message: 'Album not found', info })
-        : affectedRows && changedRows
-        ? res.status(200).send({ message: 'Album updated successfully', info })
-        : res.status(304).send({ message: 'Album not modified', info });
-};
-
-const deleteAlbum = async (req: Request, res: Response): Promise<void> => {
-    const id: string = req.params.id;
-    const result = await albumModel.delete(id);
-    result
-        ? res.status(200).send({ message: 'Album has been deleted' })
-        : res.status(304).send({
-              error: {
-                  code: 'errorNotDeleted',
-                  message: 'Album not deleted',
-              },
-          });
-};
-
-export default {
-    getAlbums,
-    getAlbumById,
-    getAlbumByTitle,
-    addAlbum,
-    updateAlbum,
-    deleteAlbum,
+    try {
+        const deleted = await Album.deleteOne({ _id: req.params.id });
+        res.status(200).json(deleted);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
 };

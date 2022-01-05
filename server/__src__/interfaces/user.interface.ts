@@ -1,20 +1,15 @@
 import { RowDataPacket } from 'mysql2';
 
 export default interface IUser extends RowDataPacket {
-    id: string;
+    id: number;
     email: string;
-    password: string;
-    display_name: string;
+    password_digest: string;
+    username: string;
     birth_date: string;
-    signup_date: string;
     gender: string;
-    images?: {
-        url: string;
-        width: number;
-        height: number;
-    };
-    send_newsletter?: boolean;
-    product?: string;
+    send_newsletter: boolean;
+    image_url?: string;
+    role?: string;
 }
 
 export interface IGetUserAuthInfoRequest extends Request {

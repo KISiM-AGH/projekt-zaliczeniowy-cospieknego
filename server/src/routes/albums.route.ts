@@ -1,19 +1,20 @@
 import { Router } from 'express';
-import controller from '../controllers/albums.controller';
+import {
+    getAlbums,
+    getAlbumById,
+    saveAlbum,
+    updateAlbum,
+    deleteAlbum,
+} from '../controllers/albums.controller';
 
 const router = Router();
 
-try {
-    router.get('/albums', controller.getAlbums);
-    router.get('/albums/?year=:year', controller.getAlbums);
-    router.get('/albums/?limit=:n', controller.getAlbums);
-    // router.get('/albums/:id', controller.getAlbumById);
-    router.get('/albums/:title', controller.getAlbumByTitle);
-    router.post('/albums', controller.addAlbum);
-    router.patch('/albums/:id', controller.updateAlbum);
-    router.delete('/albums/:id', controller.deleteAlbum);
-} catch (error) {
-    console.error(error);
-}
+router.get('/albums', getAlbums);
+router
+    .route('/albums/:id')
+    .get(getAlbumById)
+    .put(saveAlbum)
+    .patch(updateAlbum)
+    .delete(deleteAlbum);
 
-export = router;
+export default router;

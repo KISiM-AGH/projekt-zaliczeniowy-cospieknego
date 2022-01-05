@@ -59,7 +59,7 @@ function CollectionContainer({ slides }: IProps): ReactElement {
                         </Typography>
                     </Box>
                     <Grid container spacing={3}>
-                        {slide.data.map(({ name, artist, album_slug }) => (
+                        {slide.data.map(({ album, artist, album_slug }) => (
                             <Grid
                                 item
                                 xs={8}
@@ -67,10 +67,10 @@ function CollectionContainer({ slides }: IProps): ReactElement {
                                 md={2}
                                 lg={2}
                                 xl={1}
-                                key={name}
+                                key={album}
                             >
                                 <TrackCard
-                                    title={name}
+                                    title={album}
                                     subtitle={artist}
                                     slug={album_slug}
                                 />
