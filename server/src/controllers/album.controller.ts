@@ -4,7 +4,6 @@ import { Album } from '../models';
 export const getAlbums = async (req: Request, res: Response) => {
     try {
         const albums = await Album.find()
-            .lean()
             .populate('artists')
             .populate('tracks')
             .exec();
@@ -16,7 +15,20 @@ export const getAlbums = async (req: Request, res: Response) => {
 
 export const getAlbumById = async (req: Request, res: Response) => {
     try {
-        const album = await Album.findById(req.params.id).exec();
+        const album = await Album.findById(req.params.id)
+            .populate('artists')
+            .populate({
+                path: 'tracks',
+                populate: [
+                    {
+                        path: 'album',
+                    },
+                    {
+                        path: 'artists',
+                    },
+                ],
+            })
+            .exec();
         res.json(album);
     } catch (error) {
         res.status(404).json({ message: error.message });

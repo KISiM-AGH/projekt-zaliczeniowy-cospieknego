@@ -11,6 +11,10 @@ import {
     getUsers,
     getUserById,
     getCurrentUser,
+    getUserAlbums,
+    getUserFollowing,
+    getUserPlaylists,
+    getUserPodcasts,
     saveUser,
     updateUser,
     deleteUser,
@@ -26,6 +30,11 @@ router.post('/login', validateLogin, awaitHandlerFactory(loginUser));
 router.put('/users', createUserSchema, awaitHandlerFactory(saveUser));
 router.patch('/users/:id', updateUserSchema, awaitHandlerFactory(updateUser));
 router.delete('/users/:id', awaitHandlerFactory(deleteUser));
+
+router.get('/me/albums', auth(), awaitHandlerFactory(getUserAlbums));
+router.get('/me/podcasts', auth(), awaitHandlerFactory(getUserPodcasts));
+router.get('/me/following', auth(), awaitHandlerFactory(getUserFollowing));
+router.get('/me/playlists', auth(), awaitHandlerFactory(getUserPlaylists));
 
 // auth(ROLES.ADMIN) => for some verified users
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { alpha, Link, Stack, Typography, Button, styled } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ExplicitIcon from '@mui/icons-material/Explicit';
@@ -7,30 +7,18 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import * as RESOURCES from '../constants/resources';
-import * as ROUTES from '../constants/routes';
-
-interface ITrack {
-    title: string;
-    artist: string;
-    artist_slug: string;
-    album: string;
-    album_slug: string;
-    duration: number;
-    is_explicit: boolean;
-    audio_url: string;
-}
+import ITrack from '../interfaces/track.interface';
+import IArtist from '../interfaces/artist.interface';
 
 interface IProps {
     tracks: ITrack[];
 }
 
-const convertToTimeFormat = (duration: number): string => {
-    const value = (duration / 60).toFixed(2);
-    const temp = value.split('.');
-    const minutes = temp[0];
-    const seconds = temp[1];
-    return `${minutes}:${seconds}`;
+const convertToTimeFormat = (d: number): string => {
+    const m = Math.floor((d % 3600) / 60);
+    const _s = Math.floor((d % 3600) % 60);
+    const s = _s < 10 ? '0' + _s : _s;
+    return `${m}:${s}`;
 };
 
 const playMusic = () => {
@@ -98,13 +86,21 @@ const columns: GridColDef[] = [
                             />
                         ) : null}
                         <Typography>
-                            <Link
-                                color='textSecondary'
-                                underline='hover'
-                                href={`${ROUTES.ARTIST}/${params.value.href}`}
-                            >
-                                {params.value.author}
-                            </Link>
+                            {params.value.authors.map((a: any, i: number) => (
+                                <Fragment key={i}>
+                                    <Link
+                                        href={params.value.href}
+                                        color='text.secondary'
+                                        underline='hover'
+                                    >
+                                        {a.name}
+                                    </Link>
+                                    {params.value.authors.length > 1 &&
+                                        i < params.value.authors.length - 1 && (
+                                            <span>, </span>
+                                        )}
+                                </Fragment>
+                            ))}
                         </Typography>
                     </Stack>
                 </div>
@@ -122,20 +118,20 @@ const columns: GridColDef[] = [
                 <Link
                     color='textSecondary'
                     underline='hover'
-                    href={`${ROUTES.ALBUM}/${params.value.href}`}
+                    href={params.value.href}
                 >
                     {params.value.name}
                 </Link>
             </div>
         ),
     },
-    {
-        field: 'dateAdded',
-        headerName: 'DATA DODANIA',
-        flex: 1,
-        sortable: false,
-        editable: false,
-    },
+    // {
+    //     field: 'dateAdded',
+    //     headerName: 'DATA DODANIA',
+    //     flex: 1,
+    //     sortable: false,
+    //     editable: false,
+    // },
     {
         field: 'duration',
         headerAlign: 'right',
@@ -228,14 +224,17 @@ export default function Tracklist({ tracks }: IProps) {
     const addRow = (id: number, track: ITrack) => ({
         id,
         title: {
-            name: track.title,
-            author: track.artist,
-            href: track.artist_slug,
-            albumSrc: `${RESOURCES.ALBUMS}/${track.album_slug}.jpg`,
-            isExplicit: track.is_explicit,
+            name: track.name,
+            authors: track.artists,
+            href: `/${track.artists[0].type}/${track.artists[0].id}`,
+            albumSrc: track.album.images[0].url,
+            isExplicit: track.explicit,
         },
-        album: { name: track.album, href: track.album_slug },
-        dateAdded: '11 maja 2021',
+        album: {
+            name: track.album.name,
+            href: `/${track.album.type}/${track.album.id}`,
+        },
+        //dateAdded: track?.added ? '11 maja 2021' : null,
         duration: convertToTimeFormat(track.duration),
     });
 

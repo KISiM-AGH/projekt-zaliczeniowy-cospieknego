@@ -179,10 +179,10 @@ const UserMenu = ({ isOpen, onClick }: { isOpen: any; onClick: any }) => {
             }}
             onClick={onClick}
         >
-            {currentUser && currentUser.image_url ? (
+            {currentUser && currentUser.images ? (
                 <CardMedia
                     component='img'
-                    src={currentUser.image_url}
+                    src={currentUser.images[0].url}
                     alt='avatar'
                     width={28}
                     height={28}

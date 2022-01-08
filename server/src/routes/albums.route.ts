@@ -5,7 +5,7 @@ import {
     saveAlbum,
     updateAlbum,
     deleteAlbum,
-} from '../controllers/albums.controller';
+} from '../controllers/album.controller';
 
 const router = Router();
 

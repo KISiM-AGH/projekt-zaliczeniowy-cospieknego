@@ -1,8 +1,8 @@
-export { default as HomePage } from './homePage';
-export { default as SearchPage } from './searchPage';
-export { default as FavoritePage } from './favoritePage';
-export { default as CollectionPage } from './collectionPage';
-export { default as SignInPage } from './signInPage';
-export { default as SignUpPage } from './signUpPage';
-export { default as TracksPage } from './tracksPage';
-export { default as NotFoundPage } from './notFoundPage';
+export { default as HomePage } from './home.page';
+export { default as SearchPage } from './search.page';
+export { default as FavoritePage } from './favorite.page';
+export { default as CollectionPage } from './collection.page';
+export { default as SignInPage } from './signIn.page';
+export { default as SignUpPage } from './signUp.page';
+export { default as TracksPage } from './tracks.page';
+export { default as NotFoundPage } from './notFound.page';

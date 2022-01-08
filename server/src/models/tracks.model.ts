@@ -20,7 +20,7 @@ const trackSchema: Schema = new Schema({
         default: 'track',
     },
     track_number: Number,
-    album: [{ type: Schema.Types.ObjectId, ref: 'Album' }],
+    album: { type: Schema.Types.ObjectId, ref: 'Album' },
     artists: [{ type: Schema.Types.ObjectId, ref: 'Artist' }],
 });
 
@@ -28,10 +28,8 @@ trackSchema.virtual('uri').get(function () {
     return `spotify:${this.type}:${this._id}`;
 });
 
-trackSchema.method('toObject', function () {
-    const { __v, _id, ...object } = this.toObject();
-    object.id = _id;
-    return object;
+trackSchema.virtual('src').get(function () {
+    return `/audio/tracks/${this._id}.mp3`;
 });
 
 trackSchema.set('toObject', { virtuals: true });

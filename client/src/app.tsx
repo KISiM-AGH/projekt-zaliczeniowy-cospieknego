@@ -59,6 +59,13 @@ function App() {
                             />
                             <PrivateRoute
                                 exact
+                                path={ROUTES.TRACKS}
+                                loggedInPath={ROUTES.HOME}
+                                isLoggedIn={isLoggedIn}
+                                component={FavoritePage}
+                            />
+                            <PrivateRoute
+                                exact
                                 path={ROUTES.ALBUMS}
                                 loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
@@ -86,13 +93,6 @@ function App() {
                                 component={CollectionPage}
                             />
                             <PrivateRoute
-                                exact
-                                path={ROUTES.TRACKS}
-                                loggedInPath={ROUTES.HOME}
-                                isLoggedIn={isLoggedIn}
-                                component={FavoritePage}
-                            />
-                            <PrivateRoute
                                 path={`${ROUTES.COLLECTION}*`}
                                 loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
@@ -106,6 +106,21 @@ function App() {
                             <Route
                                 exact
                                 path={`${ROUTES.GENRE}/:genre`}
+                                component={TracksPage}
+                            />
+                            <Route
+                                exact
+                                path={`${ROUTES.ARTIST}/:id`}
+                                component={TracksPage}
+                            />
+                            <Route
+                                exact
+                                path={`${ROUTES.ALBUM}/:id`}
+                                component={TracksPage}
+                            />
+                            <Route
+                                exact
+                                path={`${ROUTES.PLAYLIST}/:id`}
                                 component={TracksPage}
                             />
                             <Route exact path={`${ROUTES.GENRE}`}>

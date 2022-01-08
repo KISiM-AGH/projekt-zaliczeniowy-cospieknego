@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { Fragment, ReactElement } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     Button,
@@ -12,26 +12,17 @@ import {
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { Tracklist } from '../components';
 import useContent from '../hooks/useContent';
-import * as RESOURCES from '../constants/resources';
+import ITrack from '../interfaces/track.interface';
+import IAlbum from '../interfaces/album.interface';
+import IPlaylist from '../interfaces/playlist.interface';
 
 interface IContent {
+    tracks: ITrack[];
     name?: string;
     genre?: string;
     description?: string;
     author?: string;
     theme_color?: string;
-    tracks: [
-        {
-            title: string;
-            artist: string;
-            artist_slug: string;
-            album: string;
-            album_slug: string;
-            duration: number;
-            is_explicit: boolean;
-            audio_url: string;
-        }
-    ];
 }
 
 const Background = styled('div', {
@@ -69,13 +60,16 @@ const Hero = styled('div')(({ theme }) => ({
 
 export default function TracksPage(): ReactElement {
     const location = useLocation();
-    const slug = location.pathname.split('/')[2];
-    const content = useContent(`genres/${slug}`) as unknown as IContent;
-    const { genre, theme_color, tracks } = content;
+    const slugs = location.pathname.split('/');
+    const type = slugs[1];
+    const id = slugs[2];
+    const content = useContent(`${type}s/${id}`) as unknown as any; // IAlbum | IPlaylist
+
+    //const { genre, theme_color, tracks } = content;
 
     const getTracksCount = () => {
-        if (tracks) {
-            const size = tracks.length;
+        if (content.tracks) {
+            const size = content.tracks.length;
 
             if (size === 1) {
                 return '1 utwór';
@@ -88,42 +82,28 @@ export default function TracksPage(): ReactElement {
     };
 
     const getTotalDuration = () => {
-        let total: number = 0;
-        tracks && tracks.forEach((track) => (total += track.duration));
-        const value = (total / 3600).toFixed(2);
-        const temp = value.split('.');
-        let hours = parseFloat(temp[0]);
-        let _minutes = parseFloat(temp[1]);
-        let minutes = 0;
+        let d: number = 0;
+        content?.tracks.forEach((track: ITrack) => (d += track.duration));
+        const h = Math.floor(d / 3600);
+        const m = Math.floor((d % 3600) / 60);
+        const s = Math.floor((d % 3600) % 60);
 
-        if (_minutes >= 60) {
-            const _div = _minutes / 60;
-            hours += Math.round(_div);
-            minutes = Math.round(_div);
-        } else {
-            minutes = _minutes;
-        }
-
-        return `${hours} godz. ${minutes} min`;
+        return h === 0 ? `${m} min ${s} sek` : `${h} godz. ${m} min`;
     };
 
-    if (!tracks) {
-        return <Skeleton />;
-    }
+    if (content.length === 0)
+        return <Skeleton sx={{ width: '100%', height: '100%' }} />;
 
     return (
         <>
-            <Background
-                color={theme_color}
-                src={`${RESOURCES.GENRES}/${slug}.jpg`}
-            />
+            <Background color={'red'} src={content?.images[0]?.url || ''} />
             <Hero>
                 <Stack direction='row'>
                     <Stack sx={{ borderRadius: 1, overflow: 'hidden' }}>
                         <CardMedia
                             component='img'
-                            image={`${RESOURCES.GENRES}/${slug}.jpg`}
-                            alt={`${genre} cover`}
+                            image={content?.images[0]?.url || ''}
+                            alt={`${content.name} cover`}
                             sx={{
                                 width: 151,
                                 boxShadow: '0 4px 60px rgb(0 0 0 / 50%)',
@@ -142,11 +122,18 @@ export default function TracksPage(): ReactElement {
                     </Stack>
                     <Stack justifyContent='flex-end' pl={2}>
                         <Typography
+                            variant='subtitle1'
+                            color='text.secondary'
+                            sx={{ textTransform: 'uppercase' }}
+                        >
+                            {content.type}
+                        </Typography>
+                        <Typography
                             variant='h1'
                             noWrap={true}
                             sx={{ fontWeight: 900 }}
                         >
-                            {genre}
+                            {content?.name}
                         </Typography>
                         {!content ? (
                             <>
@@ -167,22 +154,31 @@ export default function TracksPage(): ReactElement {
                                     alignItems='center'
                                     spacing={0.5}
                                 >
-                                    <Link
-                                        fontWeight='bold'
-                                        underline='hover'
-                                        color='secondary'
-                                        href='/'
-                                    >
-                                        {content?.author
-                                            ? content.author
-                                            : 'Spotify'}
-                                    </Link>{' '}
+                                    {content.artists.map(
+                                        (a: any, i: number) => (
+                                            <Fragment key={i}>
+                                                <Link
+                                                    href={`/${content.artists[0].type}/${a.id}}`}
+                                                    color='text.secondary'
+                                                    underline='hover'
+                                                >
+                                                    {a.name}
+                                                </Link>
+                                                {content.artists.length > 1 &&
+                                                    i <
+                                                        content.artists.length -
+                                                            1 && (
+                                                        <span>, </span>
+                                                    )}
+                                            </Fragment>
+                                        )
+                                    )}
                                     <Typography
                                         variant='subtitle1'
                                         color='text.secondary'
                                         component='div'
                                     >
-                                        {`• ${getTracksCount()}, ${getTotalDuration()}`}
+                                        {` • ${getTracksCount()}, ${getTotalDuration()}`}
                                     </Typography>
                                 </Stack>
                             </>
@@ -190,7 +186,11 @@ export default function TracksPage(): ReactElement {
                     </Stack>
                 </Stack>
             </Hero>
-            <Tracklist tracks={tracks} />
+            {!content.tracks ? (
+                <Skeleton />
+            ) : (
+                <Tracklist tracks={content.tracks} />
+            )}
         </>
     );
 }

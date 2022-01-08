@@ -52,6 +52,12 @@ const userSchema = new Schema({
             width: Number,
         },
     ],
+    saved: {
+        albums: [{ type: Schema.Types.ObjectId, ref: 'Album' }],
+        artists: [{ type: Schema.Types.ObjectId, ref: 'Artist' }],
+        playlists: [{ type: Schema.Types.ObjectId, ref: 'Playlist' }],
+        podcasts: [{ type: Schema.Types.ObjectId, ref: 'Podcast' }],
+    },
 });
 
 userSchema.virtual('uri').get(function () {

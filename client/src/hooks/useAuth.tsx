@@ -6,8 +6,13 @@ interface IUser {
     email: string;
     username: string;
     token: string;
-    role?: string;
-    image_url?: string;
+    images?: [
+        {
+            url: string;
+            width: number;
+            height: number;
+        }
+    ];
 }
 
 interface IAuthState {

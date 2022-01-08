@@ -48,7 +48,7 @@ const auth = (...roles: string[]) => {
                     },
                 });
 
-            req.currentUser = user;
+            req.currentUser = user.toJSON();
             next();
         } catch (e) {
             e.status = 401;

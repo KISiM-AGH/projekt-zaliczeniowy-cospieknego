@@ -28,7 +28,73 @@ export const getCurrentUser = async (
     res: Response
 ) => {
     const { password, ...userWithoutPassword } = req.currentUser;
-    res.send(userWithoutPassword);
+    res.status(200).send(userWithoutPassword);
+};
+
+export const getUserAlbums = async (
+    req: IGetUserAuthInfoRequest,
+    res: Response
+) => {
+    try {
+        const user = await User.findById(req.currentUser.id)
+            .populate({
+                path: 'saved.albums',
+                populate: [
+                    {
+                        path: 'artists',
+                    },
+                    {
+                        path: 'tracks',
+                    },
+                ],
+            })
+            .exec();
+        res.json(user.saved.albums);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
+
+export const getUserFollowing = async (
+    req: IGetUserAuthInfoRequest,
+    res: Response
+) => {
+    try {
+        const user = await User.findById(req.currentUser.id, 'saved.artists')
+            .populate('saved.artists')
+            .exec();
+        res.json(user.saved.artists);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
+
+export const getUserPlaylists = async (
+    req: IGetUserAuthInfoRequest,
+    res: Response
+) => {
+    try {
+        const user = await User.findById(req.currentUser.id, 'saved.playlists')
+            .populate('saved.playlists')
+            .exec();
+        res.json(user.saved.playlists);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
+
+export const getUserPodcasts = async (
+    req: IGetUserAuthInfoRequest,
+    res: Response
+) => {
+    try {
+        const user = await User.findById(req.currentUser.id, 'saved.podcasts')
+            .populate('saved.podcasts')
+            .exec();
+        res.json(user.saved.podcasts);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
 };
 
 export const saveUser = async (req: Request, res: Response) => {
@@ -89,7 +155,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
     try {
         let user = await User.findOne({ email: login }).exec();
-        user = !user ? await User.findOne({ username: login }) : user;
+        user = !user ? await User.findOne({ username: login }).exec() : user;
 
         if (!user) {
             res.status(401).send({
@@ -118,7 +184,7 @@ export const loginUser = async (req: Request, res: Response) => {
         });
 
         const { extractedPassword, ...userWithoutPassword } = user;
-        res.send({ user: { ...userWithoutPassword }, token });
+        res.send({ user: { ...userWithoutPassword, token } });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

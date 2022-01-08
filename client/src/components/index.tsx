@@ -1,5 +1,5 @@
 export { default as Logo } from './logo';
-export { default as TrackCard } from './trackCard';
+export { default as FeatureCard } from './featureCard';
 export { default as GenreCard } from './genreCard';
 export { default as ContentPane } from './contentPane';
 export { default as MediaPlayer } from './mediaPlayer';
