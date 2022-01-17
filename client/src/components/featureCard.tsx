@@ -1,6 +1,13 @@
-import { ReactElement, Fragment, useRef, MutableRefObject } from 'react';
+import {
+    useState,
+    useRef,
+    ReactElement,
+    Fragment,
+    MouseEvent,
+    MutableRefObject,
+} from 'react';
 import { useHistory } from 'react-router-dom';
-import { useTheme, Theme, styled } from '@mui/material/styles';
+import { useTheme, styled } from '@mui/material/styles';
 import {
     Grid,
     Card,
@@ -10,6 +17,7 @@ import {
     Typography,
     Link,
     IconButton,
+    Grow,
 } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import IArtist from '../interfaces/artist.interface';
@@ -29,21 +37,20 @@ type ICard = {
 );
 
 const PlayButton = styled(IconButton)(({ theme }) => ({
-    backgroundColor: theme.palette.primary.main,
     right: theme.spacing(3),
     bottom: theme.spacing(3),
+    backgroundColor: theme.palette.primary.main,
     position: 'absolute',
     pointerEvents: 'auto',
-    opacity: 1,
     boxShadow: '0 8px 8px rgb(0 0 0 / 30%)',
-    transform: 'scale(1) translateY(10px)',
-    transition: theme.transitions.create(['background-color', 'transform'], {
+    transform: 'scale(1)',
+    transition: theme.transitions.create(['all', 'transform'], {
         duration: theme.transitions.duration.standard,
         easing: theme.transitions.easing.easeIn,
     }),
     '&:hover': {
         backgroundColor: theme.palette.primary.dark,
-        transform: 'scale(1.1) translateY(0)',
+        transform: 'scale(1.1)',
     },
 }));
 
@@ -55,9 +62,10 @@ export default function FeatureCard({
     artists,
     artist,
 }: ICard): ReactElement {
+    const cardRef = useRef() as MutableRefObject<HTMLImageElement>;
+    const [visible, setVisible] = useState(false);
     const history = useHistory();
     const theme = useTheme();
-    const playBtnRef = useRef() as MutableRefObject<HTMLButtonElement>;
 
     return (
         <Grid item xs={8} sm={4} md={2} lg={2} xl={1}>
@@ -69,9 +77,12 @@ export default function FeatureCard({
                 }}
             >
                 <CardActionArea
-                    onMouseOver={() => {
-                        // playBtnRef.current.style.opacity = '1';
-                        // playBtnRef.current.sx = {{opacity: 1}}
+                    component='div'
+                    onMouseEnter={() => {
+                        setVisible(true);
+                    }}
+                    onMouseLeave={() => {
+                        setVisible(false);
                     }}
                     onClick={() => {
                         history.push(href);
@@ -86,6 +97,7 @@ export default function FeatureCard({
                     >
                         <div>
                             <CardMedia
+                                ref={cardRef}
                                 alt={title}
                                 image={image.url}
                                 component='img'
@@ -98,9 +110,20 @@ export default function FeatureCard({
                                 }}
                             />
                         </div>
-                        <PlayButton ref={playBtnRef} aria-label='play'>
-                            <PlayArrowIcon />
-                        </PlayButton>
+                        <Grow
+                            in={visible}
+                            style={{ transformOrigin: '0 100px 0' }}
+                            timeout={500}
+                        >
+                            <PlayButton
+                                aria-label='play'
+                                onClick={(e: MouseEvent) => {
+                                    e.stopPropagation();
+                                }}
+                            >
+                                <PlayArrowIcon />
+                            </PlayButton>
+                        </Grow>
                     </div>
                     <CardContent
                         sx={{
@@ -123,6 +146,7 @@ export default function FeatureCard({
                                 variant='body2'
                                 color='text.secondary'
                                 title={subtitle}
+                                mt={0.5}
                             >
                                 {subtitle}
                             </Typography>
@@ -132,7 +156,7 @@ export default function FeatureCard({
                                 noWrap
                                 gutterBottom
                                 variant='body2'
-                                title={'WDAWDAWD'}
+                                mt={0.5}
                             >
                                 {artists.map((a: IArtist, i) => (
                                     <Fragment key={i}>
@@ -140,6 +164,9 @@ export default function FeatureCard({
                                             color='text.secondary'
                                             underline='hover'
                                             href={`/${a.type}/${a.id}`}
+                                            onClick={(e: MouseEvent) => {
+                                                e.stopPropagation();
+                                            }}
                                         >
                                             {a.name}
                                         </Link>

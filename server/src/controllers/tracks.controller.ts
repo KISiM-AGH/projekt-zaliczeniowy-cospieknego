@@ -2,8 +2,13 @@ import { Request, Response } from 'express';
 import { Track } from '../models';
 
 export const getTracks = async (req: Request, res: Response) => {
+    const field = req.query.sort || 'id';
+    const limit = parseInt(req.query.limit as string) || 50;
+
     try {
         const tracks = await Track.find()
+            .sort(`-${field}`)
+            .limit(limit)
             .populate('artists')
             .populate('album')
             .exec();

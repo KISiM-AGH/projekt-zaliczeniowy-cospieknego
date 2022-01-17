@@ -2,9 +2,12 @@ import { Request, Response } from 'express';
 import { Artist } from '../models';
 
 export const getArtists = async (req: Request, res: Response) => {
+    const skip = parseInt(req.query.skip as string) || 0;
+    const limit = parseInt(req.query.limit as string) || 50;
+
     try {
-        const artists = await Artist.find().exec();
-        res.json(artists);
+        const artists = await Artist.find().skip(skip).limit(limit).exec();
+        res.status(200).json(artists);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

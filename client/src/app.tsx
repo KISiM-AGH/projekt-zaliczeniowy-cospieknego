@@ -16,10 +16,13 @@ import {
     SignUpPage,
     TracksPage,
     NotFoundPage,
+    ShowAllPage,
 } from './pages';
 import { PrivateRoute, IsUserRedirect } from './helpers/routes';
 import useAuth from './hooks/useAuth';
 import * as ROUTES from './constants/routes';
+
+// @TODO Clean up the routes
 
 function App() {
     const { isLoggedIn, loading } = useAuth();
@@ -106,25 +109,40 @@ function App() {
                             <Route
                                 exact
                                 path={`${ROUTES.GENRE}/:genre`}
-                                component={TracksPage}
+                                component={SearchPage}
                             />
                             <Route
                                 exact
                                 path={`${ROUTES.ARTIST}/:id`}
-                                component={TracksPage}
+                                render={(props) => (
+                                    <TracksPage
+                                        fetch={`artists/${props.match.params.id}`}
+                                    />
+                                )}
                             />
                             <Route
                                 exact
                                 path={`${ROUTES.ALBUM}/:id`}
-                                component={TracksPage}
+                                render={(props) => (
+                                    <TracksPage
+                                        fetch={`albums/${props.match.params.id}`}
+                                    />
+                                )}
                             />
                             <Route
                                 exact
                                 path={`${ROUTES.PLAYLIST}/:id`}
-                                component={TracksPage}
+                                render={(props) => (
+                                    <TracksPage
+                                        fetch={`playlists/${props.match.params.id}`}
+                                    />
+                                )}
                             />
                             <Route exact path={`${ROUTES.GENRE}`}>
                                 <Redirect to={ROUTES.HOME} />
+                            </Route>
+                            <Route exact path='/albums'>
+                                <ShowAllPage category='albums' />
                             </Route>
                         </Switch>
                     </ContentPane>

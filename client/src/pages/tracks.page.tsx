@@ -1,5 +1,4 @@
-import { Fragment, ReactElement } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Fragment, ReactElement, useEffect, useState } from 'react';
 import {
     Button,
     CardMedia,
@@ -13,17 +12,6 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { Tracklist } from '../components';
 import useContent from '../hooks/useContent';
 import ITrack from '../interfaces/track.interface';
-import IAlbum from '../interfaces/album.interface';
-import IPlaylist from '../interfaces/playlist.interface';
-
-interface IContent {
-    tracks: ITrack[];
-    name?: string;
-    genre?: string;
-    description?: string;
-    author?: string;
-    theme_color?: string;
-}
 
 const Background = styled('div', {
     shouldForwardProp: (prop) => prop !== 'color' && prop !== 'src',
@@ -58,14 +46,19 @@ const Hero = styled('div')(({ theme }) => ({
     alignItems: 'flex-start',
 }));
 
-export default function TracksPage(): ReactElement {
-    const location = useLocation();
-    const slugs = location.pathname.split('/');
-    const type = slugs[1];
-    const id = slugs[2];
-    const content = useContent(`${type}s/${id}`) as unknown as any; // IAlbum | IPlaylist
-
+export default function TracksPage({ fetch }: { fetch: string }): ReactElement {
+    const content = useContent(fetch) as unknown as any; // IAlbum | IPlaylist
     //const { genre, theme_color, tracks } = content;
+
+    const [items, setItems] = useState([]);
+
+    useEffect(() => {
+        // if(content.type === 'albums' || content.type === 'tracks') {
+        //     setItems
+        // }
+    }, []);
+
+    console.log(content);
 
     const getTracksCount = () => {
         if (content.tracks) {
@@ -91,54 +84,71 @@ export default function TracksPage(): ReactElement {
         return h === 0 ? `${m} min ${s} sek` : `${h} godz. ${m} min`;
     };
 
-    if (content.length === 0)
-        return <Skeleton sx={{ width: '100%', height: '100%' }} />;
-
     return (
         <>
-            <Background color={'red'} src={content?.images[0]?.url || ''} />
+            {content.length !== 0 && (
+                <Background color={'red'} src={content?.images[0]?.url || ''} />
+            )}
             <Hero>
                 <Stack direction='row'>
-                    <Stack sx={{ borderRadius: 1, overflow: 'hidden' }}>
-                        <CardMedia
-                            component='img'
-                            image={content?.images[0]?.url || ''}
-                            alt={`${content.name} cover`}
-                            sx={{
-                                width: 151,
-                                boxShadow: '0 4px 60px rgb(0 0 0 / 50%)',
-                            }}
+                    {content.length === 0 ? (
+                        <Skeleton
+                            variant='rectangular'
+                            width={151}
+                            height={188}
                         />
-                        <Button
-                            variant='contained'
-                            startIcon={<PlayArrowIcon />}
-                            sx={{
-                                borderTopLeftRadius: 0,
-                                borderTopRightRadius: 0,
-                            }}
-                        >
-                            Odtwarzaj
-                        </Button>
-                    </Stack>
+                    ) : (
+                        <Stack sx={{ borderRadius: 1, overflow: 'hidden' }}>
+                            <CardMedia
+                                component='img'
+                                image={content?.images[0]?.url || ''}
+                                alt={`${content.name} cover`}
+                                sx={{
+                                    width: 151,
+                                    boxShadow: '0 4px 60px rgb(0 0 0 / 50%)',
+                                }}
+                            />
+                            <Button
+                                variant='contained'
+                                startIcon={<PlayArrowIcon />}
+                                sx={{
+                                    borderTopLeftRadius: 0,
+                                    borderTopRightRadius: 0,
+                                }}
+                            >
+                                Odtwarzaj
+                            </Button>
+                        </Stack>
+                    )}
+
                     <Stack justifyContent='flex-end' pl={2}>
-                        <Typography
-                            variant='subtitle1'
-                            color='text.secondary'
-                            sx={{ textTransform: 'uppercase' }}
-                        >
-                            {content.type}
-                        </Typography>
-                        <Typography
-                            variant='h1'
-                            noWrap={true}
-                            sx={{ fontWeight: 900 }}
-                        >
-                            {content?.name}
-                        </Typography>
-                        {!content ? (
+                        {content.length === 0 ? (
                             <>
-                                <Skeleton />
-                                <Skeleton />
+                                <Skeleton width={50} height={28} />
+                                <Skeleton width={308} height={112} />
+                            </>
+                        ) : (
+                            <>
+                                <Typography
+                                    variant='subtitle1'
+                                    color='text.secondary'
+                                    sx={{ textTransform: 'uppercase' }}
+                                >
+                                    {content.type}
+                                </Typography>
+                                <Typography
+                                    variant='h1'
+                                    noWrap={true}
+                                    sx={{ fontWeight: 900 }}
+                                >
+                                    {content?.name}
+                                </Typography>
+                            </>
+                        )}
+
+                        {content.length === 0 ? (
+                            <>
+                                <Skeleton width={308} height={24} />
                             </>
                         ) : (
                             <>
@@ -154,12 +164,12 @@ export default function TracksPage(): ReactElement {
                                     alignItems='center'
                                     spacing={0.5}
                                 >
-                                    {content.artists.map(
+                                    {content?.artists.map(
                                         (a: any, i: number) => (
                                             <Fragment key={i}>
                                                 <Link
                                                     href={`/${content.artists[0].type}/${a.id}}`}
-                                                    color='text.secondary'
+                                                    color='text.primary'
                                                     underline='hover'
                                                 >
                                                     {a.name}
@@ -187,7 +197,12 @@ export default function TracksPage(): ReactElement {
                 </Stack>
             </Hero>
             {!content.tracks ? (
-                <Skeleton />
+                <>
+                    <Skeleton width='100%' height={67} sx={{ mt: 6 }} />
+                    <Skeleton width='100%' height={67} />
+                    <Skeleton width='100%' height={67} />
+                    <Skeleton width='100%' height={67} />
+                </>
             ) : (
                 <Tracklist tracks={content.tracks} />
             )}

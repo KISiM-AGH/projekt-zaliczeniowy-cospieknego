@@ -3,10 +3,11 @@ import dotenv from 'dotenv';
 import db from './db/db.config';
 import errorMiddleware from './middlewares/error.middleware';
 import {
+    userRoutes,
+    albumsRoutes,
     tracksRoutes,
     artistsRoutes,
-    albumsRoutes,
-    userRoutes,
+    playlistsRoutes,
 } from './routes';
 
 dotenv.config();
@@ -40,9 +41,10 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use(`/${api}`, tracksRoutes);
+app.use(`/${api}`, playlistsRoutes);
 app.use(`/${api}`, artistsRoutes);
 app.use(`/${api}`, albumsRoutes);
+app.use(`/${api}`, tracksRoutes);
 app.use(`/${api}`, userRoutes);
 
 // Error middleware
