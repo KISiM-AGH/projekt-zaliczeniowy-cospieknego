@@ -4,7 +4,7 @@ export default interface IUser extends RowDataPacket {
     id: string;
     email: string;
     password: string;
-    display_name: string;
+    username: string;
     birth_date: string;
     signup_date: string;
     gender: string;

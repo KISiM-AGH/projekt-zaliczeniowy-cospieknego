@@ -22,7 +22,6 @@ export const AuthReducer = (state: AuthState, action: any) => {
                 isLoggedIn: true,
                 loading: false,
             };
-        // @TEST
         case ACTIONS.VERIFY_FAILED:
         case ACTIONS.LOGIN_FAILED:
             return {

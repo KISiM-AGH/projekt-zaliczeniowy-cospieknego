@@ -1,5 +1,5 @@
 import { useState, useEffect, ReactElement, Fragment } from 'react';
-import { Grid, Box, Typography, Link } from '@mui/material';
+import { Grid, Box, Typography, Link, Skeleton, Stack } from '@mui/material';
 import featureFilter from '../utils/featureFilter';
 import FeatureCard from '../components/featureCard';
 import IArtist from '../interfaces/artist.interface';
@@ -49,27 +49,52 @@ export default function HomePage(): ReactElement {
 }
 
 function HomeContainer({ slides }: IProps): ReactElement {
-    const [slideRows, setSlideRows] = useState<any>([]);
-
-    useEffect(() => {
-        setSlideRows(slides);
-    }, [slides]);
-
-    if (slideRows.length === 0) {
-        console.log('zero');
-        return <div>awdawdawdwdawd</div>;
-    }
-
-    return (
+    return slides[0].data?.length === 0 ? (
         <>
-            {slideRows.map((slide: any) => (
+            <Skeleton width={300} height={42} sx={{ mb: 2 }} />
+            <Stack direction='row' justifyContent='space-between' width='100%'>
+                {Array.from(new Array(8)).map((item, index) => (
+                    <Skeleton
+                        key={index}
+                        width={177}
+                        height={246}
+                        variant='rectangular'
+                    />
+                ))}
+            </Stack>
+            <Skeleton width={300} height={42} sx={{ my: 2 }} />
+            <Stack direction='row' justifyContent='space-between' width='100%'>
+                {Array.from(new Array(8)).map((item, index) => (
+                    <Skeleton
+                        key={index}
+                        width={177}
+                        height={246}
+                        variant='rectangular'
+                    />
+                ))}
+            </Stack>
+            <Skeleton width={300} height={42} sx={{ my: 2 }} />
+            <Stack direction='row' justifyContent='space-between' width='100%'>
+                {Array.from(new Array(8)).map((item, index) => (
+                    <Skeleton
+                        key={index}
+                        width={177}
+                        height={246}
+                        variant='rectangular'
+                    />
+                ))}
+            </Stack>
+        </>
+    ) : (
+        <>
+            {slides.map((slide: any) => (
                 <Fragment key={slide.title}>
-                    <Box
+                    <Stack
+                        direction='row'
+                        alignItems='self-end'
+                        width='100%'
+                        mb={2}
                         sx={{
-                            display: 'flex',
-                            alignItems: 'self-end',
-                            width: '100%',
-                            mb: 2,
                             '&:not(:first-of-type)': {
                                 mt: 4,
                             },
@@ -96,7 +121,7 @@ function HomeContainer({ slides }: IProps): ReactElement {
                                 </Typography>
                             </Link>
                         )}
-                    </Box>
+                    </Stack>
                     <Grid container spacing={3}>
                         {slide.type === 'playlists' &&
                             slide.data.map(
@@ -150,7 +175,7 @@ function HomeContainer({ slides }: IProps): ReactElement {
                                     <FeatureCard
                                         key={name}
                                         artist
-                                        href={`/artist/${id}`}
+                                        href={`/${type}/${id}`}
                                         title={name}
                                         subtitle='Wykonawca'
                                         image={images[0]}

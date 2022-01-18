@@ -26,7 +26,9 @@ const auth = (...roles: string[]) => {
             const token = authHeader.replace(bearer, '');
             const secret = process.env.SECRET_JWT || '';
             const decoded = jwt.verify(token, secret) as JwtPayload;
-            const user = await User.findOne({ id: decoded.userId });
+            const user = await User.findById(decoded.userId).select(
+                'email username images type product gender'
+            );
 
             !user &&
                 res.status(401).send({

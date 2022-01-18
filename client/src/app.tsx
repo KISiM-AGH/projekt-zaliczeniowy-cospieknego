@@ -17,6 +17,7 @@ import {
     TracksPage,
     NotFoundPage,
     ShowAllPage,
+    ArtistPage,
 } from './pages';
 import { PrivateRoute, IsUserRedirect } from './helpers/routes';
 import useAuth from './hooks/useAuth';
@@ -111,33 +112,35 @@ function App() {
                                 path={`${ROUTES.GENRE}/:genre`}
                                 component={SearchPage}
                             />
-                            <Route
-                                exact
-                                path={`${ROUTES.ARTIST}/:id`}
-                                render={(props) => (
-                                    <TracksPage
-                                        fetch={`artists/${props.match.params.id}`}
-                                    />
-                                )}
-                            />
-                            <Route
-                                exact
-                                path={`${ROUTES.ALBUM}/:id`}
-                                render={(props) => (
-                                    <TracksPage
-                                        fetch={`albums/${props.match.params.id}`}
-                                    />
-                                )}
-                            />
-                            <Route
-                                exact
-                                path={`${ROUTES.PLAYLIST}/:id`}
-                                render={(props) => (
-                                    <TracksPage
-                                        fetch={`playlists/${props.match.params.id}`}
-                                    />
-                                )}
-                            />
+                            <Route>
+                                <Route
+                                    exact
+                                    path={`${ROUTES.ARTIST}/:id`}
+                                    render={(props) => (
+                                        <ArtistPage
+                                            fetch={`artists/${props.match.params.id}`}
+                                        />
+                                    )}
+                                />
+                                <Route
+                                    exact
+                                    path={`${ROUTES.ALBUM}/:id`}
+                                    render={(props) => (
+                                        <TracksPage
+                                            fetch={`albums/${props.match.params.id}`}
+                                        />
+                                    )}
+                                />
+                                <Route
+                                    exact
+                                    path={`${ROUTES.PLAYLIST}/:id`}
+                                    render={(props) => (
+                                        <TracksPage
+                                            fetch={`playlists/${props.match.params.id}`}
+                                        />
+                                    )}
+                                />
+                            </Route>
                             <Route exact path={`${ROUTES.GENRE}`}>
                                 <Redirect to={ROUTES.HOME} />
                             </Route>

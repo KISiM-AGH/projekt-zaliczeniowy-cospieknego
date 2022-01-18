@@ -18,8 +18,20 @@ export const getPlaylists = async (req: Request, res: Response) => {
 export const getPlaylistById = async (req: Request, res: Response) => {
     try {
         const playlist = await Playlist.findById(req.params.id)
-            .populate('owner')
-            .populate('tracks')
+            .populate('owner', 'username type')
+            .populate({
+                path: 'tracks',
+                populate: [
+                    {
+                        path: 'album',
+                        select: 'images name type',
+                    },
+                    {
+                        path: 'artists',
+                        select: 'name',
+                    },
+                ],
+            })
             .exec();
         res.json(playlist);
     } catch (error) {

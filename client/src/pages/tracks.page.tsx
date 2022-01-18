@@ -87,7 +87,10 @@ export default function TracksPage({ fetch }: { fetch: string }): ReactElement {
     return (
         <>
             {content.length !== 0 && (
-                <Background color={'red'} src={content?.images[0]?.url || ''} />
+                <Background
+                    color={content?.theme_color || '#000b0f'}
+                    src={content?.images[0]?.url || ''}
+                />
             )}
             <Hero>
                 <Stack direction='row'>
@@ -154,7 +157,7 @@ export default function TracksPage({ fetch }: { fetch: string }): ReactElement {
                             <>
                                 <Typography
                                     variant='subtitle1'
-                                    color='text.secondary'
+                                    color='textSecondary'
                                     component='div'
                                 >
                                     {content?.description}
@@ -164,24 +167,36 @@ export default function TracksPage({ fetch }: { fetch: string }): ReactElement {
                                     alignItems='center'
                                     spacing={0.5}
                                 >
-                                    {content?.artists.map(
-                                        (a: any, i: number) => (
-                                            <Fragment key={i}>
-                                                <Link
-                                                    href={`/${content.artists[0].type}/${a.id}}`}
-                                                    color='text.primary'
-                                                    underline='hover'
-                                                >
-                                                    {a.name}
-                                                </Link>
-                                                {content.artists.length > 1 &&
-                                                    i <
-                                                        content.artists.length -
-                                                            1 && (
-                                                        <span>, </span>
-                                                    )}
-                                            </Fragment>
-                                        )
+                                    {content?.artists &&
+                                        content.artists.map(
+                                            (a: any, i: number) => (
+                                                <Fragment key={i}>
+                                                    <Link
+                                                        href={`/${content.artists[0].type}/${a.id}}`}
+                                                        color='text.primary'
+                                                        underline='hover'
+                                                    >
+                                                        {a.name}
+                                                    </Link>
+                                                    {content.artists.length >
+                                                        1 &&
+                                                        i <
+                                                            content.artists
+                                                                .length -
+                                                                1 && (
+                                                            <span>, </span>
+                                                        )}
+                                                </Fragment>
+                                            )
+                                        )}
+                                    {content?.owner && (
+                                        <Link
+                                            href={`/${content.owner.type}/${content.owner._id}`}
+                                            color='text.primary'
+                                            underline='hover'
+                                        >
+                                            {content.owner.username}
+                                        </Link>
                                     )}
                                     <Typography
                                         variant='subtitle1'

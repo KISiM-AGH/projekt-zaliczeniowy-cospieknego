@@ -68,15 +68,22 @@ export default function SignUpPage(): ReactElement {
     const createAccount = async () => {
         const payload = {
             email: user.email,
-            confirmEmail: user.confirmEmail,
+            confirm_email: user.confirmEmail,
             password: user.password,
             username: user.username,
-            birthDay: user.birthDay,
-            birthMonth: user.birthMonth,
-            birthYear: user.birthYear,
+            birth_date: `${user.birthYear}-${user.birthMonth}-${user.birthDay}`,
             gender: user.gender,
-            isSubscribedToNewsletter: user.isSubscribedToNewsletter,
-            hasAcceptedTos: user.hasAcceptedTos,
+            send_newsletter: user.isSubscribedToNewsletter,
+            tos_accepted: user.hasAcceptedTos,
+            images: [
+                {
+                    url: `/images/avatars/${
+                        Math.floor(Math.random() * 10) + 1
+                    }.jpg`,
+                    height: '300',
+                    width: '300',
+                },
+            ],
         };
 
         try {

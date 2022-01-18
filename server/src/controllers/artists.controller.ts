@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Artist } from '../models';
+import { Album, Artist, Track } from '../models';
 
 export const getArtists = async (req: Request, res: Response) => {
     const skip = parseInt(req.query.skip as string) || 0;
@@ -21,6 +21,39 @@ export const getArtistById = async (req: Request, res: Response) => {
         res.status(404).json({ message: error.message });
     }
 };
+
+export const getArtistContent = async (req: Request, res: Response) => {
+    try {
+        if (req.params.type === 'albums') {
+            const albums = await Album.find({ artists: req.params.id })
+                .select('name type')
+                .exec();
+            res.json(albums);
+        } else if (req.params.type === 'top-tracks') {
+            const limit = parseInt(req.query.limit as string) || 20;
+            const tracks = await Track.find({ artists: req.params.id })
+                .sort('-popularity')
+                .limit(limit)
+                .select('name type')
+                .exec();
+            res.json(tracks);
+        }
+        res.status(404).json({ message: 'Not found' });
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
+
+// export const getArtistTopTracks = async (req: Request, res: Response) => {
+//     try {
+//         const tracks = await Track.find({ artists: req.params.id })
+//             .select('name type')
+//             .exec();
+//         res.json(tracks);
+//     } catch (error) {
+//         res.status(404).json({ message: error.message });
+//     }
+// };
 
 export const saveArtist = async (req: Request, res: Response) => {
     const artist = new Artist(req.body);

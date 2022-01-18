@@ -98,11 +98,16 @@ export const getUserPodcasts = async (
 };
 
 export const saveUser = async (req: Request, res: Response) => {
+    checkValidation(req, res);
+    await hashPassword(req);
+
     try {
-        let found = await User.findOne({ email: req.params.email }).exec();
-        found = !found
-            ? await User.findOne({ username: req.params.username }).exec()
-            : found;
+        const found = await User.findOne({
+            $or: [
+                { email: req.params.email },
+                { username: req.params.username },
+            ],
+        }).exec();
 
         if (found) {
             res.status(401).json({
@@ -116,6 +121,9 @@ export const saveUser = async (req: Request, res: Response) => {
 
         const user = new User(req.body);
         const saved = await user.save();
+        const { extractedPassword, ...userWithoutPassword } = user.toJSON();
+        const token = setToken(userWithoutPassword.id, true);
+        res.send({ user: { ...userWithoutPassword, token } });
         res.status(201).json(saved);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -123,6 +131,9 @@ export const saveUser = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
+    checkValidation(req, res);
+    await hashPassword(req);
+
     const user = await User.findById(req.params.id).exec();
     if (!user) return res.status(404).json({ message: 'User was not found' });
 
@@ -154,8 +165,11 @@ export const loginUser = async (req: Request, res: Response) => {
     const { login, password, remember } = req.body;
 
     try {
-        let user = await User.findOne({ email: login }).exec();
-        user = !user ? await User.findOne({ username: login }).exec() : user;
+        let user = await User.findOne({
+            $or: [{ email: login }, { username: login }],
+        })
+            .select('id email username password images type product gender')
+            .exec();
 
         if (!user) {
             res.status(401).send({
@@ -178,15 +192,25 @@ export const loginUser = async (req: Request, res: Response) => {
                 },
             });
 
-        const secret = process.env.SECRET_JWT || '';
-        const token = jwt.sign({ userId: user.id.toString() }, secret, {
-            expiresIn: remember ? '7d' : '24h',
-        });
-
+        const token = setToken(user.id, remember);
         const { extractedPassword, ...userWithoutPassword } = user;
         res.send({ user: { ...userWithoutPassword, token } });
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+};
+
+const setToken = (id: number, remember: boolean) => {
+    const secret = process.env.SECRET_JWT || '';
+    const token = jwt.sign({ userId: id.toString() }, secret, {
+        expiresIn: remember ? '7d' : '24h',
+    });
+    return token;
+};
+
+const hashPassword = async (req: Request) => {
+    if (req.body.password) {
+        req.body.password = await bcrypt.hash(req.body.password, 8);
     }
 };
 

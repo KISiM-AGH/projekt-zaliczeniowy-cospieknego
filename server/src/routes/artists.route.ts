@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
     getArtists,
     getArtistById,
+    getArtistContent,
     saveArtist,
     updateArtist,
     deleteArtist,
@@ -10,6 +11,7 @@ import {
 const router = Router();
 
 router.get('/artists', getArtists);
+router.get('/artists/:id/:type', getArtistContent);
 router
     .route('/artists/:id')
     .get(getArtistById)

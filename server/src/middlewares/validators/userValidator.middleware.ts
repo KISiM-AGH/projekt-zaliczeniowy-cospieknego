@@ -10,7 +10,7 @@ const doPasswordsMatch: CustomValidator = (value, { req }) => {
 };
 
 const doEmailsMatch: CustomValidator = (value, { req }) => {
-    return req.body.confirmEmail === req.body.email;
+    return req.body.confirm_email === req.body.email;
 };
 
 const isChecked: CustomValidator = (value) => {

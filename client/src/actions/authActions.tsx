@@ -82,21 +82,19 @@ export const signup = async (
     dispatch: Dispatch<any>,
     payload: {
         email: string;
-        confirmEmail: string;
+        confirm_email: string;
         password: string;
         username: string;
-        birthDay: string;
-        birthMonth: string;
-        birthYear: string;
+        birth_date: string;
         gender: string;
-        isSubscribedToNewsletter: boolean;
-        hasAcceptedTos: boolean;
+        send_newsletter: boolean;
+        tos_accepted: boolean;
     }
 ): Promise<any> => {
     try {
         dispatch({ type: ACTIONS.LOGIN });
         const response = await fetch(`${API_URL}/users`, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
@@ -105,7 +103,7 @@ export const signup = async (
         });
         const data: IUserPromise = await response.json();
 
-        if (data?.user) {
+        if (data.user) {
             dispatch({
                 type: ACTIONS.LOGIN_SUCCESS,
                 payload: data.user,

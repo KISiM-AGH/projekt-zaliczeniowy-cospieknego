@@ -5,5 +5,6 @@ export { default as CollectionPage } from './collection.page';
 export { default as SignInPage } from './signIn.page';
 export { default as SignUpPage } from './signUp.page';
 export { default as TracksPage } from './tracks.page';
+export { default as ArtistPage } from './artist.page';
 export { default as ShowAllPage } from './showAll.page';
 export { default as NotFoundPage } from './notFound.page';
