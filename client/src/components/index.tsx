@@ -1,4 +1,5 @@
 export { default as Logo } from './logo';
+export { default as Loader } from './loader';
 export { default as FeatureCard } from './featureCard';
 export { default as GenreCard } from './genreCard';
 export { default as ContentPane } from './contentPane';

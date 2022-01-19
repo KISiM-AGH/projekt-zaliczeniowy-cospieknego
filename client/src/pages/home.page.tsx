@@ -1,5 +1,5 @@
-import { useState, useEffect, ReactElement, Fragment } from 'react';
-import { Grid, Box, Typography, Link, Skeleton, Stack } from '@mui/material';
+import { ReactElement, Fragment } from 'react';
+import { Grid, Typography, Link, Skeleton, Stack } from '@mui/material';
 import featureFilter from '../utils/featureFilter';
 import FeatureCard from '../components/featureCard';
 import IArtist from '../interfaces/artist.interface';
@@ -7,25 +7,10 @@ import useContent from '../hooks/useContent';
 import IAlbum from '../interfaces/album.interface';
 import ITrack from '../interfaces/track.interface';
 import IPlaylist from '../interfaces/playlist.interface';
+import { Loader } from '../components';
 
 interface IProps {
     [key: string]: { title: string; type: string; data: any[] | undefined }[];
-}
-
-interface ISlideData {
-    id: number;
-    name: string;
-    type: string;
-    artists: IArtist[];
-    album: {
-        images: [
-            {
-                url: string;
-                width: number;
-                height: number;
-            }
-        ];
-    };
 }
 
 export default function HomePage(): ReactElement {
@@ -48,44 +33,9 @@ export default function HomePage(): ReactElement {
     return <HomeContainer slides={slides} />;
 }
 
+// @TODO
 function HomeContainer({ slides }: IProps): ReactElement {
-    return slides[0].data?.length === 0 ? (
-        <>
-            <Skeleton width={300} height={42} sx={{ mb: 2 }} />
-            <Stack direction='row' justifyContent='space-between' width='100%'>
-                {Array.from(new Array(8)).map((item, index) => (
-                    <Skeleton
-                        key={index}
-                        width={177}
-                        height={246}
-                        variant='rectangular'
-                    />
-                ))}
-            </Stack>
-            <Skeleton width={300} height={42} sx={{ my: 2 }} />
-            <Stack direction='row' justifyContent='space-between' width='100%'>
-                {Array.from(new Array(8)).map((item, index) => (
-                    <Skeleton
-                        key={index}
-                        width={177}
-                        height={246}
-                        variant='rectangular'
-                    />
-                ))}
-            </Stack>
-            <Skeleton width={300} height={42} sx={{ my: 2 }} />
-            <Stack direction='row' justifyContent='space-between' width='100%'>
-                {Array.from(new Array(8)).map((item, index) => (
-                    <Skeleton
-                        key={index}
-                        width={177}
-                        height={246}
-                        variant='rectangular'
-                    />
-                ))}
-            </Stack>
-        </>
-    ) : (
+    return slides[0]?.data && slides[0]?.data.length > 0 ? (
         <>
             {slides.map((slide: any) => (
                 <Fragment key={slide.title}>
@@ -186,5 +136,7 @@ function HomeContainer({ slides }: IProps): ReactElement {
                 </Fragment>
             ))}
         </>
+    ) : (
+        <Loader />
     );
 }

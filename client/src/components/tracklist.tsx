@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState, Fragment, MouseEvent } from 'react';
 import {
     alpha,
     Link,
@@ -38,11 +38,13 @@ const playMusic = () => {
     console.log('playing music ...');
 };
 
-const handleClick = () => {
+const handleClick = (e: MouseEvent) => {
+    e.stopPropagation();
     console.log('added to/removed from favorites');
 };
 
-const handleOpen = () => {
+const handleOpen = (e: MouseEvent) => {
+    e.stopPropagation();
     console.log('open menu');
 };
 
