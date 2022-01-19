@@ -7,11 +7,13 @@ import {
     Typography,
     Link,
     Skeleton,
+    Grid,
 } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { Tracklist } from '../components';
 import useContent from '../hooks/useContent';
 import ITrack from '../interfaces/track.interface';
+import translate from '../utils/translate';
 
 const Background = styled('div', {
     shouldForwardProp: (prop) => prop !== 'color' && prop !== 'src',
@@ -40,6 +42,7 @@ const Background = styled('div', {
 
 const Hero = styled('div')(({ theme }) => ({
     marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(6),
     zIndex: 1,
     width: '100%',
     display: 'flex',
@@ -48,17 +51,6 @@ const Hero = styled('div')(({ theme }) => ({
 
 export default function TracksPage({ fetch }: { fetch: string }): ReactElement {
     const content = useContent(fetch) as unknown as any; // IAlbum | IPlaylist
-    //const { genre, theme_color, tracks } = content;
-
-    const [items, setItems] = useState([]);
-
-    useEffect(() => {
-        // if(content.type === 'albums' || content.type === 'tracks') {
-        //     setItems
-        // }
-    }, []);
-
-    console.log(content);
 
     const getTracksCount = () => {
         if (content.tracks) {
@@ -137,7 +129,7 @@ export default function TracksPage({ fetch }: { fetch: string }): ReactElement {
                                     color='text.secondary'
                                     sx={{ textTransform: 'uppercase' }}
                                 >
-                                    {content.type}
+                                    {translate(content.type)}
                                 </Typography>
                                 <Typography
                                     variant='h1'
@@ -172,7 +164,7 @@ export default function TracksPage({ fetch }: { fetch: string }): ReactElement {
                                             (a: any, i: number) => (
                                                 <Fragment key={i}>
                                                     <Link
-                                                        href={`/${content.artists[0].type}/${a.id}}`}
+                                                        href={`/${content.artists[0].type}/${a.id}`}
                                                         color='text.primary'
                                                         underline='hover'
                                                     >
@@ -211,16 +203,7 @@ export default function TracksPage({ fetch }: { fetch: string }): ReactElement {
                     </Stack>
                 </Stack>
             </Hero>
-            {!content.tracks ? (
-                <>
-                    <Skeleton width='100%' height={67} sx={{ mt: 6 }} />
-                    <Skeleton width='100%' height={67} />
-                    <Skeleton width='100%' height={67} />
-                    <Skeleton width='100%' height={67} />
-                </>
-            ) : (
-                <Tracklist tracks={content.tracks} />
-            )}
+            <Tracklist tracks={content.tracks} />
         </>
     );
 }

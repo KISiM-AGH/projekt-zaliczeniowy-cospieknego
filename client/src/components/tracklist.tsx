@@ -1,5 +1,15 @@
 import { Fragment, useEffect, useState } from 'react';
-import { alpha, Link, Stack, Typography, Button, styled } from '@mui/material';
+import {
+    alpha,
+    Link,
+    Stack,
+    Typography,
+    Button,
+    styled,
+    Grid,
+    GridSize,
+    Skeleton,
+} from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ExplicitIcon from '@mui/icons-material/Explicit';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -8,10 +18,13 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ITrack from '../interfaces/track.interface';
-import IArtist from '../interfaces/artist.interface';
 
 interface IProps {
     tracks: ITrack[];
+    rowCount?: number;
+    columnSpan?: GridSize;
+    hideHeader?: boolean;
+    density?: 'standard' | 'compact' | 'comfortable';
 }
 
 const convertToTimeFormat = (d: number): string => {
@@ -92,6 +105,9 @@ const columns: GridColDef[] = [
                                         href={params.value.href}
                                         color='text.secondary'
                                         underline='hover'
+                                        onClick={(e: any) =>
+                                            e.stopPropagation()
+                                        }
                                     >
                                         {a.name}
                                     </Link>
@@ -113,12 +129,14 @@ const columns: GridColDef[] = [
         flex: 1,
         sortable: false,
         editable: false,
+        // hide: true,
         renderCell: (params) => (
             <div>
                 <Link
                     color='textSecondary'
                     underline='hover'
                     href={params.value.href}
+                    onClick={(e: any) => e.stopPropagation()}
                 >
                     {params.value.name}
                 </Link>
@@ -218,7 +236,15 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     },
 }));
 
-export default function Tracklist({ tracks }: IProps) {
+export default function Tracklist({
+    tracks,
+    rowCount,
+    columnSpan,
+    hideHeader,
+    density,
+}: IProps) {
+    const [pageSize, setPageSize] = useState<number>(rowCount || 100);
+    const [open, setOpen] = useState<boolean>(false);
     const [rows, setRows] = useState<any>([]);
 
     const addRow = (id: number, track: ITrack) => ({
@@ -239,29 +265,47 @@ export default function Tracklist({ tracks }: IProps) {
     });
 
     useEffect(() => {
-        const _rows = tracks.map((track, index) => addRow(index + 1, track));
+        const _rows =
+            tracks && tracks.map((track, index) => addRow(index + 1, track));
         setRows(_rows);
     }, [tracks]);
 
-    return (
-        <div
-            style={{
-                width: '100%',
-                marginTop: '24px',
-            }}
-        >
-            {rows.length > 0 ? (
-                <StyledDataGrid
-                    rows={rows}
-                    columns={columns}
-                    hideFooter
-                    autoHeight
-                    disableColumnMenu
-                    disableColumnFilter
-                    disableColumnSelector
-                    disableDensitySelector
-                    density='comfortable'
-                />
+    const handleClick = () => {
+        setOpen((open) => !open);
+        setPageSize((pageSize) => (!open ? 2 * pageSize : pageSize / 2));
+    };
+
+    return tracks?.length > 0 ? (
+        <Grid container>
+            {rows?.length > 0 ? (
+                <Grid item xs={8} xl={columnSpan || 8}>
+                    <StyledDataGrid
+                        rows={rows}
+                        columns={columns}
+                        rowBuffer={5}
+                        pageSize={pageSize}
+                        headerHeight={hideHeader ? 0 : 56}
+                        density={density || 'comfortable'}
+                        autoHeight
+                        hideFooter
+                        disableColumnMenu
+                        disableColumnFilter
+                        disableColumnSelector
+                        disableDensitySelector
+                    />
+                    <Button
+                        variant='text'
+                        size='large'
+                        color='secondary'
+                        onClick={handleClick}
+                    >
+                        {rowCount
+                            ? open
+                                ? 'Pokaż mniej'
+                                : 'Pokaż więcej'
+                            : null}
+                    </Button>
+                </Grid>
             ) : (
                 <Stack spacing={2} alignItems='center' mt='15vh'>
                     <Typography variant='h4'>
@@ -280,6 +324,35 @@ export default function Tracklist({ tracks }: IProps) {
                     </Button>
                 </Stack>
             )}
-        </div>
+        </Grid>
+    ) : (
+        <SkeletonList count={8} />
+    );
+}
+
+function SkeletonList({ count }: { count?: number }) {
+    return (
+        <Grid container>
+            {Array.from(new Array(count || 8)).map((item, index) => (
+                <Stack
+                    key={index}
+                    direction='row'
+                    width='100%'
+                    alignItems='center'
+                    justifyContent='flex-start'
+                    spacing={3}
+                >
+                    <Skeleton width={20} height={70} sx={{ flex: 1 }} />
+                    <Skeleton width={70} height={70} sx={{ flex: 2 }} />
+                    <Stack sx={{ flex: 30 }}>
+                        <Skeleton width={300} height={25} />
+                        <Skeleton width={150} height={25} />
+                    </Stack>
+                    <Skeleton width={80} height={25} sx={{ flex: 4 }} />
+                    <div style={{ flex: 16 }}></div>
+                    <Skeleton width={25} height={25} sx={{ flex: 2 }} />
+                </Stack>
+            ))}
+        </Grid>
     );
 }

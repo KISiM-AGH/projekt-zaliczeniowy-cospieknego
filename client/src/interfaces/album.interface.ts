@@ -6,7 +6,7 @@ export default interface IAlbum {
     id: string;
     name: string;
     release_date: string;
-    release_date_precision: string;
+    release_date_precision: 'year' | 'month' | 'day';
     type: string;
     album_type: string;
     total_tracks: number;

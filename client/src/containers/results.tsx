@@ -97,7 +97,7 @@ export default function ResultsContainer({
                                     title={data.name}
                                     subtitle='Wykonawca'
                                     artist={true}
-                                    image={data.images[1]}
+                                    image={data.images[0]}
                                 />
                             ))}
                     </Grid>

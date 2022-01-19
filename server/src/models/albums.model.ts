@@ -12,6 +12,7 @@ const albumSchema = new Schema({
     name: String,
     release_date: String,
     release_date_precision: String,
+    popularity: Number,
     type: {
         type: String,
         default: 'user',
