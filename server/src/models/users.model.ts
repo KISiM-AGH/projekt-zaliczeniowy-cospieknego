@@ -54,10 +54,11 @@ const userSchema = new Schema(
             },
         ],
         saved: {
+            shows: [{ type: Schema.Types.ObjectId, ref: 'Show' }],
+            tracks: [{ type: Schema.Types.ObjectId, ref: 'Track' }],
             albums: [{ type: Schema.Types.ObjectId, ref: 'Album' }],
             artists: [{ type: Schema.Types.ObjectId, ref: 'Artist' }],
             playlists: [{ type: Schema.Types.ObjectId, ref: 'Playlist' }],
-            podcasts: [{ type: Schema.Types.ObjectId, ref: 'Podcast' }],
         },
     },
     { versionKey: false }

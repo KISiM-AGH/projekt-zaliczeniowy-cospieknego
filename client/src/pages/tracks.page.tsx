@@ -1,4 +1,4 @@
-import { Fragment, ReactElement, useEffect, useState } from 'react';
+import { Fragment, ReactElement } from 'react';
 import {
     Button,
     CardMedia,
@@ -7,7 +7,6 @@ import {
     Typography,
     Link,
     Skeleton,
-    Grid,
 } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { Tracklist } from '../components';

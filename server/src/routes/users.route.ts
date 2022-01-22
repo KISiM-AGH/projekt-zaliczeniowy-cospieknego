@@ -11,10 +11,11 @@ import {
     getUsers,
     getUserById,
     getCurrentUser,
+    getUserTracks,
     getUserAlbums,
     getUserFollowing,
     getUserPlaylists,
-    getUserPodcasts,
+    getUserShows,
     saveUser,
     updateUser,
     deleteUser,
@@ -31,10 +32,11 @@ router.put('/users', createUserSchema, awaitHandlerFactory(saveUser));
 router.patch('/users/:id', updateUserSchema, awaitHandlerFactory(updateUser));
 router.delete('/users/:id', awaitHandlerFactory(deleteUser));
 
-router.get('/me/albums', auth(), awaitHandlerFactory(getUserAlbums));
-router.get('/me/podcasts', auth(), awaitHandlerFactory(getUserPodcasts));
 router.get('/me/following', auth(), awaitHandlerFactory(getUserFollowing));
 router.get('/me/playlists', auth(), awaitHandlerFactory(getUserPlaylists));
+router.get('/me/albums', auth(), awaitHandlerFactory(getUserAlbums));
+router.get('/me/shows', auth(), awaitHandlerFactory(getUserShows));
+router.get('/me/tracks', auth(), awaitHandlerFactory(getUserTracks));
 
 // auth(ROLES.ADMIN) => for some verified users
 

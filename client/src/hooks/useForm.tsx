@@ -36,6 +36,7 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
 
     useEffect(() => {
         performCheck(key);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, key]);
 
     const handleClick = (key: keyof T) => (e: any) => {

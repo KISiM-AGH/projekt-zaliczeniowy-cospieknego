@@ -1,5 +1,5 @@
 import { ReactElement, Fragment } from 'react';
-import { Grid, Typography, Link, Skeleton, Stack } from '@mui/material';
+import { Grid, Typography, Link, Stack } from '@mui/material';
 import featureFilter from '../utils/featureFilter';
 import FeatureCard from '../components/featureCard';
 import IArtist from '../interfaces/artist.interface';
@@ -26,16 +26,16 @@ export default function HomePage(): ReactElement {
         playlists,
     });
 
-    if (!slides) {
-        return <div>Loading...</div>;
+    if (slides[0]?.data && slides[0].data.length === 0) {
+        return <Loader />;
     }
 
     return <HomeContainer slides={slides} />;
 }
 
-// @TODO
+// @TODO redo type check
 function HomeContainer({ slides }: IProps): ReactElement {
-    return slides[0]?.data && slides[0]?.data.length > 0 ? (
+    return (
         <>
             {slides.map((slide: any) => (
                 <Fragment key={slide.title}>
@@ -136,7 +136,5 @@ function HomeContainer({ slides }: IProps): ReactElement {
                 </Fragment>
             ))}
         </>
-    ) : (
-        <Loader />
     );
 }

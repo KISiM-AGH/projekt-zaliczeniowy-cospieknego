@@ -1,5 +1,5 @@
-import { useState, ReactElement, forwardRef } from 'react';
-import { Link, LinkProps } from 'react-router-dom';
+import { useState, ReactElement } from 'react';
+import { Link } from 'react-router-dom';
 import { Stack, Button, Menu, MenuItem } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import useWindowSize from '../hooks/useWindowSize';

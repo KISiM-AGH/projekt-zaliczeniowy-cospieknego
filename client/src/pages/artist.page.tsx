@@ -19,9 +19,10 @@ import IAlbum from '../interfaces/album.interface';
 import translate from '../utils/translate';
 
 const Background = styled('div', {
-    shouldForwardProp: (prop) => prop !== 'color' && prop !== 'src',
+    shouldForwardProp: (prop) =>
+        prop !== 'color' && prop !== 'blur' && prop !== 'src',
 })<{ color?: string; src?: string; blur?: boolean }>(
-    ({ theme, blur, color, src }) => ({
+    ({ theme, blur, src }) => ({
         top: 0,
         left: 0,
         position: 'absolute',
@@ -32,7 +33,7 @@ const Background = styled('div', {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundImage: `url(${src})`,
-        filter: blur ? 'blur(16px)' : '',
+        filter: blur ? 'blur(16px)' : 'unset',
 
         '&::after': {
             content: '""',

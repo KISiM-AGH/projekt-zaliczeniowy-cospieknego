@@ -4,10 +4,10 @@ export default interface IArtist {
     id: string;
     name: string;
     type: string;
-    popularity: number;
-    followers: {
+    popularity?: number;
+    images: IImage[];
+    genres?: string[];
+    followers?: {
         total: number;
     };
-    genres: string[];
-    images: IImage[];
 }

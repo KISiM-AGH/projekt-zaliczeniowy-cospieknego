@@ -1,7 +1,7 @@
 import { useState, ChangeEvent, ReactElement } from 'react';
 import { Box, Paper, IconButton, InputBase } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
-import SearchIcon from '../icons/searchIcon';
+import SearchIcon from '../icons/search.icon';
 
 export default function SearchBar(): ReactElement {
     const [keyword, setKeyword] = useState<string>('');

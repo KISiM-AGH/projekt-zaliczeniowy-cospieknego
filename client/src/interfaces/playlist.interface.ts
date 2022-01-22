@@ -9,11 +9,11 @@ export default interface IPlaylist {
         default: 'playlist';
     };
     public: boolean;
-    collaborative: boolean;
     description: string;
     owner: {
         username: string;
     };
     images: IImage[];
-    tracks: ITrack[];
+    collaborative?: boolean;
+    tracks?: ITrack[];
 }

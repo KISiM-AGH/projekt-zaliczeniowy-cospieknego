@@ -33,6 +33,7 @@ export const authorize = async (
             },
         });
         const data = await response.json();
+        data.token = token;
 
         if (data.username) {
             dispatch({ type: ACTIONS.VERIFY_SUCCESS, payload: data });

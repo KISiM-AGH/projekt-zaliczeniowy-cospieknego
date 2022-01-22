@@ -1,4 +1,4 @@
-import { useState, ReactElement, Fragment, MouseEvent } from 'react';
+import { useState, ReactElement, Fragment, MouseEvent, useEffect } from 'react';
 import { Link, matchPath, useLocation } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
 import {
@@ -12,13 +12,15 @@ import {
 } from '@mui/material';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
-import HomeIcon from '../icons/homeIcon';
-import SearchIcon from '../icons/searchIcon';
-import CollectionIcon from '../icons/collectionIcon';
+import HomeIcon from '../icons/home.icon';
+import SearchIcon from '../icons/search.icon';
+import CollectionIcon from '../icons/collection.icon';
 import Logo from '../components/logo';
 import useAuth from '../hooks/useAuth';
 import LoginPopover from '../components/loginPopover';
 import * as ROUTES from '../constants/routes';
+import useContent from '../hooks/useContent';
+import IPlaylist from '../interfaces/playlist.interface';
 
 interface INavItem {
     id: number;
@@ -30,9 +32,6 @@ interface INavItem {
         title: string;
         text: string;
     };
-}
-interface IPlaylist {
-    name: string;
 }
 
 const drawerWidth: number = 200;
@@ -59,10 +58,8 @@ const DrawerBody = styled(Drawer)(({ theme }) => ({
 
 export default function NavBar(): ReactElement {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [playlists, setPlaylists] = useState<IPlaylist[] | null>([
-        { name: 'Moja playlista' },
-    ]);
     const { isLoggedIn }: { isLoggedIn: boolean } = useAuth();
+    const playlists = useContent('me/playlists');
     const theme = useTheme();
 
     return (
@@ -76,30 +73,31 @@ export default function NavBar(): ReactElement {
                 </Link>
             </DrawerHeader>
             <NavList />
+            <Divider variant='middle' />
             {isLoggedIn && playlists && playlists.length > 0 && (
-                <>
-                    <Divider variant='middle' />
-                    <List>
-                        <ListItem>
-                            {playlists.map((playlist) => (
-                                <ListItemText
-                                    key={playlist.name}
-                                    primary={playlist.name}
-                                    primaryTypographyProps={{
-                                        noWrap: true,
-                                        color: 'textSecondary',
-                                        sx: {
-                                            cursor: 'default ',
-                                            '&:hover': {
-                                                color: '#fff',
-                                            },
+                <List>
+                    {playlists.map((playlist: IPlaylist) => (
+                        <ListItem
+                            key={playlist.name}
+                            component={Link}
+                            to={`/${playlist.type}/${playlist.id}`}
+                        >
+                            <ListItemText
+                                primary={playlist.name}
+                                primaryTypographyProps={{
+                                    noWrap: true,
+                                    color: 'textSecondary',
+                                    sx: {
+                                        cursor: 'default ',
+                                        '&:hover': {
+                                            color: '#fff',
                                         },
-                                    }}
-                                />
-                            ))}
+                                    },
+                                }}
+                            />
                         </ListItem>
-                    </List>
-                </>
+                    ))}
+                </List>
             )}
         </DrawerBody>
     );
@@ -170,17 +168,18 @@ function NavListItem({
     const location = useLocation();
 
     const isSelected = (path: string) => {
+        // @TOFIX
         const isCollection = matchPath(location.pathname, {
             path: path === ROUTES.ALBUMS ? `${ROUTES.COLLECTION}/:id` : path,
             exact: true,
         });
 
         const isFavorites = matchPath(location.pathname, {
-            path: path === ROUTES.TRACKS ? `${ROUTES.COLLECTION}/:id` : path,
+            path: path === ROUTES.TRACKS ? ROUTES.TRACKS : path,
             exact: true,
         });
 
-        return isCollection ? true : false;
+        return isCollection || isFavorites ? true : false;
     };
 
     return (

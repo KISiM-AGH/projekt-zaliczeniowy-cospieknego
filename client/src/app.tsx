@@ -4,8 +4,7 @@ import {
     Route,
     Redirect,
 } from 'react-router-dom';
-import { Skeleton } from '@mui/material';
-import { ContentPane } from './components';
+import { ContentPane, Loader } from './components';
 import { NavBar, TopBar, NowPlaying } from './containers';
 import {
     HomePage,
@@ -70,28 +69,12 @@ function App() {
                             />
                             <PrivateRoute
                                 exact
-                                path={ROUTES.ALBUMS}
-                                loggedInPath={ROUTES.HOME}
-                                isLoggedIn={isLoggedIn}
-                                component={CollectionPage}
-                            />
-                            <PrivateRoute
-                                exact
-                                path={ROUTES.PLAYLISTS}
-                                loggedInPath={ROUTES.HOME}
-                                isLoggedIn={isLoggedIn}
-                                component={CollectionPage}
-                            />
-                            <PrivateRoute
-                                exact
-                                path={ROUTES.PODCASTS}
-                                loggedInPath={ROUTES.HOME}
-                                isLoggedIn={isLoggedIn}
-                                component={CollectionPage}
-                            />
-                            <PrivateRoute
-                                exact
-                                path={ROUTES.ARTISTS}
+                                path={[
+                                    ROUTES.ALBUMS,
+                                    ROUTES.PLAYLISTS,
+                                    ROUTES.PODCASTS,
+                                    ROUTES.ARTISTS,
+                                ]}
                                 loggedInPath={ROUTES.HOME}
                                 isLoggedIn={isLoggedIn}
                                 component={CollectionPage}
@@ -155,7 +138,7 @@ function App() {
             </Switch>
         </Router>
     ) : (
-        <Skeleton variant='rectangular' width='100%' height='100%' />
+        <Loader />
     );
 }
 

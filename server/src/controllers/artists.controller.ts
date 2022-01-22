@@ -44,7 +44,7 @@ export const getArtistContent = async (req: Request, res: Response) => {
                 .sort(sortBy)
                 .limit(limit)
                 .select(
-                    'name type iamges popularity release_date release_date_precision'
+                    'name type images popularity release_date release_date_precision'
                 )
                 .populate('album', '-tracks')
                 .populate('artists', 'id name type images')
@@ -56,7 +56,7 @@ export const getArtistContent = async (req: Request, res: Response) => {
             const tracks = await Track.find({ artists: req.params.id })
                 .sort('-popularity')
                 .limit(limit)
-                .select('name type album duration')
+                .select('name type album duration explicit')
                 .populate('album', '-tracks')
                 .populate('artists', 'id name type images')
                 .exec();

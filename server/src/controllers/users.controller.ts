@@ -31,6 +31,29 @@ export const getCurrentUser = async (
     res.status(200).send(userWithoutPassword);
 };
 
+export const getUserTracks = async (
+    req: IGetUserAuthInfoRequest,
+    res: Response
+) => {
+    try {
+        const user = await User.findById(req.currentUser.id)
+            .populate({
+                path: 'saved.tracks',
+                // select: 'id uri name type images',
+                // populate: [
+                //     {
+                //         path: 'artists',
+                //         select: 'id uri name type',
+                //     },
+                // ],
+            })
+            .exec();
+        res.json(user.saved.albums);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
+
 export const getUserAlbums = async (
     req: IGetUserAuthInfoRequest,
     res: Response
@@ -39,12 +62,11 @@ export const getUserAlbums = async (
         const user = await User.findById(req.currentUser.id)
             .populate({
                 path: 'saved.albums',
+                select: 'id uri name type images',
                 populate: [
                     {
                         path: 'artists',
-                    },
-                    {
-                        path: 'tracks',
+                        select: 'id uri name type',
                     },
                 ],
             })
@@ -61,7 +83,10 @@ export const getUserFollowing = async (
 ) => {
     try {
         const user = await User.findById(req.currentUser.id, 'saved.artists')
-            .populate('saved.artists')
+            .populate({
+                path: 'saved.artists',
+                select: 'id uri name type images',
+            })
             .exec();
         res.json(user.saved.artists);
     } catch (error) {
@@ -75,7 +100,10 @@ export const getUserPlaylists = async (
 ) => {
     try {
         const user = await User.findById(req.currentUser.id, 'saved.playlists')
-            .populate('saved.playlists')
+            .populate({
+                path: 'saved.playlists',
+                select: 'id uri name type images',
+            })
             .exec();
         res.json(user.saved.playlists);
     } catch (error) {
@@ -83,15 +111,15 @@ export const getUserPlaylists = async (
     }
 };
 
-export const getUserPodcasts = async (
+export const getUserShows = async (
     req: IGetUserAuthInfoRequest,
     res: Response
 ) => {
     try {
-        const user = await User.findById(req.currentUser.id, 'saved.podcasts')
-            .populate('saved.podcasts')
+        const user = await User.findById(req.currentUser.id, 'saved.shows')
+            .populate('saved.shows')
             .exec();
-        res.json(user.saved.podcasts);
+        res.json(user.saved.shows);
     } catch (error) {
         res.status(404).json({ message: error.message });
     }
