@@ -90,6 +90,7 @@ export default function TracksPage({ fetch }: { fetch: string }): ReactElement {
                             variant='rectangular'
                             width={151}
                             height={188}
+                            sx={{ borderRadius: 2 }}
                         />
                     ) : (
                         <Stack sx={{ borderRadius: 1, overflow: 'hidden' }}>

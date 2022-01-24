@@ -6,13 +6,15 @@ import * as ROUTES from '../constants/routes';
 interface IGenreCard {
     title: string;
     slug: string;
-    themeColor?: string;
+    image: string;
+    color?: string;
 }
 
 export default function GenreCard({
     title,
     slug,
-    themeColor,
+    image,
+    color,
 }: IGenreCard): ReactElement {
     const path = '/images/genres/thumbnails';
 
@@ -30,13 +32,13 @@ export default function GenreCard({
             to={`${ROUTES.GENRE}/${slug}`}
         >
             <Box
-                bgcolor={themeColor ? themeColor : 'primary.main'}
+                bgcolor={color ? color : 'primary.main'}
                 sx={{
                     width: '100%',
                     position: 'relative',
                     overflow: 'hidden',
                     borderRadius: 2,
-                    backgroundColor: themeColor,
+                    backgroundColor: color,
                     '&::after': {
                         content: '" "',
                         display: 'block',
@@ -63,7 +65,7 @@ export default function GenreCard({
                     {title}
                 </Typography>
                 <img
-                    src={`${path}/${slug}.jpg`}
+                    src={image}
                     alt={title}
                     loading='lazy'
                     style={{

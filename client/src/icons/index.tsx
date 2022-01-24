@@ -1,3 +1,4 @@
+export { default as TrackIcon } from './track.icon';
 export { default as AlbumIcon } from './album.icon';
 export { default as ArtistIcon } from './artist.icon';
 export { default as PlaylistIcon } from './playlist.icon';

@@ -39,16 +39,20 @@ export const getUserTracks = async (
         const user = await User.findById(req.currentUser.id)
             .populate({
                 path: 'saved.tracks',
-                // select: 'id uri name type images',
-                // populate: [
-                //     {
-                //         path: 'artists',
-                //         select: 'id uri name type',
-                //     },
-                // ],
+                select: 'id uri name type explicit duration',
+                populate: [
+                    {
+                        path: 'artists',
+                        select: 'id uri name type',
+                    },
+                    {
+                        path: 'album',
+                        select: 'id uri name type images',
+                    },
+                ],
             })
             .exec();
-        res.json(user.saved.albums);
+        res.json(user.saved.tracks);
     } catch (error) {
         res.status(404).json({ message: error.message });
     }
@@ -125,6 +129,45 @@ export const getUserShows = async (
     }
 };
 
+export const addTrackToSaved = async (
+    req: IGetUserAuthInfoRequest,
+    res: Response
+) => {
+    try {
+        const { id } = req.body as any;
+        await User.findByIdAndUpdate(
+            req.currentUser.id,
+            { $push: { 'saved.tracks': { _id: id } } },
+            { new: true, useFindAndModify: false }
+        ).exec();
+        res.json('Added to favorites');
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
+
+export const removeTrackFromSaved = async (
+    req: IGetUserAuthInfoRequest,
+    res: Response
+) => {
+    try {
+        const { id } = req.body as any;
+
+        await User.findByIdAndUpdate(
+            req.currentUser.id,
+            {
+                $pull: {
+                    'saved.tracks': id,
+                },
+            },
+            { new: true }
+        ).exec();
+        res.json('Removed from favorites');
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
+
 export const saveUser = async (req: Request, res: Response) => {
     checkValidation(req, res);
     await hashPassword(req);
@@ -158,16 +201,16 @@ export const saveUser = async (req: Request, res: Response) => {
     }
 };
 
-export const updateUser = async (req: Request, res: Response) => {
-    checkValidation(req, res);
-    await hashPassword(req);
-
-    const user = await User.findById(req.params.id).exec();
+export const updateUser = async (
+    req: IGetUserAuthInfoRequest,
+    res: Response
+) => {
+    const user = await User.findById(req.currentUser.id).exec();
     if (!user) return res.status(404).json({ message: 'User was not found' });
 
     try {
         const updated = await User.updateOne(
-            { _id: req.params.id },
+            { _id: req.currentUser.id },
             { $set: req.body }
         );
         res.status(200).json(updated);

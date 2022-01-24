@@ -1,6 +1,7 @@
 import { Schema } from 'mongoose';
 
 const trackSchema: Schema = new Schema({
+    _id: Schema.Types.ObjectId,
     name: {
         type: String,
         required: true,

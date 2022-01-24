@@ -20,6 +20,8 @@ import {
     updateUser,
     deleteUser,
     loginUser,
+    addTrackToSaved,
+    removeTrackFromSaved,
 } from '../controllers/users.controller';
 
 const router = Router();
@@ -37,6 +39,10 @@ router.get('/me/playlists', auth(), awaitHandlerFactory(getUserPlaylists));
 router.get('/me/albums', auth(), awaitHandlerFactory(getUserAlbums));
 router.get('/me/shows', auth(), awaitHandlerFactory(getUserShows));
 router.get('/me/tracks', auth(), awaitHandlerFactory(getUserTracks));
+
+router.put('/me/tracks', auth(), awaitHandlerFactory(addTrackToSaved));
+
+router.delete('/me/tracks', auth(), awaitHandlerFactory(removeTrackFromSaved));
 
 // auth(ROLES.ADMIN) => for some verified users
 

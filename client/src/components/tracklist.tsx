@@ -1,4 +1,10 @@
-import { useEffect, useState, Fragment, MouseEvent } from 'react';
+import {
+    useEffect,
+    useState,
+    Fragment,
+    MouseEvent,
+    SyntheticEvent,
+} from 'react';
 import {
     alpha,
     Link,
@@ -9,6 +15,9 @@ import {
     Grid,
     GridSize,
     Skeleton,
+    IconButton,
+    Snackbar,
+    Tooltip,
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ExplicitIcon from '@mui/icons-material/Explicit';
@@ -17,184 +26,41 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import CloseIcon from '@mui/icons-material/Close';
 import ITrack from '../interfaces/track.interface';
+import useContent from '../hooks/useContent';
+import useApi from '../hooks/useApi';
+import IArtist from '../interfaces/artist.interface';
 
 interface IProps {
     tracks: ITrack[];
     rowCount?: number;
     columnSpan?: GridSize;
     hideHeader?: boolean;
+    userFavoritesPage?: boolean;
     density?: 'standard' | 'compact' | 'comfortable';
 }
 
-const convertToTimeFormat = (d: number): string => {
-    const m = Math.floor((d % 3600) / 60);
-    const _s = Math.floor((d % 3600) % 60);
-    const s = _s < 10 ? '0' + _s : _s;
-    return `${m}:${s}`;
-};
-
-const playMusic = () => {
-    console.log('playing music ...');
-};
-
-const handleClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    console.log('added to/removed from favorites');
-};
-
-const handleOpen = (e: MouseEvent) => {
-    e.stopPropagation();
-    console.log('open menu');
-};
-
-const columns: GridColDef[] = [
-    {
-        field: 'id',
-        headerName: '#',
-        headerAlign: 'center',
-        align: 'center',
-        width: 20,
-        sortable: false,
-        editable: false,
-        renderCell: (params) => (
-            <Stack
-                alignItems='center'
-                justifyContent='center'
-                position='relative'
-            >
-                <Typography component='h3' sx={{ position: 'absolute' }}>
-                    {params.value}
-                </Typography>
-                <PlayArrowIcon
-                    fontSize='small'
-                    sx={{ opacity: 0, position: 'absolute' }}
-                    onClick={playMusic}
-                />
-            </Stack>
-        ),
-    },
-    {
-        field: 'title',
-        headerName: 'TYTUŁ',
-        flex: 2,
-        sortable: false,
-        editable: false,
-        renderCell: (params) => (
-            <Stack direction='row' alignItems='center' spacing={2}>
-                <img
-                    width={40}
-                    height={40}
-                    loading='lazy'
-                    src={params.value.albumSrc}
-                    alt='Album cover'
-                />
-                <div>
-                    <Typography color='textPrimary' lineHeight={1.2}>
-                        {params.value.name}
-                    </Typography>
-                    <Stack direction='row' alignItems='center' spacing={0.5}>
-                        {params.value.isExplicit ? (
-                            <ExplicitIcon
-                                fontSize='small'
-                                sx={{ color: 'text.secondary' }}
-                            />
-                        ) : null}
-                        <Typography>
-                            {params.value.authors.map((a: any, i: number) => (
-                                <Fragment key={i}>
-                                    <Link
-                                        href={params.value.href}
-                                        color='text.secondary'
-                                        underline='hover'
-                                        onClick={(e: any) =>
-                                            e.stopPropagation()
-                                        }
-                                    >
-                                        {a.name}
-                                    </Link>
-                                    {params.value.authors.length > 1 &&
-                                        i < params.value.authors.length - 1 && (
-                                            <span>, </span>
-                                        )}
-                                </Fragment>
-                            ))}
-                        </Typography>
-                    </Stack>
-                </div>
-            </Stack>
-        ),
-    },
-    {
-        field: 'album',
-        headerName: 'ALBUM',
-        flex: 1,
-        sortable: false,
-        editable: false,
-        // hide: true,
-        renderCell: (params) => (
-            <div>
-                <Link
-                    color='textSecondary'
-                    underline='hover'
-                    href={params.value.href}
-                    onClick={(e: any) => e.stopPropagation()}
-                >
-                    {params.value.name}
-                </Link>
-            </div>
-        ),
-    },
-    // {
-    //     field: 'dateAdded',
-    //     headerName: 'DATA DODANIA',
-    //     flex: 1,
-    //     sortable: false,
-    //     editable: false,
-    // },
-    {
-        field: 'duration',
-        headerAlign: 'right',
-        width: 120,
-        sortable: false,
-        editable: false,
-        renderHeader: () => (
-            <AccessTimeIcon fontSize='small' sx={{ mr: 4.5 }} />
-        ),
-        renderCell: (params) => (
-            <Stack direction='row' alignItems='center' spacing={2}>
-                <Stack
-                    alignItems='center'
-                    justifyContent='center'
-                    position='relative'
-                    sx={{ width: 20, height: 20 }}
-                >
-                    <FavoriteBorderIcon
-                        fontSize='small'
-                        sx={{
-                            opacity: 0,
-                            position: 'absolute',
-                            '&:hover': { color: 'primary.main' },
-                        }}
-                        onClick={handleClick}
-                    />
-                    <FavoriteIcon
-                        fontSize='small'
-                        color='primary'
-                        sx={{ opacity: 0, position: 'absolute' }}
-                        onClick={handleClick}
-                    />
-                </Stack>
-                <div>{params.value}</div>
-                <MoreHorizIcon
-                    fontSize='small'
-                    sx={{ opacity: 0 }}
-                    onClick={handleOpen}
-                />
-            </Stack>
-        ),
-    },
-];
+interface IRow {
+    trackId: string;
+    id: number;
+    title: {
+        name: string;
+        authors: string[];
+        href: string;
+        albumSrc: string;
+        isExplicit: boolean;
+    };
+    album: {
+        name: string;
+        href: string;
+    };
+    menu: {
+        duration: number;
+        trackId: string;
+        isFavorite: boolean;
+    };
+}
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     border: 0,
@@ -224,11 +90,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
                 opacity: 1,
             },
         },
-        '[data-field="duration"]': {
-            '[data-testid="FavoriteIcon"]': {
-                opacity: 0,
-                zIndex: 0,
-            },
+        '[data-field="menu"]': {
             '[data-testid="FavoriteBorderIcon"], [data-testid="MoreHorizIcon"],':
                 {
                     opacity: 1,
@@ -240,93 +102,393 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 
 export default function Tracklist({
     tracks,
+    density,
     rowCount,
     columnSpan,
     hideHeader,
-    density,
+    userFavoritesPage,
 }: IProps) {
     const [pageSize, setPageSize] = useState<number>(rowCount || 100);
+    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
     const [open, setOpen] = useState<boolean>(false);
-    const [rows, setRows] = useState<any>([]);
+    const [message, setMessage] = useState<string>('');
+    const [key, setKey] = useState<string>('');
+    const [rows, setRows] = useState<any[]>([]);
+    const userFavorites: any[] = useContent('me/tracks');
+    const api = useApi();
 
-    const addRow = (id: number, track: ITrack) => ({
-        id,
-        title: {
-            name: track.name,
-            authors: track.artists,
-            href: `/${track.artists[0].type}/${track.artists[0].id}`,
-            albumSrc: track.album.images[0].url,
-            isExplicit: track.explicit,
+    const columns: GridColDef[] = [
+        { field: 'trackId', hide: true },
+        {
+            field: 'id',
+            headerName: '#',
+            headerAlign: 'center',
+            align: 'center',
+            width: 20,
+            sortable: false,
+            editable: false,
+            renderCell: (params: any) => (
+                <Stack
+                    alignItems='center'
+                    justifyContent='center'
+                    position='relative'
+                >
+                    <Typography component='h3' sx={{ position: 'absolute' }}>
+                        {params.value}
+                    </Typography>
+                    <Tooltip
+                        enterDelay={1000}
+                        enterNextDelay={1000}
+                        placement='top'
+                        title={
+                            <Typography fontSize={16}>
+                                {`Odtwórz ${
+                                    params.getValue(params.id, 'title')?.name
+                                } artysty ${params
+                                    .getValue(params.id, 'title')
+                                    ?.authors.map((a: IArtist) => a.name)
+                                    .join(', ')}`}
+                            </Typography>
+                        }
+                    >
+                        <PlayArrowIcon
+                            fontSize='small'
+                            sx={{ opacity: 0, position: 'absolute' }}
+                            onClick={playMusic}
+                        />
+                    </Tooltip>
+                </Stack>
+            ),
         },
-        album: {
-            name: track.album.name,
-            href: `/${track.album.type}/${track.album.id}`,
+        {
+            field: 'title',
+            headerName: 'TYTUŁ',
+            flex: 2,
+            sortable: false,
+            editable: false,
+            renderCell: (params) => (
+                <Stack direction='row' alignItems='center' spacing={2}>
+                    <img
+                        width={40}
+                        height={40}
+                        loading='lazy'
+                        src={params.value.albumSrc}
+                        alt='Album cover'
+                    />
+                    <div>
+                        <Typography color='textPrimary' lineHeight={1.2}>
+                            {params.value.name}
+                        </Typography>
+                        <Stack
+                            direction='row'
+                            alignItems='center'
+                            spacing={0.5}
+                        >
+                            {params.value.isExplicit ? (
+                                <ExplicitIcon
+                                    fontSize='small'
+                                    sx={{ color: 'text.secondary' }}
+                                />
+                            ) : null}
+                            <Typography>
+                                {params.value.authors.map(
+                                    (a: any, i: number) => (
+                                        <Fragment key={i}>
+                                            <Link
+                                                href={params.value.href}
+                                                color='text.secondary'
+                                                underline='hover'
+                                                onClick={(e: any) =>
+                                                    e.stopPropagation()
+                                                }
+                                            >
+                                                {a.name}
+                                            </Link>
+                                            {params.value.authors.length > 1 &&
+                                                i <
+                                                    params.value.authors
+                                                        .length -
+                                                        1 && <span>, </span>}
+                                        </Fragment>
+                                    )
+                                )}
+                            </Typography>
+                        </Stack>
+                    </div>
+                </Stack>
+            ),
         },
-        //dateAdded: track?.added ? '11 maja 2021' : null,
-        duration: convertToTimeFormat(track.duration),
-    });
+        {
+            field: 'album',
+            headerName: 'ALBUM',
+            flex: 1,
+            sortable: false,
+            editable: false,
+            // hide: true,
+            renderCell: (params) => (
+                <div>
+                    <Link
+                        color='textSecondary'
+                        underline='hover'
+                        href={params.value.href}
+                        onClick={(e: any) => e.stopPropagation()}
+                    >
+                        {params.value.name}
+                    </Link>
+                </div>
+            ),
+        },
+        // {
+        //     field: 'dateAdded',
+        //     headerName: 'DATA DODANIA',
+        //     flex: 1,
+        //     sortable: false,
+        //     editable: false,
+        // },
+        {
+            field: 'menu',
+            headerAlign: 'right',
+            width: 120,
+            sortable: false,
+            editable: false,
+            renderHeader: () => (
+                <AccessTimeIcon fontSize='small' sx={{ mr: 4.5 }} />
+            ),
+            renderCell: (params) => (
+                <Stack direction='row' alignItems='center' spacing={2}>
+                    <Stack
+                        alignItems='center'
+                        justifyContent='center'
+                        position='relative'
+                        sx={{ width: 20, height: 20 }}
+                    >
+                        {params.value.isFavorite ? (
+                            <FavoriteIcon
+                                fontSize='small'
+                                color='primary'
+                                sx={{
+                                    opacity: 1,
+                                    position: 'absolute',
+                                }}
+                                onClick={(e: MouseEvent) => {
+                                    removeFromFavorites(
+                                        params.value.trackId,
+                                        e
+                                    );
+                                    params.value.isFavorite = false;
+                                }}
+                            />
+                        ) : (
+                            <FavoriteBorderIcon
+                                fontSize='small'
+                                sx={{
+                                    opacity: 0,
+                                    position: 'absolute',
+                                    '&:hover': { color: 'primary.main' },
+                                }}
+                                onClick={(e: MouseEvent) => {
+                                    addToFavorites(params.value.trackId, e);
+                                    params.value.isFavorite = true;
+                                }}
+                            />
+                        )}
+                    </Stack>
+                    <div>{params.value.duration}</div>
+                    <MoreHorizIcon
+                        fontSize='small'
+                        sx={{ opacity: 0 }}
+                        onClick={handleOpen}
+                    />
+                </Stack>
+            ),
+        },
+    ];
 
     useEffect(() => {
-        const _rows =
-            tracks && tracks.map((track, index) => addRow(index + 1, track));
-        setRows(_rows);
-    }, [tracks]);
+        const addRow = (index: number, track: ITrack, isFavorite: boolean) => ({
+            trackId: track.id,
+            id: index,
+            title: {
+                name: track.name,
+                authors: track.artists,
+                href: `/${track.artists[0].type}/${track.artists[0].id}`,
+                albumSrc: track.album.images[0].url,
+                isExplicit: track.explicit,
+            },
+            album: {
+                name: track.album.name,
+                href: `/${track.album.type}/${track.album.id}`,
+            },
+            //dateAdded: track?.added ? '11 maja 2021' : null,
+            menu: {
+                duration: convertToTimeFormat(track.duration),
+                trackId: track.id,
+                isFavorite,
+            },
+        });
 
-    const handleClick = () => {
+        const _rows =
+            tracks &&
+            tracks.map((track, index) => {
+                const isFavorite =
+                    userFavorites.filter((t) => t.id === track.id).length > 0
+                        ? true
+                        : false;
+                return addRow(index + 1, track, isFavorite);
+            });
+        setRows(_rows);
+    }, [tracks, userFavorites]);
+
+    const convertToTimeFormat = (d: number): string => {
+        const m = Math.floor((d % 3600) / 60);
+        const _s = Math.floor((d % 3600) % 60);
+        const s = _s < 10 ? '0' + _s : _s;
+        return `${m}:${s}`;
+    };
+
+    const playMusic = (e: MouseEvent) => {
+        e.stopPropagation();
+        console.log('playing music ...');
+    };
+
+    const handleExpand = () => {
         setOpen((open) => !open);
         setPageSize((pageSize) => (!open ? 2 * pageSize : pageSize / 2));
     };
 
+    const handleOpen = () => {
+        // open popover menu
+    };
+
+    const handleCloseSnackbar = (
+        event: SyntheticEvent | Event,
+        reason?: string
+    ) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpenSnackbar(false);
+    };
+
+    const addToFavorites = async (trackId: string, e: MouseEvent) => {
+        e.stopPropagation();
+        setKey(trackId);
+        setOpenSnackbar(true);
+
+        const response = await api.put('me/tracks', { id: trackId });
+
+        if (response) {
+            setMessage('Dodano do Polubionych utworów');
+        }
+    };
+
+    const removeFromFavorites = async (trackId: string, e: MouseEvent) => {
+        e.stopPropagation();
+        setKey(trackId);
+        setOpenSnackbar(true);
+
+        const response = await api.delete('me/tracks', { id: trackId });
+
+        if (response) {
+            setMessage('Usunięto z Polubionych utworów');
+        }
+
+        if (userFavoritesPage) {
+            let _rows: IRow[] = rows.filter(
+                (row: IRow) => row.trackId !== trackId
+            );
+            _rows.map((row: IRow, i: number) => {
+                row.id = i + 1;
+            });
+            setRows((rows: IRow[]) => _rows);
+        }
+    };
+
     return tracks?.length > 0 ? (
-        <Grid container>
-            {rows?.length > 0 ? (
-                <Grid item xs={8} xl={columnSpan || 8}>
-                    <StyledDataGrid
-                        rows={rows}
-                        columns={columns}
-                        rowBuffer={5}
-                        pageSize={pageSize}
-                        headerHeight={hideHeader ? 0 : 56}
-                        density={density || 'comfortable'}
-                        autoHeight
-                        hideFooter
-                        disableColumnMenu
-                        disableColumnFilter
-                        disableColumnSelector
-                        disableDensitySelector
-                    />
-                    <Button
-                        variant='text'
-                        size='large'
-                        color='secondary'
-                        onClick={handleClick}
+        <>
+            <Snackbar
+                key={key}
+                open={openSnackbar}
+                autoHideDuration={5000}
+                onClose={handleCloseSnackbar}
+                message={message}
+                action={
+                    <IconButton
+                        size='small'
+                        aria-label='close'
+                        color='inherit'
+                        onClick={handleCloseSnackbar}
                     >
-                        {rowCount
-                            ? open
-                                ? 'Pokaż mniej'
-                                : 'Pokaż więcej'
-                            : null}
-                    </Button>
-                </Grid>
-            ) : (
-                <Stack spacing={2} alignItems='center' mt='15vh'>
-                    <Typography variant='h4'>
-                        Ta playlista jest obecnie pusta
-                    </Typography>
-                    <Typography>
-                        Znajdź muzykę, którą kochasz wśród naszych najnowszych
-                        wydań
-                    </Typography>
-                    <Button
-                        variant='contained'
-                        component={Link}
-                        href='/genre/new-releases'
-                    >
-                        Przejdź do nowych wydań
-                    </Button>
-                </Stack>
-            )}
-        </Grid>
+                        <CloseIcon fontSize='small' />
+                    </IconButton>
+                }
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                ContentProps={{
+                    sx: {
+                        bgcolor: 'background.paper',
+                        color: 'text.secondary',
+                    },
+                }}
+                sx={{
+                    transform: 'translate(-50%, -250%) !important',
+                }}
+            />
+            <Grid container>
+                {rows?.length > 0 ? (
+                    <Grid item xs={8} xl={columnSpan || 8}>
+                        <StyledDataGrid
+                            rows={rows}
+                            columns={columns}
+                            rowBuffer={5}
+                            pageSize={pageSize}
+                            headerHeight={hideHeader ? 0 : 56}
+                            density={density || 'comfortable'}
+                            autoHeight
+                            hideFooter
+                            disableColumnMenu
+                            disableColumnFilter
+                            disableColumnSelector
+                            disableDensitySelector
+                        />
+                        {hideHeader && (
+                            <Button
+                                variant='text'
+                                size='large'
+                                color='secondary'
+                                onClick={handleExpand}
+                            >
+                                {rowCount
+                                    ? open
+                                        ? 'Pokaż mniej'
+                                        : 'Pokaż więcej'
+                                    : null}
+                            </Button>
+                        )}
+                    </Grid>
+                ) : (
+                    <Stack spacing={2} alignItems='center' mt='15vh'>
+                        <Typography variant='h4'>
+                            Ta playlista jest obecnie pusta
+                        </Typography>
+                        <Typography>
+                            Znajdź muzykę, którą kochasz wśród naszych
+                            najnowszych wydań
+                        </Typography>
+                        <Button
+                            variant='contained'
+                            component={Link}
+                            href='/genre/new-releases'
+                        >
+                            Przejdź do nowych wydań
+                        </Button>
+                    </Stack>
+                )}
+            </Grid>
+        </>
     ) : (
         <SkeletonList count={8} />
     );

@@ -5,6 +5,7 @@ import errorMiddleware from './middlewares/error.middleware';
 import {
     userRoutes,
     showRoutes,
+    genreRoutes,
     albumsRoutes,
     tracksRoutes,
     artistsRoutes,
@@ -46,6 +47,7 @@ app.use(`/${api}`, playlistsRoutes);
 app.use(`/${api}`, artistsRoutes);
 app.use(`/${api}`, albumsRoutes);
 app.use(`/${api}`, tracksRoutes);
+app.use(`/${api}`, genreRoutes);
 app.use(`/${api}`, showRoutes);
 app.use(`/${api}`, userRoutes);
 

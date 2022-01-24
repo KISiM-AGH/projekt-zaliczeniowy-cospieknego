@@ -1,17 +1,13 @@
 import { ReactElement } from 'react';
 import { Grid, Box, Skeleton, Typography } from '@mui/material';
-import { GenreCard } from '../components';
+import { GenreCard, Loader } from '../components';
 import useContent from '../hooks/useContent';
+import IGenre from '../interfaces/genre.interface';
 
 export default function SearchPage(): ReactElement {
     const genres = useContent('genres');
 
-    if (!genres) {
-        // @TO_CHANGE
-        return <div>Loading ...</div>;
-    }
-
-    return (
+    return genres ? (
         <>
             <Box
                 sx={{
@@ -31,32 +27,26 @@ export default function SearchPage(): ReactElement {
                 </Typography>
             </Box>
             <Grid container spacing={3}>
-                {genres.map(
-                    ({
-                        name,
-                        slug,
-                        theme_color,
-                    }: {
-                        name: string;
-                        slug: string;
-                        theme_color: string;
-                    }) =>
-                        name ? (
-                            <GenreCard
-                                key={name}
-                                title={name}
-                                slug={slug}
-                                themeColor={theme_color}
-                            />
-                        ) : (
-                            <Skeleton
-                                variant='rectangular'
-                                width={180}
-                                height={180}
-                            />
-                        )
+                {genres.map((genre: IGenre) =>
+                    genre.name ? (
+                        <GenreCard
+                            key={genre.id}
+                            slug={genre.id}
+                            title={genre.name}
+                            image={genre.images[0].url}
+                            color={genre.color}
+                        />
+                    ) : (
+                        <Skeleton
+                            variant='rectangular'
+                            width={180}
+                            height={180}
+                        />
+                    )
                 )}
             </Grid>
         </>
+    ) : (
+        <Loader />
     );
 }

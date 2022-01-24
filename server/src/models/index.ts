@@ -4,6 +4,7 @@ import userSchema from './users.model';
 import trackSchema from './tracks.model';
 import albumSchema from './albums.model';
 import artistSchema from './artists.model';
+import genreSchema from './genres.model';
 import episodeSchema from './episodes.model';
 import playlistSchema from './playlists.model';
 
@@ -12,5 +13,6 @@ export const Episode = mongoose.model('Episode', episodeSchema);
 export const Artist = mongoose.model('Artist', artistSchema);
 export const Album = mongoose.model('Album', albumSchema);
 export const Track = mongoose.model('Track', trackSchema);
+export const Genre = mongoose.model('Genre', genreSchema);
 export const User = mongoose.model('User', userSchema);
 export const Show = mongoose.model('Show', showSchema);

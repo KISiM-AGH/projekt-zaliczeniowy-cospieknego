@@ -20,8 +20,9 @@ export default function useContent(target: string, method?: string): [] {
             );
 
             if (!response.ok) {
-                const message = `An error has occured: ${response.status}`;
-                throw new Error(message);
+                // const message = `An error has occured: ${response.status}`;
+                // throw new Error(message);
+                return;
             }
 
             const data = await response.json();
@@ -36,7 +37,7 @@ export default function useContent(target: string, method?: string): [] {
     }, []);
 
     const authHeader = () => {
-        if (isLoggedIn) {
+        if (isLoggedIn && currentUser) {
             return { Authorization: `Bearer ${currentUser?.token}` };
         }
         return {};

@@ -5,6 +5,7 @@ const GENDERS = ['male', 'female', 'non-binary'];
 
 const userSchema = new Schema(
     {
+        _id: Schema.Types.ObjectId,
         email: {
             type: String,
             unique: true,
