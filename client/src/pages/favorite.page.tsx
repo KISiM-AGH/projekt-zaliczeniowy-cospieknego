@@ -1,5 +1,6 @@
-import { Button, Link, Stack, Typography } from '@mui/material';
 import { ReactElement } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { Button, Link, Stack, Typography } from '@mui/material';
 import { Tracklist } from '../components';
 import useContent from '../hooks/useContent';
 import { TrackIcon } from '../icons';
@@ -9,7 +10,12 @@ export default function FavoritePage(): ReactElement {
     const favoriteTracks = useContent('me/tracks') as ITrack[];
 
     return favoriteTracks[0]?.name ? (
-        <Tracklist tracks={favoriteTracks} userFavoritesPage={true} />
+        <>
+            <Helmet>
+                <title>Spotify – Polubione utwory</title>
+            </Helmet>
+            <Tracklist tracks={favoriteTracks} userFavoritesPage={true} />
+        </>
     ) : (
         <Stack
             alignItems='center'

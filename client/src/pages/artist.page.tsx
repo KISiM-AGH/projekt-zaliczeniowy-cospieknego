@@ -1,4 +1,5 @@
 import { useState, ReactElement, Fragment } from 'react';
+import { Helmet } from 'react-helmet-async';
 import {
     Button,
     Stack,
@@ -95,6 +96,9 @@ export default function ArtistPage({ fetch }: { fetch: string }): ReactElement {
 
     return (
         <>
+            <Helmet>
+                {content.name && <title>{`Spotify – ${content.name}`}</title>}
+            </Helmet>
             {content.length !== 0 && (
                 <Background
                     src={content?.images[1]?.url || content?.images[0]?.url}
@@ -229,6 +233,7 @@ export default function ArtistPage({ fetch }: { fetch: string }): ReactElement {
                     columnSpan={6}
                     hideHeader={true}
                     density='standard'
+                    hideArtist={true}
                 />
             )}
             {rows.map((row, index) => (

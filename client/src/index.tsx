@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import App from './app';
 import { AuthProvider } from './context/authContext';
@@ -10,7 +11,9 @@ ReactDOM.render(
         <AuthProvider>
             <ThemeProvider theme={THEME}>
                 <CssBaseline />
-                <App />
+                <HelmetProvider>
+                    <App />
+                </HelmetProvider>
             </ThemeProvider>
         </AuthProvider>
     </React.StrictMode>,

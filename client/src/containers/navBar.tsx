@@ -1,4 +1,4 @@
-import { useState, ReactElement, Fragment, MouseEvent, useEffect } from 'react';
+import { useState, ReactElement, Fragment, MouseEvent } from 'react';
 import { Link, matchPath, useLocation } from 'react-router-dom';
 import { styled, useTheme } from '@mui/material/styles';
 import {

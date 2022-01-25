@@ -28,7 +28,7 @@ export const getPlaylistById = async (req: Request, res: Response) => {
                     },
                     {
                         path: 'artists',
-                        select: 'name',
+                        select: 'id type name',
                     },
                 ],
             })

@@ -1,5 +1,6 @@
 import { useState, ReactElement } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import {
     Divider,
     Container,
@@ -84,6 +85,9 @@ export default function SignInPage(): ReactElement {
 
     return (
         <>
+            <Helmet>
+                <title>Logowanie - Spotify</title>
+            </Helmet>
             <Box
                 p={2}
                 sx={{

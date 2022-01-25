@@ -1,4 +1,5 @@
 import { ReactElement } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Grid, Box, Skeleton, Typography } from '@mui/material';
 import { GenreCard, Loader } from '../components';
 import useContent from '../hooks/useContent';
@@ -9,6 +10,9 @@ export default function SearchPage(): ReactElement {
 
     return genres ? (
         <>
+            <Helmet>
+                <title>Spotify – Wyszukaj</title>
+            </Helmet>
             <Box
                 sx={{
                     display: 'flex',

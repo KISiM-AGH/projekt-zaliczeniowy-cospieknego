@@ -31,12 +31,15 @@ import ITrack from '../interfaces/track.interface';
 import useContent from '../hooks/useContent';
 import useApi from '../hooks/useApi';
 import IArtist from '../interfaces/artist.interface';
+import { useHistory } from 'react-router-dom';
 
 interface IProps {
     tracks: ITrack[];
     rowCount?: number;
     columnSpan?: GridSize;
     hideHeader?: boolean;
+    hideAlbum?: boolean;
+    hideArtist?: boolean;
     userFavoritesPage?: boolean;
     density?: 'standard' | 'compact' | 'comfortable';
 }
@@ -106,6 +109,8 @@ export default function Tracklist({
     rowCount,
     columnSpan,
     hideHeader,
+    hideAlbum,
+    hideArtist,
     userFavoritesPage,
 }: IProps) {
     const [pageSize, setPageSize] = useState<number>(rowCount || 100);
@@ -114,6 +119,7 @@ export default function Tracklist({
     const [message, setMessage] = useState<string>('');
     const [key, setKey] = useState<string>('');
     const [rows, setRows] = useState<any[]>([]);
+    const history = useHistory();
     const userFavorites: any[] = useContent('me/tracks');
     const api = useApi();
 
@@ -190,29 +196,42 @@ export default function Tracklist({
                                     sx={{ color: 'text.secondary' }}
                                 />
                             ) : null}
-                            <Typography>
-                                {params.value.authors.map(
-                                    (a: any, i: number) => (
-                                        <Fragment key={i}>
-                                            <Link
-                                                href={params.value.href}
-                                                color='text.secondary'
-                                                underline='hover'
-                                                onClick={(e: any) =>
-                                                    e.stopPropagation()
-                                                }
-                                            >
-                                                {a.name}
-                                            </Link>
-                                            {params.value.authors.length > 1 &&
-                                                i <
-                                                    params.value.authors
-                                                        .length -
-                                                        1 && <span>, </span>}
-                                        </Fragment>
-                                    )
-                                )}
-                            </Typography>
+                            {!hideArtist && (
+                                <Typography>
+                                    {params.value.authors.map(
+                                        (a: any, i: number) => (
+                                            <Fragment key={i}>
+                                                <Link
+                                                    color='text.secondary'
+                                                    underline='hover'
+                                                    onClick={(
+                                                        e: MouseEvent
+                                                    ) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        history.push(
+                                                            params.value.href
+                                                        );
+                                                    }}
+                                                    sx={{
+                                                        cursor: 'pointer',
+                                                    }}
+                                                >
+                                                    {a.name}
+                                                </Link>
+                                                {params.value.authors.length >
+                                                    1 &&
+                                                    i <
+                                                        params.value.authors
+                                                            .length -
+                                                            1 && (
+                                                        <span>, </span>
+                                                    )}
+                                            </Fragment>
+                                        )
+                                    )}
+                                </Typography>
+                            )}
                         </Stack>
                     </div>
                 </Stack>
@@ -224,14 +243,20 @@ export default function Tracklist({
             flex: 1,
             sortable: false,
             editable: false,
-            // hide: true,
+            hide: hideAlbum ? true : false,
             renderCell: (params) => (
                 <div>
                     <Link
                         color='textSecondary'
                         underline='hover'
-                        href={params.value.href}
-                        onClick={(e: any) => e.stopPropagation()}
+                        onClick={(e: MouseEvent) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            history.push(params.value.href);
+                        }}
+                        sx={{
+                            cursor: 'pointer',
+                        }}
                     >
                         {params.value.name}
                     </Link>
@@ -398,9 +423,7 @@ export default function Tracklist({
             let _rows: IRow[] = rows.filter(
                 (row: IRow) => row.trackId !== trackId
             );
-            _rows.map((row: IRow, i: number) => {
-                row.id = i + 1;
-            });
+            _rows.map((row: IRow, i: number) => (row.id = i + 1));
             setRows((rows: IRow[]) => _rows);
         }
     };

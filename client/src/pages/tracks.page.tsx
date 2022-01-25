@@ -1,4 +1,5 @@
 import { Fragment, ReactElement } from 'react';
+import { Helmet } from 'react-helmet-async';
 import {
     Button,
     CardMedia,
@@ -77,6 +78,9 @@ export default function TracksPage({ fetch }: { fetch: string }): ReactElement {
 
     return (
         <>
+            <Helmet>
+                {content.name && <title>{`Spotify – ${content.name}`}</title>}
+            </Helmet>
             {content.length !== 0 && (
                 <Background
                     color={content?.theme_color || '#000b0f'}
@@ -203,7 +207,10 @@ export default function TracksPage({ fetch }: { fetch: string }): ReactElement {
                     </Stack>
                 </Stack>
             </Hero>
-            <Tracklist tracks={content.tracks} />
+            <Tracklist
+                tracks={content.tracks}
+                hideAlbum={content.type === 'album' ? true : false}
+            />
         </>
     );
 }

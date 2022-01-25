@@ -1,4 +1,5 @@
 import { ReactElement, Fragment } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Grid, Typography, Link, Stack } from '@mui/material';
 import featureFilter from '../utils/featureFilter';
 import FeatureCard from '../components/featureCard';
@@ -30,7 +31,14 @@ export default function HomePage(): ReactElement {
         return <Loader />;
     }
 
-    return <HomeContainer slides={slides} />;
+    return (
+        <>
+            <Helmet>
+                <title>Spotify – Odtwarzacz internetowy</title>
+            </Helmet>
+            <HomeContainer slides={slides} />
+        </>
+    );
 }
 
 // @TODO redo type check

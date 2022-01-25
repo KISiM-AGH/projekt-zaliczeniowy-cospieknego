@@ -84,8 +84,9 @@ export default function FeatureCard({
                     onMouseLeave={() => {
                         setVisible(false);
                     }}
-                    onClick={() => {
+                    onClick={(e: MouseEvent) => {
                         history.push(href);
+                        e.stopPropagation();
                     }}
                 >
                     <div
@@ -163,9 +164,12 @@ export default function FeatureCard({
                                         <Link
                                             color='text.secondary'
                                             underline='hover'
-                                            href={`/${a.type}/${a.id}`}
                                             onClick={(e: MouseEvent) => {
+                                                e.preventDefault();
                                                 e.stopPropagation();
+                                                history.push(
+                                                    `/${a.type}/${a.id}`
+                                                );
                                             }}
                                         >
                                             {a.name}

@@ -1,4 +1,5 @@
 import { ReactElement } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { ResultsContainer } from '../containers';
 import selectionFilter from '../utils/selectionFilter';
 import useContent from '../hooks/useContent';
@@ -15,5 +16,12 @@ export default function CollectionPage(): ReactElement {
         artists,
     });
 
-    return <ResultsContainer slides={slides} />;
+    return (
+        <>
+            <Helmet>
+                <title>Spotify – Biblioteka</title>
+            </Helmet>
+            <ResultsContainer slides={slides} />
+        </>
+    );
 }

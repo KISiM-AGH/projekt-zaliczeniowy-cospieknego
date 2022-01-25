@@ -16,8 +16,6 @@ export default function GenreCard({
     image,
     color,
 }: IGenreCard): ReactElement {
-    const path = '/images/genres/thumbnails';
-
     return (
         <Grid
             item
