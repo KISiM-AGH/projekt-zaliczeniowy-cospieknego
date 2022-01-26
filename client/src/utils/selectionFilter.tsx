@@ -1,8 +1,14 @@
-interface IProps {
-    albums: [];
-    playlists: [];
-    podcasts: [];
-    artists: [];
+type RequireAtLeastOne<T> = {
+    [K in keyof T]-?: Required<Pick<T, K>> &
+        Partial<Pick<T, Exclude<keyof T, K>>>;
+}[keyof T];
+
+interface IDataset {
+    albums?: [];
+    playlists?: [];
+    podcasts?: [];
+    artists?: [];
+    genres?: [];
 }
 
 export default function selectionFilter({
@@ -10,7 +16,8 @@ export default function selectionFilter({
     playlists,
     podcasts,
     artists,
-}: IProps) {
+    genres,
+}: RequireAtLeastOne<IDataset>) {
     return {
         albums: [
             {
@@ -34,6 +41,12 @@ export default function selectionFilter({
             {
                 title: 'Wykonawcy',
                 data: artists,
+            },
+        ],
+        genres: [
+            {
+                title: 'Przeglądaj wszystko',
+                data: genres,
             },
         ],
     };

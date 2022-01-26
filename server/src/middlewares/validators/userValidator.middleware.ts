@@ -1,5 +1,5 @@
 import { body, CustomValidator } from 'express-validator';
-import Role from '../../utils/userRoles.utils';
+import ROLES from '../../utils/userRoles.utils';
 
 const isPasswordLongEnough: CustomValidator = (value, { req }) => {
     return !!req.body.confirm_password;
@@ -9,6 +9,14 @@ const doPasswordsMatch: CustomValidator = (value, { req }) => {
     return value === req.body.password;
 };
 
+const doEmailsMatch: CustomValidator = (value, { req }) => {
+    return req.body.confirm_email === req.body.email;
+};
+
+const isChecked: CustomValidator = (value) => {
+    return value === true;
+};
+
 export const createUserSchema = [
     body('email')
         .exists()
@@ -16,28 +24,28 @@ export const createUserSchema = [
         .isEmail()
         .withMessage('Must be a valid email')
         .normalizeEmail(),
+    body('confirm_email')
+        .exists()
+        .normalizeEmail()
+        .custom(doEmailsMatch)
+        .withMessage('Both email fields must have the same value'),
+    body('password')
+        .exists()
+        .withMessage('Password is required')
+        .notEmpty()
+        .isLength({ min: 6 })
+        .withMessage('Password must contain at least 8 characters'),
     body('username')
         .exists()
         .withMessage('Username is required')
         .isLength({ min: 3 })
         .withMessage('Must be at least 3 chars long'),
-    body('password')
-        .exists()
-        .withMessage('Password is required')
-        .notEmpty()
-        .isLength({ min: 4 })
-        .withMessage('Password must contain at least 4 characters'),
-    body('confirm_password')
-        .exists()
-        .custom(isPasswordLongEnough)
-        .withMessage(
-            'confirm_password field must have the same value as the password field'
-        ),
-    body('image_url').optional(),
-    body('role')
-        .optional()
-        .isIn([Role.Admin, Role.RegularUser, Role.PremiumUser])
-        .withMessage('Invalid Role type'),
+    // birthDate
+    body('tos_accepted')
+        .isBoolean()
+        .withMessage('Must be a boolean value')
+        .custom(isChecked)
+        .withMessage('User did not agree to Terms of Service'),
 ];
 
 export const updateUserSchema = [
@@ -54,20 +62,7 @@ export const updateUserSchema = [
         .optional()
         .notEmpty()
         .isLength({ min: 6 })
-        .withMessage('Password must contain at least 6 characters')
-        // .custom((value, { req }) => !!req.body.confirm_password)
-        .withMessage('Please confirm your password'),
-    body('confirm_password')
-        .optional()
-        .custom(doPasswordsMatch)
-        .withMessage(
-            '"Confirm password" field must have the same value as the password field'
-        ),
-    body('image_url').optional(),
-    body('role')
-        .optional()
-        .isIn([Role.Admin, Role.RegularUser, Role.PremiumUser])
-        .withMessage('Invalid Role type'),
+        .withMessage('Password must contain at least 6 characters'),
     body()
         .custom((value: string) => {
             return !!Object.keys(value).length;
@@ -79,20 +74,19 @@ export const updateUserSchema = [
                 'email',
                 'username',
                 'password',
-                'confirm_password',
-                'image_url',
-                'role',
+                'gender',
+                'birth_date',
+                'image',
+                'product',
+                'send_newsletter',
             ];
             return updates.every((update) => allowUpdates.includes(update));
         })
-        .withMessage('Invalid updates!'),
+        .withMessage('Invalid updates! Not allowed field.'),
 ];
 
 export const validateLogin = [
-    body('email').exists().withMessage('Email/username is required'),
-    //.isEmail()
-    //.withMessage('Must be a valid email')
-    //.normalizeEmail(),
+    body('login').exists().withMessage('Email/username is required'),
     body('password')
         .exists()
         .withMessage('Password is required')

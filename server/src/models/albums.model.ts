@@ -1,72 +1,44 @@
-import { multipleColumnSet } from '../utils/common.utils';
-import pool from '../db/db.config';
-import IAlbum from '../interfaces/album.interface';
+import { Schema } from 'mongoose';
 
-interface IReturnedRows {
-    fieldCount?: number;
-    affectedRows?: number;
-    insertId?: number;
-    info?: string;
-    serverStatus?: number;
-    warningStatus?: number;
-    changedRows?: number;
-}
+const TYPES = ['album', 'single', 'compilation'];
 
-class albumModel {
-    _table = 'albums';
+const albumSchema = new Schema({
+    album_type: {
+        type: String,
+        enum: TYPES,
+        required: true,
+    },
+    total_tracks: Number,
+    name: String,
+    release_date: String,
+    release_date_precision: String,
+    popularity: Number,
+    type: {
+        type: String,
+        default: 'user',
+    },
+    images: [
+        {
+            url: String,
+            height: Number,
+            width: Number,
+        },
+    ],
+    artists: [{ type: Schema.Types.ObjectId, ref: 'Artist' }],
+    tracks: [{ type: Schema.Types.ObjectId, ref: 'Track' }],
+});
 
-    read = async (params: object = {}) => {
-        let sql = `SELECT albums.name, year, albums.slug, artists.name as artist FROM ${this._table} INNER JOIN artists ON ${this._table}.artist_id = artists.id`;
+albumSchema.virtual('uri').get(function () {
+    return `spotify:${this.type}:${this._id}`;
+});
 
-        if (!Object.keys(params).length) {
-            const [rows] = await pool.query<IAlbum[]>(sql, []);
-            return rows;
-        }
+albumSchema.method('toJSON', function () {
+    const { __v, _id, ...object } = this.toObject();
+    object.id = _id;
+    return object;
+});
 
-        const { columnSet, values } = multipleColumnSet(params);
-        sql += ` WHERE ${columnSet}`;
-        const [rows] = await pool.query<IAlbum[]>(sql, [...values]);
+albumSchema.set('toObject', { virtuals: true });
+albumSchema.set('toJSON', { virtuals: true });
 
-        return rows;
-    };
-
-    find = async (params: object): Promise<IAlbum> => {
-        const { columnSet, values } = multipleColumnSet(params);
-        const sql = `SELECT * FROM ${this._table} WHERE ${columnSet}`;
-        const [rows] = await pool.query<IAlbum[]>(sql, [...values]);
-        return rows[0];
-    };
-
-    create = async (album: IAlbum) => {
-        const sql = `INSERT INTO ${this._table}(id, name, year, slug, artist_id) VALUES(NULL, ?, ?, ?, ?)`;
-        const { name, year, slug, artist_id } = album;
-        const [rows] = await pool.query<IAlbum[]>(sql, [
-            name,
-            year,
-            slug,
-            artist_id,
-        ]);
-        const result = rows as IReturnedRows;
-
-        return result ? result.affectedRows : 0;
-    };
-
-    update = async (id: string, params: object) => {
-        const { columnSet, values } = multipleColumnSet(params);
-        const sql = `UPDATE ${this._table} SET ${columnSet} WHERE id = ?`;
-        const [rows] = await pool.query(sql, [...values, id]);
-        const result = rows as IReturnedRows;
-
-        return result;
-    };
-
-    delete = async (id: string) => {
-        const sql = `DELETE FROM ${this._table} WHERE id = ?`;
-        const [rows] = await pool.query(sql, [id]);
-        const result = rows as IReturnedRows;
-
-        return result ? result.affectedRows : 0;
-    };
-}
-
-export default new albumModel();
+export default albumSchema;

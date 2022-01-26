@@ -1,16 +1,26 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
+import db from './db/db.config';
 import errorMiddleware from './middlewares/error.middleware';
-import songsRoutes from './routes/songs.route';
-import albumsRoutes from './routes/albums.route';
-import usersRoutes from './routes/users.route';
+import {
+    userRoutes,
+    showRoutes,
+    genreRoutes,
+    albumsRoutes,
+    tracksRoutes,
+    artistsRoutes,
+    playlistsRoutes,
+} from './routes';
 
 dotenv.config();
 
 const port = process.env.PORT || 8080;
 const app: Express = express();
+const api: string = 'api/v1';
 
-app.use(express.urlencoded({ extended: false }));
+db.on('error', (error) => console.error(error));
+db.once('open', () => console.log('Connected to database'));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // CORS
@@ -24,7 +34,7 @@ app.use((req, res, next) => {
     if (req.method === 'OPTIONS') {
         res.header(
             'Access-Control-Allow-Methods',
-            'GET,PATCH,DELETE,POST,OPTIONS'
+            'GET,PATCH,DELETE,POST,PUT,OPTIONS'
         );
 
         return res.status(200).json({});
@@ -33,9 +43,13 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/api/v1', songsRoutes);
-app.use('/api/v1', albumsRoutes);
-app.use('/api/v1', usersRoutes);
+app.use(`/${api}`, playlistsRoutes);
+app.use(`/${api}`, artistsRoutes);
+app.use(`/${api}`, albumsRoutes);
+app.use(`/${api}`, tracksRoutes);
+app.use(`/${api}`, genreRoutes);
+app.use(`/${api}`, showRoutes);
+app.use(`/${api}`, userRoutes);
 
 // Error middleware
 app.use(errorMiddleware);
@@ -54,5 +68,5 @@ app.use('*', (req: Request, res: Response) => {
 
 app.listen(port, () =>
     // tslint:disable-next-line:no-console
-    console.log(`Running on http://localhost:${port}/api/v1`)
+    console.log(`Running on http://localhost:${port}/${api}`)
 );

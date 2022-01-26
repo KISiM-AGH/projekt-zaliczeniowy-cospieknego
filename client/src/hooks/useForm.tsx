@@ -1,4 +1,9 @@
-import { useState, ChangeEvent, FormEvent } from 'react';
+/**
+ * @TO_REFACTOR
+ * MAŁO WYDAJNE! Wymaga zmian, jeżeli ma działać dla `onChange`.
+ */
+import { SelectChangeEvent } from '@mui/material';
+import { useState, useEffect, ChangeEvent, FocusEvent, FormEvent } from 'react';
 
 interface Validation {
     required?: {
@@ -13,6 +18,7 @@ interface Validation {
         isValid: (value: string) => boolean;
         message: string;
     };
+    onBlur?: boolean;
 }
 
 type ErrorRecord<T> = Partial<Record<keyof T, string>>;
@@ -26,16 +32,21 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
 }) => {
     const [data, setData] = useState<T>((options?.initialValues || {}) as T);
     const [errors, setErrors] = useState<ErrorRecord<T>>({});
+    const [key, setKey] = useState<any>(''); // @REMOVE 'any'
+
+    useEffect(() => {
+        performCheck(key);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data, key]);
 
     const handleClick = (key: keyof T) => (e: any) => {
-        const value = !data[key];
-
+        const value = !data[key]; // true or false
+        setKey(key);
         setData({
             ...data,
             [key]: value,
         });
         performCheck(key);
-        console.log(key, value);
     };
 
     const handleChange =
@@ -43,12 +54,28 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
         (e: ChangeEvent<HTMLInputElement>) => {
             const value = sanitizeFn
                 ? sanitizeFn(e.target.value)
-                : e.target.value;
+                : (e.target.value as string);
 
+            setKey(key);
             setData({
                 ...data,
                 [key]: value,
             });
+        };
+
+    const handleSelect = (key: keyof T) => (e: SelectChangeEvent) => {
+        const value = e.target.value as string;
+        setKey(key);
+        setData({
+            ...data,
+            [key]: value,
+        });
+    };
+
+    const handleFocusEvent =
+        <S extends unknown>(key: keyof T, sanitizeFn?: (value: string) => S) =>
+        (e: FocusEvent<HTMLInputElement>) => {
+            performCheck(key);
         };
 
     const handleSubmit = async (
@@ -58,28 +85,23 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
         performFullCheck();
     };
 
-    const validate = () => {
-        //
-    };
-
     const performCheck = (key: keyof T) => {
         const validations = options?.validations;
         const validation = validations && validations[key];
-
-        const value = data[key];
         const newErrors: ErrorRecord<T> = {};
+        const value = data[key];
         let isValid = true;
 
         // Required
         const required = validation?.required;
-        if (required?.value && value) {
+        if (required?.value && !value) {
             isValid = false;
             newErrors[key] = required?.message;
         }
 
         // Pattern
         const pattern = validation?.pattern;
-        if (pattern?.value && !RegExp(pattern.value).test(value)) {
+        if (value && pattern?.value && !RegExp(pattern.value).test(value)) {
             isValid = false;
             newErrors[key] = pattern.message;
         }
@@ -92,14 +114,13 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
         }
 
         if (!isValid) {
-            setErrors({ ...errors, newErrors });
+            setErrors({ ...errors, ...newErrors });
             return;
         }
 
-        const { [key]: val, ...restErrors } = errors;
-        // const neuErrors: Omit<ErrorRecord<T>, keyof T> = restErrors;
-        // setErrors(neuErrors);
-        options?.onClick && options?.onClick();
+        delete errors[key];
+        setErrors({ ...errors });
+        // options?.onClick && options?.onClick();
     };
 
     const performFullCheck = () => {
@@ -149,7 +170,9 @@ export const useForm = <T extends Record<keyof T, any> = {}>(options?: {
         data,
         errors,
         handleClick,
-        handleChange,
         handleSubmit,
+        handleChange,
+        handleSelect,
+        handleFocusEvent,
     };
 };

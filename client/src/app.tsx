@@ -4,52 +4,141 @@ import {
     Route,
     Redirect,
 } from 'react-router-dom';
-import { ContentPane, NavBar, TopBar, MediaPlayer } from './components';
-import { Home, Search, Collection, SignIn, SignUp, NotFound } from './pages';
+import { ContentPane, Loader } from './components';
+import { NavBar, TopBar, NowPlaying } from './containers';
+import {
+    HomePage,
+    SearchPage,
+    CollectionPage,
+    FavoritePage,
+    SignInPage,
+    SignUpPage,
+    TracksPage,
+    NotFoundPage,
+    ShowAllPage,
+    ArtistPage,
+} from './pages';
+import { PrivateRoute, IsUserRedirect } from './helpers/routes';
+import useAuth from './hooks/useAuth';
+import * as ROUTES from './constants/routes';
+
+// @TODO Clean up the routes
 
 function App() {
-    return (
+    const { isLoggedIn, loading } = useAuth();
+
+    return !loading ? (
         <Router>
             <Switch>
-                <Route exact path='/login' component={SignIn} />
-                <Route exact path='/signup' component={SignUp} />
+                <IsUserRedirect
+                    exact
+                    path={ROUTES.LOGIN}
+                    loggedInPath={ROUTES.HOME}
+                    isLoggedIn={isLoggedIn}
+                >
+                    <SignInPage />
+                </IsUserRedirect>
+                <IsUserRedirect
+                    exact
+                    path={ROUTES.SIGNUP}
+                    loggedInPath={ROUTES.HOME}
+                    isLoggedIn={isLoggedIn}
+                >
+                    <SignUpPage />
+                </IsUserRedirect>
                 <Route>
                     <NavBar />
                     <TopBar />
                     <ContentPane>
                         <Switch>
-                            <Route exact path='/' component={Home} />
-                            <Route path='/search' component={Search} />
                             <Route
                                 exact
-                                path='/collection/albums'
-                                component={Collection}
+                                path={ROUTES.HOME}
+                                component={HomePage}
                             />
                             <Route
-                                exact
-                                path='/collection/playlists'
-                                component={Collection}
+                                path={ROUTES.BROWSE}
+                                component={SearchPage}
                             />
+                            <PrivateRoute
+                                exact
+                                path={ROUTES.TRACKS}
+                                loggedInPath={ROUTES.HOME}
+                                isLoggedIn={isLoggedIn}
+                                component={FavoritePage}
+                            />
+                            <PrivateRoute
+                                exact
+                                path={[
+                                    ROUTES.ALBUMS,
+                                    ROUTES.PLAYLISTS,
+                                    ROUTES.PODCASTS,
+                                    ROUTES.ARTISTS,
+                                ]}
+                                loggedInPath={ROUTES.HOME}
+                                isLoggedIn={isLoggedIn}
+                                component={CollectionPage}
+                            />
+                            <PrivateRoute
+                                path={`${ROUTES.COLLECTION}*`}
+                                loggedInPath={ROUTES.HOME}
+                                isLoggedIn={isLoggedIn}
+                            >
+                                {isLoggedIn ? (
+                                    <Redirect to={ROUTES.ALBUMS} />
+                                ) : (
+                                    <Redirect to={ROUTES.HOME} />
+                                )}
+                            </PrivateRoute>
                             <Route
                                 exact
-                                path='/collection/podcasts'
-                                component={Collection}
+                                path={`${ROUTES.GENRE}/:genre`}
+                                component={SearchPage}
                             />
-                            <Route
-                                exact
-                                path='/collection/artists'
-                                component={Collection}
-                            />
-                            <Route path='/collection/*'>
-                                <Redirect to='/collection/albums' />
+                            <Route>
+                                <Route
+                                    exact
+                                    path={`${ROUTES.ARTIST}/:id`}
+                                    render={(props) => (
+                                        <ArtistPage
+                                            fetch={`artists/${props.match.params.id}`}
+                                        />
+                                    )}
+                                />
+                                <Route
+                                    exact
+                                    path={`${ROUTES.ALBUM}/:id`}
+                                    render={(props) => (
+                                        <TracksPage
+                                            fetch={`albums/${props.match.params.id}`}
+                                        />
+                                    )}
+                                />
+                                <Route
+                                    exact
+                                    path={`${ROUTES.PLAYLIST}/:id`}
+                                    render={(props) => (
+                                        <TracksPage
+                                            fetch={`playlists/${props.match.params.id}`}
+                                        />
+                                    )}
+                                />
+                            </Route>
+                            <Route exact path={`${ROUTES.GENRE}`}>
+                                <Redirect to={ROUTES.HOME} />
+                            </Route>
+                            <Route exact path='/albums'>
+                                <ShowAllPage category='albums' />
                             </Route>
                         </Switch>
                     </ContentPane>
-                    <MediaPlayer />
+                    <NowPlaying />
                 </Route>
-                <Route path='*' component={NotFound} />
+                <Route path='*' component={NotFoundPage} />
             </Switch>
         </Router>
+    ) : (
+        <Loader />
     );
 }
 

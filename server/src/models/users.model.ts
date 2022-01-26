@@ -1,76 +1,81 @@
-import { multipleColumnSet } from '../utils/common.utils';
-import pool from '../db/db.config';
-import IUser from '../interfaces/user.interface';
+import { Schema } from 'mongoose';
 
-interface IReturnedRows {
-    fieldCount?: number;
-    affectedRows?: number;
-    insertId?: number;
-    info?: string;
-    serverStatus?: number;
-    warningStatus?: number;
-    changedRows?: number;
-}
+const PLANS = ['premium', 'free'];
+const GENDERS = ['male', 'female', 'non-binary'];
 
-class userModel {
-    _table = 'users';
+const userSchema = new Schema(
+    {
+        _id: Schema.Types.ObjectId,
+        email: {
+            type: String,
+            unique: true,
+            required: [true, 'Email is required'],
+        },
+        username: {
+            type: String,
+            unique: true,
+            required: [true, 'Username is required'],
+        },
+        password: {
+            type: String,
+            minlength: 6,
+            required: [true, 'Password is required'],
+        },
+        gender: {
+            type: String,
+            enum: GENDERS,
+            required: true,
+        },
+        birth_date: {
+            type: String,
+            required: true,
+        },
+        send_newsletter: {
+            type: Boolean,
+            default: false,
+        },
+        product: {
+            type: String,
+            enum: PLANS,
+            default: 'free',
+        },
+        signup_date: {
+            type: Date,
+            default: Date.now(),
+        },
+        type: {
+            type: String,
+            default: 'user',
+        },
+        images: [
+            {
+                url: String,
+                height: Number,
+                width: Number,
+            },
+        ],
+        saved: {
+            shows: [{ type: Schema.Types.ObjectId, ref: 'Show' }],
+            tracks: [{ type: Schema.Types.ObjectId, ref: 'Track' }],
+            albums: [{ type: Schema.Types.ObjectId, ref: 'Album' }],
+            artists: [{ type: Schema.Types.ObjectId, ref: 'Artist' }],
+            playlists: [{ type: Schema.Types.ObjectId, ref: 'Playlist' }],
+        },
+    },
+    { versionKey: false }
+);
 
-    read = async (params: object = {}) => {
-        let sql = `SELECT * FROM ${this._table}`;
+userSchema.virtual('uri').get(function () {
+    return `spotify:${this.type}:${this._id}`;
+});
 
-        if (!Object.keys(params).length) {
-            const [rows] = await pool.query<IUser[]>(sql, []);
-            return rows;
-        }
+userSchema.method('toJSON', function () {
+    const { __v, _id, ...object } = this.toObject();
+    object.id = _id;
+    return object;
+});
 
-        const { columnSet, values } = multipleColumnSet(params);
-        sql += ` WHERE ${columnSet}`;
-        const [rows] = await pool.query<IUser[]>(sql, [...values]);
+userSchema.set('toJSON', { virtuals: true });
+userSchema.set('toObject', { virtuals: false });
 
-        return rows;
-    };
-
-    find = async (params: object): Promise<IUser> => {
-        const { columnSet, values } = multipleColumnSet(params);
-        const sql = `SELECT * FROM ${this._table} WHERE ${columnSet}`;
-        const [rows] = await pool.query<IUser[]>(sql, [...values]);
-        return rows[0];
-    };
-
-    create = async (song: IUser) => {
-        // uuid lub NULL
-        const sql = `INSERT INTO ${this._table}(id, email, password_digest, name, image_url, role) VALUES(?, ?, ?, ?, ?, ?)`;
-        const { title, duration, audio_url, artist_id, album_id, lyrics } =
-            song;
-        const [rows] = await pool.query<IUser[]>(sql, [
-            title,
-            duration,
-            audio_url,
-            artist_id,
-            album_id,
-            lyrics,
-        ]);
-        const result = rows as IReturnedRows;
-
-        return result ? result.affectedRows : 0;
-    };
-
-    update = async (id: string, params: object) => {
-        const { columnSet, values } = multipleColumnSet(params);
-        const sql = `UPDATE ${this._table} SET ${columnSet} WHERE id = ?`;
-        const [rows] = await pool.query(sql, [...values, id]);
-        const result = rows as IReturnedRows;
-
-        return result;
-    };
-
-    delete = async (id: string) => {
-        const sql = `DELETE FROM ${this._table} WHERE id = ?`;
-        const [rows] = await pool.query(sql, [id]);
-        const result = rows as IReturnedRows;
-
-        return result ? result.affectedRows : 0;
-    };
-}
-
-export default new userModel();
+export default userSchema;

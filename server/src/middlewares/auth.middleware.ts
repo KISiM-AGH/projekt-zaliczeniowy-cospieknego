@@ -1,11 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
-import UserModel from '../models/users.model';
-import {
-    default as IUser,
-    IGetUserAuthInfoRequest,
-} from '../interfaces/user.interface';
+import { User } from '../models';
 
 dotenv.config();
 
@@ -30,7 +26,9 @@ const auth = (...roles: string[]) => {
             const token = authHeader.replace(bearer, '');
             const secret = process.env.SECRET_JWT || '';
             const decoded = jwt.verify(token, secret) as JwtPayload;
-            const user = await UserModel.find({ id: decoded.userId });
+            const user = await User.findById(decoded.userId).select(
+                'email username images type product gender'
+            );
 
             !user &&
                 res.status(401).send({
@@ -52,7 +50,7 @@ const auth = (...roles: string[]) => {
                     },
                 });
 
-            req.currentUser = user;
+            req.currentUser = user.toJSON();
             next();
         } catch (e) {
             e.status = 401;

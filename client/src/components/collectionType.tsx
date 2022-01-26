@@ -1,9 +1,9 @@
-import { useState, ReactElement, forwardRef } from 'react';
-import { useHistory, Link, LinkProps } from 'react-router-dom';
+import { useState, ReactElement } from 'react';
+import { Link } from 'react-router-dom';
 import { Stack, Button, Menu, MenuItem } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { useTheme } from '@mui/material/styles';
 import useWindowSize from '../hooks/useWindowSize';
+import * as ROUTES from '../constants/routes';
 
 interface IProps {
     activeType: string;
@@ -12,8 +12,6 @@ interface IProps {
 export default function CollectionType({ activeType }: IProps): ReactElement {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const windowSize = useWindowSize();
-    const history = useHistory();
-    const theme = useTheme();
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -23,7 +21,6 @@ export default function CollectionType({ activeType }: IProps): ReactElement {
         setAnchorEl(null);
     };
 
-    // Na sztywno => do poprawy
     return (
         <Stack direction='row' spacing={2} sx={{ flexGrow: 24, color: '#fff' }}>
             {windowSize.x >= 1024 && (
@@ -34,16 +31,8 @@ export default function CollectionType({ activeType }: IProps): ReactElement {
                             activeType === 'albums' ? 'primary' : 'secondary'
                         }
                         sx={{ padding: '6px 16px' }}
-                        component={forwardRef<
-                            HTMLAnchorElement,
-                            Partial<LinkProps>
-                        >((props, ref) => (
-                            <Link
-                                to='/collection/albums'
-                                ref={ref as any}
-                                {...props}
-                            />
-                        ))}
+                        component={Link}
+                        to={ROUTES.ALBUMS}
                     >
                         Albumy
                     </Button>
@@ -55,16 +44,8 @@ export default function CollectionType({ activeType }: IProps): ReactElement {
                             activeType === 'playlists' ? 'primary' : 'secondary'
                         }
                         sx={{ padding: '6px 16px' }}
-                        component={forwardRef<
-                            HTMLAnchorElement,
-                            Partial<LinkProps>
-                        >((props, ref) => (
-                            <Link
-                                to='/collection/playlists'
-                                ref={ref as any}
-                                {...props}
-                            />
-                        ))}
+                        component={Link}
+                        to={ROUTES.PLAYLISTS}
                     >
                         Playlisty
                     </Button>
@@ -76,16 +57,8 @@ export default function CollectionType({ activeType }: IProps): ReactElement {
                             activeType === 'podcasts' ? 'primary' : 'secondary'
                         }
                         sx={{ padding: '6px 16px' }}
-                        component={forwardRef<
-                            HTMLAnchorElement,
-                            Partial<LinkProps>
-                        >((props, ref) => (
-                            <Link
-                                to='/collection/podcasts'
-                                ref={ref as any}
-                                {...props}
-                            />
-                        ))}
+                        component={Link}
+                        to={ROUTES.PODCASTS}
                     >
                         Podcasty
                     </Button>
@@ -97,16 +70,8 @@ export default function CollectionType({ activeType }: IProps): ReactElement {
                             activeType === 'artists' ? 'primary' : 'secondary'
                         }
                         sx={{ padding: '6px 16px' }}
-                        component={forwardRef<
-                            HTMLAnchorElement,
-                            Partial<LinkProps>
-                        >((props, ref) => (
-                            <Link
-                                to='/collection/artists'
-                                ref={ref as any}
-                                {...props}
-                            />
-                        ))}
+                        component={Link}
+                        to={ROUTES.ARTISTS}
                     >
                         Wykonawcy
                     </Button>
@@ -114,9 +79,27 @@ export default function CollectionType({ activeType }: IProps): ReactElement {
             )}
             {windowSize.x < 1024 && windowSize.x >= 900 && (
                 <>
-                    <Button variant='contained'>Albumy</Button>
-                    <Button color='secondary'>Playlisty</Button>
-                    <Button color='secondary'>Podcasty</Button>
+                    <Button
+                        variant='contained'
+                        component={Link}
+                        to={ROUTES.ALBUMS}
+                    >
+                        Albumy
+                    </Button>
+                    <Button
+                        color='secondary'
+                        component={Link}
+                        to={ROUTES.PLAYLISTS}
+                    >
+                        Playlisty
+                    </Button>
+                    <Button
+                        color='secondary'
+                        component={Link}
+                        to={ROUTES.PODCASTS}
+                    >
+                        Podcasty
+                    </Button>
                     <Button
                         color='secondary'
                         endIcon={<ArrowDropDownIcon />}
@@ -139,14 +122,32 @@ export default function CollectionType({ activeType }: IProps): ReactElement {
                         onClose={handleClose}
                         sx={{ mt: 1 }}
                     >
-                        <Button color='secondary'>Wykonawcy</Button>
+                        <Button
+                            color='secondary'
+                            component={Link}
+                            to={ROUTES.ARTISTS}
+                        >
+                            Wykonawcy
+                        </Button>
                     </Menu>
                 </>
             )}
             {windowSize.x < 900 && (
                 <>
-                    <Button variant='contained'>Albumy</Button>
-                    <Button color='secondary'>Playlisty</Button>
+                    <Button
+                        variant='contained'
+                        component={Link}
+                        to={ROUTES.ALBUMS}
+                    >
+                        Albumy
+                    </Button>
+                    <Button
+                        color='secondary'
+                        component={Link}
+                        to={ROUTES.PLAYLISTS}
+                    >
+                        Playlisty
+                    </Button>
                     <Button
                         color='secondary'
                         endIcon={<ArrowDropDownIcon />}
@@ -170,10 +171,22 @@ export default function CollectionType({ activeType }: IProps): ReactElement {
                         sx={{ mt: 1 }}
                     >
                         <MenuItem>
-                            <Button color='secondary'>Podcasty</Button>
+                            <Button
+                                color='secondary'
+                                component={Link}
+                                to={ROUTES.PODCASTS}
+                            >
+                                Podcasty
+                            </Button>
                         </MenuItem>
                         <MenuItem>
-                            <Button color='secondary'>Wykonawcy</Button>
+                            <Button
+                                color='secondary'
+                                component={Link}
+                                to={ROUTES.ARTISTS}
+                            >
+                                Wykonawcy
+                            </Button>
                         </MenuItem>
                     </Menu>
                 </>

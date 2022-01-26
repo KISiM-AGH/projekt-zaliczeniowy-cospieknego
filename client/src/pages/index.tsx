@@ -1,6 +1,10 @@
-export { default as Home } from './home';
-export { default as Search } from './search';
-export { default as Collection } from './collection';
-export { default as SignIn } from './signIn';
-export { default as SignUp } from './signUp';
-export { default as NotFound } from './notFound';
+export { default as HomePage } from './home.page';
+export { default as SearchPage } from './search.page';
+export { default as FavoritePage } from './favorite.page';
+export { default as CollectionPage } from './collection.page';
+export { default as SignInPage } from './signIn.page';
+export { default as SignUpPage } from './signUp.page';
+export { default as TracksPage } from './tracks.page';
+export { default as ArtistPage } from './artist.page';
+export { default as ShowAllPage } from './showAll.page';
+export { default as NotFoundPage } from './notFound.page';

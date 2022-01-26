@@ -7,9 +7,9 @@ const topBarHeight: number = 64;
 
 const styles = {
     root: {
-        backgroundColor: 'background.default',
-        minHeight: '100%',
         m: 2,
+        minHeight: '100%',
+        backgroundColor: 'background.default',
         marginLeft: (theme: Theme) =>
             `calc(${drawerWidth}px + ${theme.spacing(4)})`,
         '&::before, &::after': {
@@ -18,7 +18,7 @@ const styles = {
             position: 'absolute',
             zIndex: 99,
             height: '40px',
-            width: (theme: Theme) => `calc(100% - ${theme.spacing(1)})`,
+            width: '100%',
         },
         '&::before': {
             background: (theme: Theme) =>
@@ -39,19 +39,9 @@ const styles = {
             `calc(100vh - ${theme.spacing(
                 8
             )} - ${mediaPlayerHeight}px - ${topBarHeight}px)`,
-        overflow: 'auto',
         p: 4,
-        '&::-webkit-scrollbar': {
-            width: '8px',
-        },
-        '&::-webkit-scrollbar-track': {
-            boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-            webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-            bgcolor: '#2a0b12',
-        },
-        '&::-webkit-scrollbar-thumb': {
-            bgcolor: (theme: Theme) => theme.palette.primary.main,
-        },
+        overflow: 'auto',
+        alignContent: 'flex-start',
     },
 };
 
@@ -65,8 +55,13 @@ export default function ContentPane({
 }: IProps): ReactElement {
     return (
         <>
-            <Box sx={styles.root} position='relative'>
-                <Grid container sx={styles.container} columns={8}>
+            <Box sx={styles.root} position='relative' {...props}>
+                <Grid
+                    container
+                    sx={styles.container}
+                    columns={8}
+                    position='relative'
+                >
                     {children}
                 </Grid>
             </Box>

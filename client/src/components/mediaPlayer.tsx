@@ -1,11 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useMemo, ReactElement } from 'react';
 import { useTheme } from '@mui/material/styles';
 import {
     Box,
     IconButton,
     Tooltip,
-    AppBar,
     CardContent,
     CardMedia,
     Typography,
@@ -23,7 +21,7 @@ import VolumeOffOutlinedIcon from '@mui/icons-material/VolumeOffOutlined';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import RepeatIcon from '@mui/icons-material/Repeat';
 
-export default function MediaPlayer(props: {}): ReactElement {
+export default function MediaPlayer(): ReactElement {
     const [progress, setProgress] = useState<number>(0);
     const [volume, setVolume] = useState<number>(100);
     const [prevVolume, setPrevVolume] = useState<number>(100);
@@ -55,6 +53,7 @@ export default function MediaPlayer(props: {}): ReactElement {
     useMemo(() => {
         setPrevVolume(volume > 0 ? volume : prevVolume);
         setVolume(muted ? 0 : prevVolume);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [muted]);
 
     const handleClick = (): void => {
@@ -66,17 +65,7 @@ export default function MediaPlayer(props: {}): ReactElement {
     };
 
     return (
-        <AppBar
-            elevation={0}
-            sx={{
-                m: 2,
-                zIndex: theme.zIndex.drawer + 1,
-                top: 'unset',
-                bottom: 0,
-                width: `calc(100% - ${theme.spacing(4)})`,
-                display: 'flex',
-            }}
-        >
+        <>
             <LinearProgress variant='determinate' value={progress} />
             <Toolbar sx={{ height: 90, justifyContent: 'space-between' }}>
                 <Box
@@ -247,6 +236,6 @@ export default function MediaPlayer(props: {}): ReactElement {
                     />
                 </Box>
             </Toolbar>
-        </AppBar>
+        </>
     );
 }
