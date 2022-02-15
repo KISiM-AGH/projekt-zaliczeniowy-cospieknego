@@ -2,9 +2,9 @@
 
 <div id="top"></div>
 
-![Home Page](https://user-images.githubusercontent.com/53997424/154150706-533534c2-7b3b-485f-a0a9-a79fb0d14492.PNG)
+![Home Page](https://user-images.githubusercontent.com/53997424/154158662-cd1f1283-a142-4834-be03-73d0668bdb0a.PNG)
 
-![Collection Page](https://user-images.githubusercontent.com/53997424/154150711-9e26427d-383b-4f33-9110-c2f7ddfd5503.PNG)
+![Collection Page](https://user-images.githubusercontent.com/53997424/154158666-c2de16a4-f7d9-4f67-b668-b7eb5ec373f9.PNG)
 
 <!-- TABLE OF CONTENTS -->
 <details>
