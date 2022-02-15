@@ -25,8 +25,6 @@
 <!-- ABOUT THE PROJECT -->
 ## Opis projektu
 
-Projekt z przedmiotu Inżynieria Internetu realizowany w ramach studiów.
-
 Celem projektu było opracowanie serwisu internetowego opartego na Spotify z uwzględnieniem zmian w wyglądzie i układzie poszczególnych elementów. Serwis miał umożliwiać użytkownikom założenie konta w celu odblokowania niedostępnych dla niezalogowanych użytkowników usług, takich jak: słuchanie muzyki i podcastów, tworzenie playlist i zapisywanie ulubionych dzieł. Projekt zakładał zarówno Front-end, jak i Back-end. Użyte technologie zamieszczono w spisie poniżej. Autoryzacji dokonywano za pomocą JWT.
 
 
