@@ -1,10 +1,11 @@
 # Spotify Redesign
 
 <div id="top"></div>
+
 ![Home Page](https://user-images.githubusercontent.com/53997424/154150706-533534c2-7b3b-485f-a0a9-a79fb0d14492.PNG)
 ![Collection Page](https://user-images.githubusercontent.com/53997424/154150711-9e26427d-383b-4f33-9110-c2f7ddfd5503.PNG)
-[![Home Page][product-screenshot]](https://example.com)
-[![Home Page][product-screenshot]](https://user-images.githubusercontent.com/53997424/154150711-9e26427d-383b-4f33-9110-c2f7ddfd5503.PNG)
+
+![alt text](https://user-images.githubusercontent.com/53997424/154150706-533534c2-7b3b-485f-a0a9-a79fb0d14492.PNG)
 
 <!-- TABLE OF CONTENTS -->
 <details>
