@@ -21,6 +21,7 @@
 </details>
 
 
+
 <!-- ABOUT THE PROJECT -->
 ## Opis projektu
 
@@ -37,6 +38,7 @@ Celem projektu było opracowanie serwisu internetowego opartego na Spotify z uwz
 * [MongoDB](https://www.mongodb.com/)
 
 
+
 <!-- ROADMAP -->
 ## Roadmap
 
@@ -47,3 +49,4 @@ Celem projektu było opracowanie serwisu internetowego opartego na Spotify z uwz
 - [ ] Wsparcie wielojęzyczne
 
 <p align="right">(<a href="#top">Powrót na górę</a>)</p>
+
